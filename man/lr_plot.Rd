@@ -27,6 +27,10 @@ lr_plot_build(plt)
 \item{exp_bins}{Exposure bin variable (unquoted)}
 
 \item{...}{Other arguments}
+
+\item{plt}{description}
+
+\item{shade}{description}
 }
 \value{
 A plot
