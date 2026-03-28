@@ -128,18 +128,18 @@ lr_simulator <- function(object) {
 
 #' Builds an exposure-response plot for a logistic regression model
 #'
-#' @param obs_data The observed data set
-#' @param prd_data Simul
-#' @param exposure
-#' @param response
-#' @param exp_bins
-#' @param ...
+#' @param obs_data Observed data
+#' @param prd_data Prediction data
+#' @param exposure Exposure variable (unquoted)
+#' @param response Response variable (unquoted)
+#' @param exp_bins Exposure bin variable (unquoted)
+#' @param ... Other arguments
 #'
-#' @returns
+#' @returns A plot
 #'
-#' @export
 #' @examples
-#' 
+#' # add example here
+#' @name lr_plot
 
 #' @export
 #' @rdname lr_plot

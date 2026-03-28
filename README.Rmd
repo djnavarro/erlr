@@ -32,5 +32,9 @@ pak::pak("djnavarro/erlr")
 
 ```{r example}
 library(erlr)
-## basic example code
+
+lr_dat
+
+mod <- lr_model(response ~ exposure, lr_dat)
+mod
 ```
