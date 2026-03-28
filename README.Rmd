@@ -1,0 +1,36 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
+)
+```
+
+# erlr
+
+<!-- badges: start -->
+<!-- badges: end -->
+
+Provides estimation and plotting tools for exposure-response models that use logistic regression for binary responses.
+
+## Installation
+
+You can install the development version of erlr like so:
+
+``` r
+pak::pak("djnavarro/erlr")
+```
+
+## Example
+
+```{r example}
+library(erlr)
+## basic example code
+```
