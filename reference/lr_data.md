@@ -1,22 +1,50 @@
-# erlr
+# Sample simulated data for logistic regression exposure-response models with covariates.
 
-Provides estimation and plotting tools for exposure-response models that
-use logistic regression for binary responses.
+Sample simulated data for logistic regression exposure-response models
+with covariates.
 
-## Installation
-
-You can install the development version of erlr like so:
+## Usage
 
 ``` r
-pak::pak("djnavarro/erlr")
+lr_data
 ```
 
-## Example
+## Format
+
+A data frame with columns:
+
+- id:
+
+  Identifier
+
+- dose:
+
+  Nominal dose, units not specified
+
+- exposure:
+
+  Exposure value, units and metric not specified
+
+- exposure_quartile:
+
+  Exposure quartile, with placebo group separate
+
+- response:
+
+  Continuous response value (units not specified)
+
+- sex:
+
+  Sex
+
+## Details
+
+This simulated dataset is entirely synthetic You can find the data
+generating code in the package source code
+
+## Examples
 
 ``` r
-library(erlr)
-library(tibble)
-
 lr_data
 #> # A tibble: 300 × 6
 #>       id  dose exposure exposure_quartile response sex   
@@ -32,18 +60,4 @@ lr_data
 #>  9     9     0      0   Placebo                  0 Male  
 #> 10    10   200    165.  Q3                       1 Male  
 #> # ℹ 290 more rows
-
-mod <- lr_model(response ~ exposure, lr_data)
-mod
-#> 
-#> Call:  stats::glm(formula = formula, family = stats::binomial(link = "logit"), 
-#>     data = data)
-#> 
-#> Coefficients:
-#> (Intercept)     exposure  
-#>     0.15078      0.01112  
-#> 
-#> Degrees of Freedom: 299 Total (i.e. Null);  298 Residual
-#> Null Deviance:       341.7 
-#> Residual Deviance: 283.9     AIC: 287.9
 ```

@@ -23,7 +23,7 @@ Numeric vector
 ## Examples
 
 ``` r
-logit(lr_dat$exposure)
+logit(lr_data$exposure)
 #> Warning: NaNs produced
 #>   [1]  NaN  NaN  NaN  NaN -Inf  NaN  NaN  NaN -Inf  NaN -Inf  NaN  NaN  NaN -Inf
 #>  [16] -Inf  NaN -Inf  NaN  NaN  NaN -Inf -Inf  NaN -Inf  NaN  NaN  NaN  NaN  NaN
@@ -47,7 +47,7 @@ logit(lr_dat$exposure)
 #> [286]  NaN -Inf -Inf  NaN -Inf -Inf  NaN -Inf -Inf  NaN  NaN  NaN -Inf -Inf  NaN
 #> attr(,"label")
 #> [1] "Exposure"
-invlogit(lr_dat$response)
+invlogit(lr_data$response)
 #>   [1] 0.7310586 0.7310586 0.7310586 0.5000000 0.7310586 0.7310586 0.7310586
 #>   [8] 0.5000000 0.5000000 0.7310586 0.7310586 0.7310586 0.7310586 0.7310586
 #>  [15] 0.7310586 0.5000000 0.5000000 0.5000000 0.7310586 0.7310586 0.7310586

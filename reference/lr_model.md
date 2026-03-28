@@ -29,5 +29,5 @@ A glm object
 ## Examples
 
 ``` r
-mod <- lr_model(response ~ exposure, lr_dat)
+mod <- lr_model(response ~ exposure, lr_data)
 ```

@@ -1,11 +1,6 @@
-# Takes a fitted glm object as input and returns a function that will evaluate the underlying structural model with user-specified parameters or data (e.g., for VPCs or other counterfactual simulation scenarios). In principle this should work for glms more generally, not merely logistic regressions, but has not been tested except for logistic regression models Simulate from a logistic regression model
+# Simulate from a logistic regression model
 
-Takes a fitted glm object as input and returns a function that will
-evaluate the underlying structural model with user-specified parameters
-or data (e.g., for VPCs or other counterfactual simulation scenarios).
-In principle this should work for glms more generally, not merely
-logistic regressions, but has not been tested except for logistic
-regression models Simulate from a logistic regression model
+Simulate from a logistic regression model
 
 ## Usage
 
@@ -30,25 +25,32 @@ A function with arguments `param`, `data`, and `type`.
 - The `type` argument should be a string indicating the type of
   prediction to generate (defaults to `"response"`)
 
+Takes a fitted glm object as input and returns a function that will
+evaluate the underlying structural model with user-specified parameters
+or data (e.g., for VPCs or other counterfactual simulation scenarios).
+In principle this should work for glms more generally, not merely
+logistic regressions, but has not been tested except for logistic
+regression models
+
 ## Examples
 
 ``` r
-mod1 <- lr_model(response ~ exposure + sex, lr_dat)
+mod1 <- lr_model(response ~ exposure + sex, lr_data)
 par1 <- coef(mod1)
 mod1_sim <- lr_simulator(mod1)
 
 # no counterfactuals
-p1 <- mod1_sim(param = par1, data = lr_dat) 
+p1 <- mod1_sim(param = par1, data = lr_data) 
 p2 <- unname(predict(mod1, type = "response")) # same result
 
 # user modifies the data set
-lr_dat2 <- lr_dat[1:20, ]
-p3 <- mod1_sim(param = par1, data = lr_dat2) 
-p4 <- unname(predict(mod1, newdata = lr_dat2, type = "response")) # same result
+lr_data2 <- lr_data[1:20, ]
+p3 <- mod1_sim(param = par1, data = lr_data2) 
+p4 <- unname(predict(mod1, newdata = lr_data2, type = "response")) # same result
 
 # user modifies the parameters
 par2 <- par1
 int1 <- par1["(Intercept)"]
 par2["(Intercept)"] <- 0
-p5 <- mod1_sim(param = par2, data = lr_dat)
+p5 <- mod1_sim(param = par2, data = lr_data)
 ```

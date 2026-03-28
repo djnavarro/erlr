@@ -64,7 +64,7 @@
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">logit</span><span class="op">(</span><span class="va">lr_dat</span><span class="op">$</span><span class="va">exposure</span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">logit</span><span class="op">(</span><span class="va">lr_data</span><span class="op">$</span><span class="va">exposure</span><span class="op">)</span></span></span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>NaNs produced</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   [1]  NaN  NaN  NaN  NaN -Inf  NaN  NaN  NaN -Inf  NaN -Inf  NaN  NaN  NaN -Inf</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [16] -Inf  NaN -Inf  NaN  NaN  NaN -Inf -Inf  NaN -Inf  NaN  NaN  NaN  NaN  NaN</span>
@@ -88,7 +88,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> [286]  NaN -Inf -Inf  NaN -Inf -Inf  NaN -Inf -Inf  NaN  NaN  NaN -Inf -Inf  NaN</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"label")</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Exposure"</span>
-<span class="r-in"><span><span class="fu">invlogit</span><span class="op">(</span><span class="va">lr_dat</span><span class="op">$</span><span class="va">response</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">invlogit</span><span class="op">(</span><span class="va">lr_data</span><span class="op">$</span><span class="va">response</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   [1] 0.7310586 0.7310586 0.7310586 0.5000000 0.7310586 0.7310586 0.7310586</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   [8] 0.5000000 0.5000000 0.7310586 0.7310586 0.7310586 0.7310586 0.7310586</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [15] 0.7310586 0.5000000 0.5000000 0.5000000 0.7310586 0.7310586 0.7310586</span>

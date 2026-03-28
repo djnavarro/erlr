@@ -29,8 +29,8 @@ A tibble
 ## Examples
 
 ``` r
-mod <- lr_model(response ~ exposure, lr_dat)
-lr_predict(mod, lr_dat)
+mod <- lr_model(response ~ exposure, lr_data)
+lr_predict(mod, lr_data)
 #> # A tibble: 300 × 11
 #>       id  dose exposure exposure_quartile response sex    fit_link se_link
 #>    <int> <dbl>    <dbl> <fct>                <dbl> <fct>     <dbl>   <dbl>
