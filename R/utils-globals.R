@@ -1,0 +1,9 @@
+utils::globalVariables(c(
+  "exposure",
+  "dose",
+  "ci_lower",
+  "ci_upper",
+  "fit_resp",
+  "fit_link",
+  "se_link"
+))
