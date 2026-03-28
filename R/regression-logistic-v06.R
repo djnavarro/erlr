@@ -167,37 +167,26 @@ lr_plot <- function(data,        # observed data for the points
                     response,    # response variable (unquoted)
                     ...          # passed to theme()
                     ) {
-  plt <- list(
+  object <- list(
     obs_data = data,
     prd_data = NULL,
     exp_name = rlang::as_name(rlang::enquo(exposure)),
     rsp_name = rlang::as_name(rlang::enquo(response)),
     bins = NULL,
-    theme_args = list(...),
-    base = NULL,
-    strip = list(upper = NULL, lower = NULL),
-    box = NULL  
+    theme_args = list(...)
   )
-  plt$formula <- as.formula(paste(plt$rsp_name, plt$exp_name, sep = "~"))
-  plt$model <- lr_model(formula = plt$formula, data = plt$obs_data)
-  plt$exp_lbl = attr(plt$obs_data[[plt$exp_name]], "label")
-  plt$rsp_lbl = attr(plt$obs_data[[plt$rsp_name]], "label")
-  plt$xlim <- range(data[[plt$exp_name]])
-  return(structure(.Data = plt, class = "erlr_plot"))
-}
+  object$formula <- as.formula(paste(object$rsp_name, object$exp_name, sep = "~"))
+  object$model <- lr_model(formula = object$formula, data = object$obs_data)
+  object$exp_lbl = attr(object$obs_data[[object$exp_name]], "label")
+  object$rsp_lbl = attr(object$obs_data[[object$rsp_name]], "label")
+  object$xlim <- range(data[[object$exp_name]])
 
-#' @rdname lr_plot
-#' @export
-lr_plot_add_base <- function(object, bins = 4) {
-
-  object$bins <- bins
-  object$obs_data[[".bins"]] <- cut_exposure_quantile(object$obs_data[[object$exp_name]], n = bins)
   rng <- range(object$obs_data[[object$exp_name]])
   prd <- data.frame(x = seq(rng[1], rng[2], length.out = 100))
   names(prd) <- object$exp_name 
   object$prd_data <- lr_predict(object$model, prd)
 
-  plt <- ggplot2::ggplot() +
+  object$base <- ggplot2::ggplot() +
     ggplot2::geom_ribbon(
       data = object$prd_data,
       mapping = ggplot2::aes(
@@ -213,7 +202,10 @@ lr_plot_add_base <- function(object, bins = 4) {
       mapping = ggplot2::aes(!!dplyr::sym(object$exp_name), fit_resp),
       linewidth = 1
     ) +
-    ggplot2::scale_y_continuous(oob = scales::oob_keep, expand = c(0, 0)) +
+    ggplot2::scale_y_continuous(
+      oob = scales::oob_keep, 
+      expand = ggplot2::expansion(mult = .01, add = 0)
+    )  +
     ggplot2::coord_cartesian(xlim = object$xlim, ylim = c(0, 1), clip = "off") +
     ggplot2::theme_bw() +
     ggplot2::theme(
@@ -224,7 +216,53 @@ lr_plot_add_base <- function(object, bins = 4) {
       y = attr(object$obs_data[[object$rsp_name]], "label")
     )
   
-  object$base <- plt
+  object$strip <- list(upper = NULL, lower = NULL)
+  object$box <- NULL  
+
+  return(structure(.Data = object, class = "erlr_plot"))
+}
+
+clopper_pearson <- function(x, n, conf.level = 0.95) {
+  alpha <- 1 - conf.level
+  lower <- if (x > 0) stats::qbeta(alpha/2, x, n - x + 1) else 0
+  upper <- if (x < n) stats::qbeta(1 - alpha/2, x + 1, n - x) else 1
+  return(c(lower = lower, upper = upper))
+}
+
+#' @rdname lr_plot
+#' @export
+lr_plot_add_quantiles <- function(object, bins = 4, conf.level = 0.95) {
+
+  percent <- scales::label_percent(accuracy = 1)
+  object$bins <- bins
+  object$obs_data[[".bins"]] <- cut_exposure_quantile(object$obs_data[[object$exp_name]], n = bins)
+
+  object$quantiles <- object$obs_data |> 
+    dplyr::summarise(
+      n1 = sum(!!dplyr::sym(object$rsp_name) == 1, na.rm = TRUE),
+      n0 = sum(!!dplyr::sym(object$rsp_name) == 0, na.rm = TRUE),
+      x_mid = mean(!!dplyr::sym(object$exp_name), na.rm = TRUE),
+      y_mid = n1 / (n0 + n1),
+      y_mid_lbl = percent(n1 / (n0 + n1)),
+      ci_lower = clopper_pearson(n1, n0 + n1)["lower"], 
+      ci_upper = clopper_pearson(n1, n0 + n1)["upper"], 
+      .by = ".bins"
+    )
+
+  object$base <- object$base + 
+    ggplot2::geom_point(
+      data = object$quantiles,
+      mapping = ggplot2::aes(x_mid, y_mid),
+      inherit.aes = FALSE,
+      size = 2
+    ) + 
+    ggplot2::geom_errorbar(
+      data = object$quantiles,
+      mapping = ggplot2::aes(x_mid, ymin = ci_lower, ymax = ci_upper),
+      inherit.aes = FALSE,
+      width = 0.025 * (object$xlim[2] - object$xlim[1])
+    ) 
+  
   return(object)
 }
 
@@ -326,7 +364,7 @@ if (FALSE) {
   lr_data |> 
     dplyr::filter(exposure > 0) |> 
     lr_plot(exposure, response) |> 
-    lr_plot_add_base(bins = 4) |> 
+    lr_plot_add_quantiles(bins = 4) |> 
     lr_plot_add_strips(color = sex) |> 
     print()
 

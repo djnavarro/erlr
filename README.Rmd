@@ -33,11 +33,19 @@ pak::pak("djnavarro/erlr")
 
 ```{r example}
 library(erlr)
+library(dplyr)
 library(tibble)
 
 lr_data
 
 mod <- lr_model(response ~ exposure, lr_data)
 mod
+
+lr_data |> 
+  filter(exposure > 0) |> 
+  lr_plot(exposure, response) |> 
+  lr_plot_add_quantiles(bins = 4) |> 
+  lr_plot_add_strips(color = sex) |> 
+  print()
 
 ```

@@ -2,14 +2,14 @@
 % Please edit documentation in R/regression-logistic-v06.R
 \name{lr_plot}
 \alias{lr_plot}
-\alias{lr_plot_add_base}
+\alias{lr_plot_add_quantiles}
 \alias{lr_plot_add_strips}
 \alias{print.erlr_plot}
 \title{Builds an exposure-response plot for a logistic regression model}
 \usage{
 lr_plot(data, exposure, response, ...)
 
-lr_plot_add_base(object, bins = 4)
+lr_plot_add_quantiles(object, bins = 4, conf.level = 0.95)
 
 lr_plot_add_strips(object, color = NULL)
 
