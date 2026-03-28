@@ -4,36 +4,34 @@
 \alias{lr_plot}
 \alias{lr_plot_add_base}
 \alias{lr_plot_add_strips}
-\alias{lr_plot_build}
+\alias{print.erlr_plot}
 \title{Builds an exposure-response plot for a logistic regression model}
 \usage{
-lr_plot(obs_data, prd_data, exposure, response, exp_bins, ...)
+lr_plot(data, exposure, response, ...)
 
-lr_plot_add_base(plt)
+lr_plot_add_base(object, bins = 4)
 
-lr_plot_add_strips(plt, shade = NULL)
+lr_plot_add_strips(object, color = NULL)
 
-lr_plot_build(plt)
+\method{print}{erlr_plot}(x, ...)
 }
 \arguments{
-\item{obs_data}{Observed data}
-
-\item{prd_data}{Prediction data}
+\item{data}{Observed data}
 
 \item{exposure}{Exposure variable (unquoted)}
 
 \item{response}{Response variable (unquoted)}
 
-\item{exp_bins}{Exposure bin variable (unquoted)}
-
 \item{...}{Other arguments}
 
-\item{plt}{description}
+\item{object}{Partially constructed plot (has S3 class \code{erlr_plot})}
 
-\item{shade}{description}
+\item{bins}{Number of exposure bins (not counting placebo)}
+
+\item{color}{Variable (unquoted) to assign colors to strip plot dots}
 }
 \value{
-A plot
+Plot object of class \code{erlr_plot}
 }
 \description{
 Builds an exposure-response plot for a logistic regression model

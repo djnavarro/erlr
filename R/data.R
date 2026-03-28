@@ -1,28 +1,13 @@
 
-.cut_exposure_quantile <- function(exposure, n = 4, is_placebo = NULL) {
-  if (is.null(is_placebo)) is_placebo <- exposure == 0
-  breaks <- tibble::tibble(exposure, is_placebo) |>
-    dplyr::filter(!is_placebo) |>
-    dplyr::pull(exposure) |>
-    stats::quantile(probs = (0:n)/n, na.rm = TRUE)
-  exp_bin <- as.numeric(dplyr::case_when(
-    is_placebo ~ "0",
-    is.na(exposure) ~ NA_character_,
-    TRUE ~ cut(exposure, breaks, labels = 1:n, include.lowest = TRUE)
-  ))
-  exp_quantile <- exp_bin |>
-    factor(levels = 0:n, labels = c("Placebo", paste0("Q", 1:n)))  
-  return(exp_quantile)
-}
 
-.make_lr_data <- function(seed) {
+make_lr_data <- function(seed) {
   set.seed(seed)
   n <- 300L
   lr_data <- tibble::tibble(
     id = 1:n,
     dose = sample(rep(c(0, 100, 200), c(n/3, n/3, n/3))),
     exposure = stats::qlnorm(p = stats::runif(n, .05, .95)) * dose,
-    exposure_quartile = .cut_exposure_quantile(exposure),
+    exposure_quartile = cut_exposure_quantile(exposure),
     response = as.numeric(logit(stats::runif(n)) < exposure/100 - .1),
     sex = factor(sample(rep(c("Male", "Female"), c(n/2, n/2))))
   )
@@ -35,7 +20,7 @@
   return(lr_data)
 }
 
-#lr_data <- .make_lr_data(seed = 2407L)
+#lr_data <- make_lr_data(seed = 2407L)
 #usethis::use_data(lr_data, overwrite = TRUE)
 
 #' Sample simulated data for logistic regression exposure-response models with covariates.

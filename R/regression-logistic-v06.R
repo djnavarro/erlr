@@ -127,18 +127,34 @@ lr_simulator <- function(object) {
 
 # plotting helpers --------------------------------------------------------
 
+# used during plots
+cut_exposure_quantile <- function(exposure, n = 4, is_placebo = NULL) {
+  if (is.null(is_placebo)) is_placebo <- exposure == 0
+  breaks <- tibble::tibble(exposure, is_placebo) |>
+    dplyr::filter(!is_placebo) |>
+    dplyr::pull(exposure) |>
+    stats::quantile(probs = (0:n)/n, na.rm = TRUE)
+  exp_bin <- as.numeric(dplyr::case_when(
+    is_placebo ~ "0",
+    is.na(exposure) ~ NA_character_,
+    TRUE ~ cut(exposure, breaks, labels = 1:n, include.lowest = TRUE)
+  ))
+  exp_quantile <- exp_bin |>
+    factor(levels = 0:n, labels = c("Placebo", paste0("Q", 1:n)))  
+  return(exp_quantile)
+}
+
 #' Builds an exposure-response plot for a logistic regression model
 #'
-#' @param obs_data Observed data
-#' @param prd_data Prediction data
+#' @param data Observed data
 #' @param exposure Exposure variable (unquoted)
 #' @param response Response variable (unquoted)
-#' @param exp_bins Exposure bin variable (unquoted)
-#' @param shade description
-#' @param plt description
+#' @param bins Number of exposure bins (not counting placebo)
+#' @param color Variable (unquoted) to assign colors to strip plot dots
+#' @param object Partially constructed plot (has S3 class `erlr_plot`)
 #' @param ... Other arguments
 #'
-#' @returns A plot
+#' @returns Plot object of class `erlr_plot`
 #'
 #' @examples
 #' # add example here
@@ -146,39 +162,46 @@ lr_simulator <- function(object) {
 
 #' @export
 #' @rdname lr_plot
-lr_plot <- function(obs_data,    # observed data for the points 
-                    prd_data,    # prediction data for the lines & ribbon
+lr_plot <- function(data,        # observed data for the points 
                     exposure,    # exposure variable (unquoted)
                     response,    # response variable (unquoted)
-                    exp_bins,    # exposure quantiles variable (unquoted)
                     ...          # passed to theme()
                     ) {
   plt <- list(
-    obs_data = obs_data,
-    prd_data = prd_data, 
+    obs_data = data,
+    prd_data = NULL,
     exp_name = rlang::as_name(rlang::enquo(exposure)),
-    rsp_name = rlang::as_name(rlang::enquo(response))
+    rsp_name = rlang::as_name(rlang::enquo(response)),
+    bins = NULL,
+    theme_args = list(...),
+    base = NULL,
+    strip = list(upper = NULL, lower = NULL),
+    box = NULL  
   )
-  plt$exp_lbl = attr(obs_data[[plt$exp_name]], "label")
-  plt$rsp_lbl = attr(obs_data[[plt$rsp_name]], "label")
-  plt$xlim <- range(c(
-    obs_data[[plt$exp_name]], 
-    prd_data[[plt$exp_name]]
-  ))
-  plt$theme_args <- list(...)
-  
-  return(plt)
+  plt$formula <- as.formula(paste(plt$rsp_name, plt$exp_name, sep = "~"))
+  plt$model <- lr_model(formula = plt$formula, data = plt$obs_data)
+  plt$exp_lbl = attr(plt$obs_data[[plt$exp_name]], "label")
+  plt$rsp_lbl = attr(plt$obs_data[[plt$rsp_name]], "label")
+  plt$xlim <- range(data[[plt$exp_name]])
+  return(structure(.Data = plt, class = "erlr_plot"))
 }
 
 #' @rdname lr_plot
 #' @export
-lr_plot_add_base <- function(plt) {
+lr_plot_add_base <- function(object, bins = 4) {
 
-  plt$base <- ggplot2::ggplot() +
+  object$bins <- bins
+  object$obs_data[[".bins"]] <- cut_exposure_quantile(object$obs_data[[object$exp_name]], n = bins)
+  rng <- range(object$obs_data[[object$exp_name]])
+  prd <- data.frame(x = seq(rng[1], rng[2], length.out = 100))
+  names(prd) <- object$exp_name 
+  object$prd_data <- lr_predict(object$model, prd)
+
+  plt <- ggplot2::ggplot() +
     ggplot2::geom_ribbon(
-      data = plt$prd_data,
+      data = object$prd_data,
       mapping = ggplot2::aes(
-        x = !!dplyr::sym(plt$exp_name),
+        x = !!dplyr::sym(object$exp_name),
         ymin = ci_lower,
         ymax = ci_upper
       ),
@@ -186,43 +209,44 @@ lr_plot_add_base <- function(plt) {
       alpha = .5
     ) +
     ggplot2::geom_path(
-      data = plt$prd_data,
-      mapping = ggplot2::aes(!!dplyr::sym(plt$exp_name), fit_resp),
+      data = object$prd_data,
+      mapping = ggplot2::aes(!!dplyr::sym(object$exp_name), fit_resp),
       linewidth = 1
     ) +
     ggplot2::scale_y_continuous(oob = scales::oob_keep, expand = c(0, 0)) +
-    ggplot2::coord_cartesian(xlim = plt$xlim, ylim = c(0, 1), clip = "off") +
+    ggplot2::coord_cartesian(xlim = object$xlim, ylim = c(0, 1), clip = "off") +
     ggplot2::theme_bw() +
     ggplot2::theme(
       panel.border = ggplot2::element_rect(fill = NA, color = "grey80", linewidth = .5),
     ) + 
     ggplot2::labs(
-      x = attr(plt$obs_data[[plt$exp_name]], "label"),
-      y = attr(plt$obs_data[[plt$rsp_name]], "label")
+      x = attr(object$obs_data[[object$exp_name]], "label"),
+      y = attr(object$obs_data[[object$rsp_name]], "label")
     )
-
-  return(plt)
+  
+  object$base <- plt
+  return(object)
 }
 
 #' @rdname lr_plot
 #' @export
-lr_plot_add_strips <- function(plt, shade = NULL) {
+lr_plot_add_strips <- function(object, color = NULL) {
 
-  plot_strip <- function(dd) {
-    is_upr <- dplyr::pull(dd, !!dplyr::sym(plt$rsp_name))[1] == 1
+  strip <- function(dd) {
+    is_upr <- dplyr::pull(dd, !!dplyr::sym(object$rsp_name))[1] == 1
     nbin <- 100
     dd |> 
       ggplot2::ggplot() +
       ggplot2::geom_dotplot(
-        mapping = ggplot2::aes(x = !!dplyr::sym(plt$exp_name), fill = {{shade}}),
-        binwidth = (plt$xlim[2] - plt$xlim[1]) / nbin,
+        mapping = ggplot2::aes(x = !!dplyr::sym(object$exp_name), fill = {{color}}),
+        binwidth = (object$xlim[2] - object$xlim[1]) / nbin,
         dotsize = 1,
         method = "histodot",
         stackgroups = TRUE,
         #stackdir = if (is_upr) "up" else "down"
         stackdir = "centerwhole"
     ) +
-    ggplot2::coord_cartesian(xlim = plt$xlim, clip = "off") +
+    ggplot2::coord_cartesian(xlim = object$xlim, clip = "off") +
     ggplot2::theme_bw() +
     ggplot2::theme(
       panel.grid.major.y = ggplot2::element_blank(),
@@ -234,15 +258,15 @@ lr_plot_add_strips <- function(plt, shade = NULL) {
     )
   }
     
-  plt$upper_strip <- plt$obs_data |> dplyr::filter(!!dplyr::sym(plt$rsp_name) == 1) |> plot_strip()
-  plt$lower_strip <- plt$obs_data |> dplyr::filter(!!dplyr::sym(plt$rsp_name) == 0) |> plot_strip()
-
-  return(plt)
+  object$strip <- list(
+    upper = object$obs_data |> dplyr::filter(!!dplyr::sym(object$rsp_name) == 1) |> strip(),
+    lower = object$obs_data |> dplyr::filter(!!dplyr::sym(object$rsp_name) == 0) |> strip()
+  )
+  return(object)
 }
     
-#' @rdname lr_plot
-#' @export
-lr_plot_build <- function(plt) {
+lr_plot_build <- function(object) {
+  if (is.null(object$base)) return(invisible(object))
 
   margins <- ggplot2::margin(t = 5.5, r = 5.5, b = 5.5, l = 5.5, unit = "pt")
   zero_pt <- ggplot2::unit(0, "pt")
@@ -251,55 +275,60 @@ lr_plot_build <- function(plt) {
   upper_strip_margins <- margins
   lower_strip_margins <- margins
 
-  if (!is.null(plt$upper_strip)) {
+  if (!is.null(object$strip$upper)) {
     base_margins[1] <- zero_pt
     upper_strip_margins[3] <- zero_pt
   }
-  if (!is.null(plt$lower_strip)) {
+  if (!is.null(object$strip$lower)) {
     base_margins[3] <- zero_pt
     lower_strip_margins[1] <- zero_pt
   }
 
-  # normally "collect" in wrap_plots() would detect that plt_upr
-  # and plt_lwr have the same guide for fill aesthetic, and 
-  # remove duplicates. however, because plt_mid doesn't have a
-  # fill aesthetic the automatic collection doesn't work here. 
-  # so we manually remove the duplicated guide for one of the 
-  # two strip plots
-  plt$lower_strip <- plt$lower_strip +  ggplot2::guides(fill = ggplot2::guide_none())
+  plt_list <- list(base = object$base + ggplot2::theme(margins = base_margins))
+  plt_size <- 4
+
+  if (!is.null(object$strip$upper)) {
+    plt_list <- c(
+      list(upper = object$strip$upper + ggplot2::theme(margins = upper_strip_margins)),
+      plt_list
+    )
+    plt_size <- c(1, plt_size)
+  }
+
+  if (!is.null(object$strip$lower)) {
+    plt_list <- c(
+      plt_list,
+      list(lower = object$strip$lower + 
+        ggplot2::theme(margins = lower_strip_margins) + 
+        ggplot2::guides(fill = ggplot2::guide_none()) # avoid duplication
+      )
+    )
+    plt_size <- c(plt_size, 1)
+  }
+
+  if (length(plt_list) == 1) return(object$base)
 
   plt_merged <- patchwork::wrap_plots(
-    plt$upper_strip + ggplot2::theme(margins = upper_strip_margins), 
-    plt$base + ggplot2::theme(margins = base_margins), 
-    plt$lower_strip + ggplot2::theme(margins = lower_strip_margins), 
+    plt_list, 
     ncol = 1, 
-    heights = c(1, 4, 1),
+    heights = plt_size,
     guides = "collect",
     axes = "collect"
   )
-
   return(plt_merged)
 }
 
-# mod2 <- lr_model(rsp ~ exp, dat3)
-# rng <- range(dat3$exp)
-# prd <- tibble::tibble(exp = seq(rng[1], rng[2], length.out = 100))
-# prd <- lr_predict(mod2, prd)
-# set_label <- function(x, lbl) {attr(x, "label") <- lbl; x}
-# dat4 <- dat3 |> 
-#   dplyr::mutate(
-#     exp = set_label(exp, "Exposure"),
-#     rsp = set_label(rsp, "Response"),
-#     sex = set_label(sex, "Sex")
-#   )
+#' @rdname lr_plot
+#' @exportS3Method base::print
+print.erlr_plot <- function(x, ...) lr_plot_build(x)
 
-# lr_plot(
-#   obs_data = dat4, 
-#   prd_data = prd, 
-#   exposure = exp, 
-#   response = rsp
-# ) |> 
-#   lr_plot_add_base() |> 
-#   lr_plot_add_strips(shade = sex) |> 
-#   lr_plot_build()
+if (FALSE) {
+  lr_data |> 
+    dplyr::filter(exposure > 0) |> 
+    lr_plot(exposure, response) |> 
+    lr_plot_add_base(bins = 4) |> 
+    lr_plot_add_strips(color = sex) |> 
+    print()
+
+}
 
