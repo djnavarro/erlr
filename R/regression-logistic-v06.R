@@ -321,7 +321,10 @@ lr_plot_add_boxplot <- function(object, group_by) {
       y = {{group_by}}
     )) + 
     ggplot2::geom_boxplot() + 
-    ggplot2::theme_bw()
+    ggplot2::theme_bw() +
+    ggplot2::theme(
+      panel.border = ggplot2::element_rect(fill = NA, color = "grey80", linewidth = .5),
+    ) + 
 
   if (is.null(object$box)) object$box <- list()
   pos <- length(object$box) + 1L
