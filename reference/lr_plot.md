@@ -40,6 +40,14 @@ lr_plot_build(plt)
 
   Other arguments
 
+- plt:
+
+  description
+
+- shade:
+
+  description
+
 ## Value
 
 A plot
