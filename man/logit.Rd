@@ -19,6 +19,6 @@ Numeric vector
 Logit and inverse logit functions
 }
 \examples{
-logit(lr_dat$exposure)
-invlogit(lr_dat$response)
+logit(lr_data$exposure)
+invlogit(lr_data$response)
 }

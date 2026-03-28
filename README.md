@@ -25,7 +25,7 @@ pak::pak("djnavarro/erlr")
 library(erlr)
 library(tibble)
 
-lr_dat
+lr_data
 #> # A tibble: 300 × 6
 #>       id  dose exposure exposure_quartile response sex   
 #>    <int> <dbl>    <dbl> <fct>                <dbl> <fct> 
@@ -41,7 +41,7 @@ lr_dat
 #> 10    10   200    165.  Q3                       1 Male  
 #> # ℹ 290 more rows
 
-mod <- lr_model(response ~ exposure, lr_dat)
+mod <- lr_model(response ~ exposure, lr_data)
 mod
 #> 
 #> Call:  stats::glm(formula = formula, family = stats::binomial(link = "logit"), 

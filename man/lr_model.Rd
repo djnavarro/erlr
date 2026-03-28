@@ -20,6 +20,6 @@ A glm object
 Fit a logistic regression function
 }
 \examples{
-mod <- lr_model(response ~ exposure, lr_dat)
+mod <- lr_model(response ~ exposure, lr_data)
 
 }

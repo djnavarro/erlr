@@ -35,9 +35,9 @@ pak::pak("djnavarro/erlr")
 library(erlr)
 library(tibble)
 
-lr_dat
+lr_data
 
-mod <- lr_model(response ~ exposure, lr_dat)
+mod <- lr_model(response ~ exposure, lr_data)
 mod
 
 ```
