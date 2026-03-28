@@ -76,7 +76,7 @@ lr_data |>
   lr_plot_add_strips(color_by = sex) |> 
   lr_plot_add_boxplot(group_by = quartile) |> 
   lr_plot_add_boxplot(group_by = sex) |> 
-  print(box_height = 3)
+  print(box_height = 2)
 #> Warning: annotation$theme is not a valid theme.
 #> Please use `theme()` to construct themes.
 ```
