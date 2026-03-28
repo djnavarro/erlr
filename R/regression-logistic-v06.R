@@ -161,12 +161,32 @@ cut_exposure_quantile <- function(exposure, n = 4, is_placebo = NULL) {
 #' @returns Plot object of class `erlr_plot`
 #'
 #' @examples
-#' # add example here
-#' @name lr_plot
-
-#' @export
-#' @rdname lr_plot
+#' lr_data |> 
+#'   lr_plot(exposure, response) |> 
+#'   lr_plot_add_quantiles(bins = 4) |> 
+#'   lr_plot_add_boxplot(group_by = quartile) |> 
+#'   print()
 #' 
+#' lr_data |> 
+#'   lr_plot(exposure, response) |> 
+#'   lr_plot_add_quantiles(bins = 4) |> 
+#'   lr_plot_add_jitter_strips(color_by = sex) |> 
+#'   lr_plot_add_boxplot(group_by = quartile) |> 
+#'   print()  
+#' 
+#' lr_data[1:70,] |> 
+#'   lr_plot(exposure, response) |> 
+#'   lr_plot_add_quantiles(bins = 4) |> 
+#'   lr_plot_add_dotplot_strips(color_by = sex) |> 
+#'   lr_plot_add_boxplot(group_by = quartile) |> 
+#'   lr_plot_add_boxplot(group_by = sex) |> 
+#'   print(box_height = 2)
+#' 
+#' @name lr_plot
+NULL
+
+#' @rdname lr_plot
+#' @export
 lr_plot <- function(data, exposure, response, ...) {
 
   object <- list(
@@ -274,7 +294,7 @@ lr_plot_add_quantiles <- function(object, bins = 4, conf_level = 0.95) {
 
 #' @rdname lr_plot
 #' @export
-lr_plot_add_strips <- function(object, color_by = NULL) {
+lr_plot_add_dotplot_strips <- function(object, color_by = NULL) {
 
   strip <- function(dd) {
     is_upr <- dplyr::pull(dd, !!dplyr::sym(object$rsp_name))[1] == 1
@@ -314,6 +334,47 @@ lr_plot_add_strips <- function(object, color_by = NULL) {
 
 #' @rdname lr_plot
 #' @export
+lr_plot_add_jitter_strips <- function(object, color_by = NULL) {
+
+  strip <- function(dd) {
+    is_upr <- dplyr::pull(dd, !!dplyr::sym(object$rsp_name))[1] == 1
+    dd |> 
+      ggplot2::ggplot() +
+      ggplot2::geom_jitter(
+        mapping = ggplot2::aes(
+          x = !!dplyr::sym(object$exp_name), 
+          y = 0, # the panel has its own scale 
+          color = {{color_by}}
+        ),
+        width = 0,
+        height = 0.1,
+        size = 1
+    ) +
+    ggplot2::coord_cartesian(
+      xlim = object$xlim, 
+      ylim = c(-0.1, 0.1),
+      clip = "off"
+    ) +
+    ggplot2::theme_bw() +
+    ggplot2::theme(
+      panel.grid.major.y = ggplot2::element_blank(),
+      panel.grid.minor.y = ggplot2::element_blank(),
+      axis.title.y = ggplot2::element_blank(),
+      axis.ticks.y = ggplot2::element_blank(),
+      axis.text.y = ggplot2::element_blank(),
+      panel.border = ggplot2::element_rect(fill = NA, color = "grey80", linewidth = .5),
+    )
+  }
+    
+  object$strip <- list(
+    upper = object$obs_data |> dplyr::filter(!!dplyr::sym(object$rsp_name) == 1) |> strip(),
+    lower = object$obs_data |> dplyr::filter(!!dplyr::sym(object$rsp_name) == 0) |> strip()
+  )
+  return(object)
+}
+
+#' @rdname lr_plot
+#' @export
 lr_plot_add_boxplot <- function(object, group_by) {
 
   grp <- rlang::as_name(rlang::enquo(group_by))
@@ -326,7 +387,7 @@ lr_plot_add_boxplot <- function(object, group_by) {
     ggplot2::theme_bw() +
     ggplot2::theme(
       panel.border = ggplot2::element_rect(fill = NA, color = "grey80", linewidth = .5),
-    ) + 
+    )
 
   if (is.null(object$box)) object$box <- list()
   pos <- length(object$box) + 1L
@@ -373,7 +434,10 @@ lr_plot_build <- function(object, base_height = 4, strip_height = 2, box_height 
       plt_list,
       list(lower = object$strip$lower + 
         ggplot2::theme(margins = lower_strip_margins) + 
-        ggplot2::guides(fill = ggplot2::guide_none()) # avoid duplication
+        ggplot2::guides(  # avoid duplication
+          fill = ggplot2::guide_none(),
+          color = ggplot2::guide_none()
+        )
       )
     )
     plt_size <- c(plt_size, strip_height / 2)
@@ -458,10 +522,16 @@ lr_vpc_sim <- function(object, nsim = 100, seed = NULL) {
 #' @param group_by Variable (unquoted) to stratify predictions
 #' @param conf_level Confidence level
 #'
-#' @returns
+#' @returns A ggplot2 object
 #'
-#' @export
 #' @examples
+#' mod <- lr_model(response ~ exposure + sex, lr_data)
+#' sim <- lr_vpc_sim(mod)
+#' lr_vpc_plot(mod, sim, group_by = exposure)
+#' lr_vpc_plot(mod, sim, group_by = sex)
+#' 
+#' @export
+#' 
 lr_vpc_plot <- function(object, sim, group_by, conf_level = 0.95) {
 
   ff <- object$formula

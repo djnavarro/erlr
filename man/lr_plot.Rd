@@ -3,7 +3,8 @@
 \name{lr_plot}
 \alias{lr_plot}
 \alias{lr_plot_add_quantiles}
-\alias{lr_plot_add_strips}
+\alias{lr_plot_add_dotplot_strips}
+\alias{lr_plot_add_jitter_strips}
 \alias{lr_plot_add_boxplot}
 \title{Builds an exposure-response plot for a logistic regression model}
 \usage{
@@ -11,7 +12,9 @@ lr_plot(data, exposure, response, ...)
 
 lr_plot_add_quantiles(object, bins = 4, conf_level = 0.95)
 
-lr_plot_add_strips(object, color_by = NULL)
+lr_plot_add_dotplot_strips(object, color_by = NULL)
+
+lr_plot_add_jitter_strips(object, color_by = NULL)
 
 lr_plot_add_boxplot(object, group_by)
 }
@@ -41,5 +44,25 @@ Plot object of class \code{erlr_plot}
 Builds an exposure-response plot for a logistic regression model
 }
 \examples{
-# add example here
+lr_data |> 
+  lr_plot(exposure, response) |> 
+  lr_plot_add_quantiles(bins = 4) |> 
+  lr_plot_add_boxplot(group_by = quartile) |> 
+  print()
+
+lr_data |> 
+  lr_plot(exposure, response) |> 
+  lr_plot_add_quantiles(bins = 4) |> 
+  lr_plot_add_jitter_strips(color_by = sex) |> 
+  lr_plot_add_boxplot(group_by = quartile) |> 
+  print()  
+
+lr_data[1:70,] |> 
+  lr_plot(exposure, response) |> 
+  lr_plot_add_quantiles(bins = 4) |> 
+  lr_plot_add_dotplot_strips(color_by = sex) |> 
+  lr_plot_add_boxplot(group_by = quartile) |> 
+  lr_plot_add_boxplot(group_by = sex) |> 
+  print(box_height = 2)
+
 }
