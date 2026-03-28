@@ -78,16 +78,16 @@
 <span><span class="co">#&gt; # A tibble: 300 × 6</span></span>
 <span><span class="co">#&gt;       id  dose exposure exposure_quartile response sex   </span></span>
 <span><span class="co">#&gt;    &lt;int&gt; &lt;dbl&gt;    &lt;dbl&gt; &lt;fct&gt;                &lt;dbl&gt; &lt;fct&gt; </span></span>
-<span><span class="co">#&gt;  1     1   100    112.  Q2                       1 Female</span></span>
-<span><span class="co">#&gt;  2     2     0      0   Placebo                  0 Female</span></span>
-<span><span class="co">#&gt;  3     3     0      0   Placebo                  1 Female</span></span>
-<span><span class="co">#&gt;  4     4     0      0   Placebo                  1 Male  </span></span>
+<span><span class="co">#&gt;  1     1   100    148.  Q3                       1 Male  </span></span>
+<span><span class="co">#&gt;  2     2   100     79.7 Q1                       1 Male  </span></span>
+<span><span class="co">#&gt;  3     3   200    212.  Q3                       1 Male  </span></span>
+<span><span class="co">#&gt;  4     4   200    236.  Q3                       0 Female</span></span>
 <span><span class="co">#&gt;  5     5     0      0   Placebo                  1 Female</span></span>
-<span><span class="co">#&gt;  6     6     0      0   Placebo                  0 Female</span></span>
-<span><span class="co">#&gt;  7     7     0      0   Placebo                  1 Female</span></span>
-<span><span class="co">#&gt;  8     8   100     40.7 Q1                       1 Female</span></span>
-<span><span class="co">#&gt;  9     9   100    204.  Q3                       1 Male  </span></span>
-<span><span class="co">#&gt; 10    10     0      0   Placebo                  0 Female</span></span>
+<span><span class="co">#&gt;  6     6   200     71.0 Q1                       1 Male  </span></span>
+<span><span class="co">#&gt;  7     7   100    173.  Q3                       1 Male  </span></span>
+<span><span class="co">#&gt;  8     8   100    123.  Q2                       0 Female</span></span>
+<span><span class="co">#&gt;  9     9     0      0   Placebo                  0 Male  </span></span>
+<span><span class="co">#&gt; 10    10   200    165.  Q3                       1 Male  </span></span>
 <span><span class="co">#&gt; # ℹ 290 more rows</span></span>
 <span></span>
 <span><span class="va">mod</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/lr_model.html">lr_model</a></span><span class="op">(</span><span class="va">response</span> <span class="op">~</span> <span class="va">exposure</span>, <span class="va">lr_dat</span><span class="op">)</span></span>
@@ -98,11 +98,11 @@
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Coefficients:</span></span>
 <span><span class="co">#&gt; (Intercept)     exposure  </span></span>
-<span><span class="co">#&gt;     0.03472      0.00740  </span></span>
+<span><span class="co">#&gt;     0.15078      0.01112  </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Degrees of Freedom: 299 Total (i.e. Null);  298 Residual</span></span>
-<span><span class="co">#&gt; Null Deviance:       379.1 </span></span>
-<span><span class="co">#&gt; Residual Deviance: 338.7     AIC: 342.7</span></span></code></pre></div>
+<span><span class="co">#&gt; Null Deviance:       341.7 </span></span>
+<span><span class="co">#&gt; Residual Deviance: 283.9     AIC: 287.9</span></span></code></pre></div>
 </div>
 </div>
   </main><aside class="col-md-3"><div class="links">
