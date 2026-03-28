@@ -9,5 +9,8 @@ utils::globalVariables(c(
   "n1",
   "n0",
   "x_mid",
-  "y_mid"
+  "y_mid",
+  ".data",
+  "Source",
+  "y"
 ))
