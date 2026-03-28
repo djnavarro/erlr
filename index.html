@@ -59,7 +59,7 @@
 </h1></div>
 <!-- badges: start -->
 
-<p>Provides estimation and plotting tools for exposure-response models that use logistic regression for binary responses.</p>
+<p>Provides estimation and plotting tools for exposure-response models that use logistic regression for binary responses. It is mostly intended as a convenience package: the core tools are wrappers around <code><a href="https://rdrr.io/r/stats/glm.html" class="external-link">glm()</a></code>, and the plotting tools use ggplot2 and patchwork to build typical plots used in exposure-response modelling.</p>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
@@ -124,17 +124,27 @@
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="va">lr_data</span> <span class="op">|&gt;</span> </span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">exposure</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="reference/lr_plot.html">lr_plot</a></span><span class="op">(</span><span class="va">exposure</span>, <span class="va">response</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="reference/lr_plot.html">lr_plot_add_quantiles</a></span><span class="op">(</span>bins <span class="op">=</span> <span class="fl">4</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
-<span>  <span class="fu">lr_plot_add_strips</span><span class="op">(</span>color_by <span class="op">=</span> <span class="va">sex</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="reference/lr_plot.html">lr_plot_add_jitter_strips</a></span><span class="op">(</span>color_by <span class="op">=</span> <span class="va">sex</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="reference/lr_plot.html">lr_plot_add_boxplot</a></span><span class="op">(</span>group_by <span class="op">=</span> <span class="va">quartile</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="op">)</span>  </span>
+<span><span class="co">#&gt; Warning: annotation$theme is not a valid theme.</span></span>
+<span><span class="co">#&gt; Please use `theme()` to construct themes.</span></span></code></pre></div>
+<p><img src="reference/figures/README-example-2.png" width="100%"></p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span></span>
+<span><span class="va">lr_data</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">70</span>,<span class="op">]</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="reference/lr_plot.html">lr_plot</a></span><span class="op">(</span><span class="va">exposure</span>, <span class="va">response</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="reference/lr_plot.html">lr_plot_add_quantiles</a></span><span class="op">(</span>bins <span class="op">=</span> <span class="fl">4</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="reference/lr_plot.html">lr_plot_add_dotplot_strips</a></span><span class="op">(</span>color_by <span class="op">=</span> <span class="va">sex</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="reference/lr_plot.html">lr_plot_add_boxplot</a></span><span class="op">(</span>group_by <span class="op">=</span> <span class="va">quartile</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="reference/lr_plot.html">lr_plot_add_boxplot</a></span><span class="op">(</span>group_by <span class="op">=</span> <span class="va">sex</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span>box_height <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Warning: annotation$theme is not a valid theme.</span></span>
 <span><span class="co">#&gt; Please use `theme()` to construct themes.</span></span></code></pre></div>
-<p><img src="reference/figures/README-example-2.png" width="100%"></p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<p><img src="reference/figures/README-example-3.png" width="100%"></p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="va">mod</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/lr_model.html">lr_model</a></span><span class="op">(</span><span class="va">response</span> <span class="op">~</span> <span class="va">exposure</span> <span class="op">+</span> <span class="va">sex</span>, <span class="va">lr_data</span><span class="op">)</span></span>
 <span><span class="va">sim</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/lr_vpc_sim.html">lr_vpc_sim</a></span><span class="op">(</span><span class="va">mod</span><span class="op">)</span></span>
@@ -142,23 +152,23 @@
 <span><span class="co">#&gt; # A tibble: 30,000 × 5</span></span>
 <span><span class="co">#&gt;    response exposure sex    row_id sim_id</span></span>
 <span><span class="co">#&gt;       &lt;dbl&gt;    &lt;dbl&gt; &lt;fct&gt;   &lt;int&gt;  &lt;int&gt;</span></span>
-<span><span class="co">#&gt;  1    0.883    148.  Male        1      1</span></span>
-<span><span class="co">#&gt;  2    0.759     79.7 Male        2      1</span></span>
+<span><span class="co">#&gt;  1    0.891    148.  Male        1      1</span></span>
+<span><span class="co">#&gt;  2    0.789     79.7 Male        2      1</span></span>
 <span><span class="co">#&gt;  3    0.945    212.  Male        3      1</span></span>
-<span><span class="co">#&gt;  4    0.956    236.  Female      4      1</span></span>
-<span><span class="co">#&gt;  5    0.518      0   Female      5      1</span></span>
-<span><span class="co">#&gt;  6    0.738     71.0 Male        6      1</span></span>
-<span><span class="co">#&gt;  7    0.913    173.  Male        7      1</span></span>
-<span><span class="co">#&gt;  8    0.839    123.  Female      8      1</span></span>
-<span><span class="co">#&gt;  9    0.532      0   Male        9      1</span></span>
-<span><span class="co">#&gt; 10    0.904    165.  Male       10      1</span></span>
+<span><span class="co">#&gt;  4    0.962    236.  Female      4      1</span></span>
+<span><span class="co">#&gt;  5    0.627      0   Female      5      1</span></span>
+<span><span class="co">#&gt;  6    0.772     71.0 Male        6      1</span></span>
+<span><span class="co">#&gt;  7    0.917    173.  Male        7      1</span></span>
+<span><span class="co">#&gt;  8    0.874    123.  Female      8      1</span></span>
+<span><span class="co">#&gt;  9    0.600      0   Male        9      1</span></span>
+<span><span class="co">#&gt; 10    0.909    165.  Male       10      1</span></span>
 <span><span class="co">#&gt; # ℹ 29,990 more rows</span></span>
 <span></span>
 <span><span class="fu"><a href="reference/lr_vpc_plot.html">lr_vpc_plot</a></span><span class="op">(</span><span class="va">mod</span>, <span class="va">sim</span>, group_by <span class="op">=</span> <span class="va">exposure</span><span class="op">)</span></span></code></pre></div>
-<p><img src="reference/figures/README-example-3.png" width="100%"></p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="reference/lr_vpc_plot.html">lr_vpc_plot</a></span><span class="op">(</span><span class="va">mod</span>, <span class="va">sim</span>, group_by <span class="op">=</span> <span class="va">sex</span><span class="op">)</span></span></code></pre></div>
 <p><img src="reference/figures/README-example-4.png" width="100%"></p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="reference/lr_vpc_plot.html">lr_vpc_plot</a></span><span class="op">(</span><span class="va">mod</span>, <span class="va">sim</span>, group_by <span class="op">=</span> <span class="va">sex</span><span class="op">)</span></span></code></pre></div>
+<p><img src="reference/figures/README-example-5.png" width="100%"></p>
 </div>
 </div>
   </main><aside class="col-md-3"><div class="links">
