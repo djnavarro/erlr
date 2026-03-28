@@ -37,7 +37,10 @@ invlogit <- function(x) 1 / (1 + exp(-x))
 #' mod
 #' 
 lr_model <- function(formula, data, ...) {
-  stats::glm(formula = formula, data = data, family = stats::binomial(link = "logit"), ...)
+  mod <- stats::glm(formula = formula, data = data, family = stats::binomial(link = "logit"), ...)
+  class(mod) <- c("erlr_glm", class(mod)) # append class in case new methods are required
+  mod$erlr <- list(type = "logistic") # internal "erlr" list to store erlr-specific info
+  mod
 }
 
 # extract model predictions and confidence intervals for a new data set.
