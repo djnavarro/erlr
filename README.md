@@ -9,7 +9,10 @@
 <!-- badges: end -->
 
 Provides estimation and plotting tools for exposure-response models that
-use logistic regression for binary responses.
+use logistic regression for binary responses. It is mostly intended as a
+convenience package: the core tools are wrappers around `glm()`, and the
+plotting tools use ggplot2 and patchwork to build typical plots used in
+exposure-response modelling.
 
 ## Installation
 
@@ -78,10 +81,23 @@ lr_data |>
 ``` r
 
 lr_data |> 
-  filter(exposure > 0) |> 
   lr_plot(exposure, response) |> 
   lr_plot_add_quantiles(bins = 4) |> 
-  lr_plot_add_strips(color_by = sex) |> 
+  lr_plot_add_jitter_strips(color_by = sex) |> 
+  lr_plot_add_boxplot(group_by = quartile) |> 
+  print()  
+#> Warning: annotation$theme is not a valid theme.
+#> Please use `theme()` to construct themes.
+```
+
+<img src="man/figures/README-example-2.png" width="100%" />
+
+``` r
+
+lr_data[1:70,] |> 
+  lr_plot(exposure, response) |> 
+  lr_plot_add_quantiles(bins = 4) |> 
+  lr_plot_add_dotplot_strips(color_by = sex) |> 
   lr_plot_add_boxplot(group_by = quartile) |> 
   lr_plot_add_boxplot(group_by = sex) |> 
   print(box_height = 2)
@@ -89,7 +105,7 @@ lr_data |>
 #> Please use `theme()` to construct themes.
 ```
 
-<img src="man/figures/README-example-2.png" width="100%" />
+<img src="man/figures/README-example-3.png" width="100%" />
 
 ``` r
 
@@ -99,25 +115,25 @@ sim
 #> # A tibble: 30,000 × 5
 #>    response exposure sex    row_id sim_id
 #>       <dbl>    <dbl> <fct>   <int>  <int>
-#>  1    0.883    148.  Male        1      1
-#>  2    0.759     79.7 Male        2      1
+#>  1    0.891    148.  Male        1      1
+#>  2    0.789     79.7 Male        2      1
 #>  3    0.945    212.  Male        3      1
-#>  4    0.956    236.  Female      4      1
-#>  5    0.518      0   Female      5      1
-#>  6    0.738     71.0 Male        6      1
-#>  7    0.913    173.  Male        7      1
-#>  8    0.839    123.  Female      8      1
-#>  9    0.532      0   Male        9      1
-#> 10    0.904    165.  Male       10      1
+#>  4    0.962    236.  Female      4      1
+#>  5    0.627      0   Female      5      1
+#>  6    0.772     71.0 Male        6      1
+#>  7    0.917    173.  Male        7      1
+#>  8    0.874    123.  Female      8      1
+#>  9    0.600      0   Male        9      1
+#> 10    0.909    165.  Male       10      1
 #> # ℹ 29,990 more rows
 
 lr_vpc_plot(mod, sim, group_by = exposure)
 ```
 
-<img src="man/figures/README-example-3.png" width="100%" />
+<img src="man/figures/README-example-4.png" width="100%" />
 
 ``` r
 lr_vpc_plot(mod, sim, group_by = sex)
 ```
 
-<img src="man/figures/README-example-4.png" width="100%" />
+<img src="man/figures/README-example-5.png" width="100%" />

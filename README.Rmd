@@ -19,7 +19,7 @@ knitr::opts_chunk$set(
 [![R-CMD-check](https://github.com/djnavarro/erlr/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/djnavarro/erlr/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
-Provides estimation and plotting tools for exposure-response models that use logistic regression for binary responses.
+Provides estimation and plotting tools for exposure-response models that use logistic regression for binary responses. It is mostly intended as a convenience package: the core tools are wrappers around `glm()`, and the plotting tools use ggplot2 and patchwork to build typical plots used in exposure-response modelling.
 
 ## Installation
 
