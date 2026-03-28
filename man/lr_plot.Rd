@@ -4,16 +4,13 @@
 \alias{lr_plot}
 \alias{lr_plot_add_quantiles}
 \alias{lr_plot_add_strips}
-\alias{print.erlr_plot}
 \title{Builds an exposure-response plot for a logistic regression model}
 \usage{
 lr_plot(data, exposure, response, ...)
 
-lr_plot_add_quantiles(object, bins = 4, conf.level = 0.95)
+lr_plot_add_quantiles(object, bins = 4, conf_level = 0.95)
 
 lr_plot_add_strips(object, color = NULL)
-
-\method{print}{erlr_plot}(x, ...)
 }
 \arguments{
 \item{data}{Observed data}
@@ -27,6 +24,8 @@ lr_plot_add_strips(object, color = NULL)
 \item{object}{Partially constructed plot (has S3 class \code{erlr_plot})}
 
 \item{bins}{Number of exposure bins (not counting placebo)}
+
+\item{conf_level}{Confidence level for Clopper-Pearson intervals}
 
 \item{color}{Variable (unquoted) to assign colors to strip plot dots}
 }

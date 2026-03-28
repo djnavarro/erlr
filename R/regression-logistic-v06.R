@@ -150,6 +150,7 @@ cut_exposure_quantile <- function(exposure, n = 4, is_placebo = NULL) {
 #' @param exposure Exposure variable (unquoted)
 #' @param response Response variable (unquoted)
 #' @param bins Number of exposure bins (not counting placebo)
+#' @param conf_level Confidence level for Clopper-Pearson intervals
 #' @param color Variable (unquoted) to assign colors to strip plot dots
 #' @param object Partially constructed plot (has S3 class `erlr_plot`)
 #' @param ... Other arguments
@@ -175,7 +176,7 @@ lr_plot <- function(data,        # observed data for the points
     bins = NULL,
     theme_args = list(...)
   )
-  object$formula <- as.formula(paste(object$rsp_name, object$exp_name, sep = "~"))
+  object$formula <- stats::as.formula(paste(object$rsp_name, object$exp_name, sep = "~"))
   object$model <- lr_model(formula = object$formula, data = object$obs_data)
   object$exp_lbl = attr(object$obs_data[[object$exp_name]], "label")
   object$rsp_lbl = attr(object$obs_data[[object$rsp_name]], "label")
@@ -222,8 +223,8 @@ lr_plot <- function(data,        # observed data for the points
   return(structure(.Data = object, class = "erlr_plot"))
 }
 
-clopper_pearson <- function(x, n, conf.level = 0.95) {
-  alpha <- 1 - conf.level
+clopper_pearson <- function(x, n, conf_level = 0.95) {
+  alpha <- 1 - conf_level
   lower <- if (x > 0) stats::qbeta(alpha/2, x, n - x + 1) else 0
   upper <- if (x < n) stats::qbeta(1 - alpha/2, x + 1, n - x) else 1
   return(c(lower = lower, upper = upper))
@@ -231,7 +232,7 @@ clopper_pearson <- function(x, n, conf.level = 0.95) {
 
 #' @rdname lr_plot
 #' @export
-lr_plot_add_quantiles <- function(object, bins = 4, conf.level = 0.95) {
+lr_plot_add_quantiles <- function(object, bins = 4, conf_level = 0.95) {
 
   percent <- scales::label_percent(accuracy = 1)
   object$bins <- bins
@@ -244,8 +245,8 @@ lr_plot_add_quantiles <- function(object, bins = 4, conf.level = 0.95) {
       x_mid = mean(!!dplyr::sym(object$exp_name), na.rm = TRUE),
       y_mid = n1 / (n0 + n1),
       y_mid_lbl = percent(n1 / (n0 + n1)),
-      ci_lower = clopper_pearson(n1, n0 + n1)["lower"], 
-      ci_upper = clopper_pearson(n1, n0 + n1)["upper"], 
+      ci_lower = clopper_pearson(n1, n0 + n1, conf_level)["lower"], 
+      ci_upper = clopper_pearson(n1, n0 + n1, conf_level)["upper"], 
       .by = ".bins"
     )
 
@@ -356,7 +357,6 @@ lr_plot_build <- function(object) {
   return(plt_merged)
 }
 
-#' @rdname lr_plot
 #' @exportS3Method base::print
 print.erlr_plot <- function(x, ...) lr_plot_build(x)
 

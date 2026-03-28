@@ -5,5 +5,9 @@ utils::globalVariables(c(
   "ci_upper",
   "fit_resp",
   "fit_link",
-  "se_link"
+  "se_link",
+  "n1",
+  "n0",
+  "x_mid",
+  "y_mid"
 ))
