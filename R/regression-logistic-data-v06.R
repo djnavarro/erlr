@@ -29,9 +29,9 @@
   lr_dat <- tibble::tibble(
     id = 1:n,
     dose = sample(rep(c(0, 100, 200), c(n/3, n/3, n/3))),
-    exposure = stats::qlnorm(p = runif(n, .05, .95)) * dose,
+    exposure = stats::qlnorm(p = stats::runif(n, .05, .95)) * dose,
     exposure_quartile = .cut_exposure_quantile(exposure),
-    response = as.numeric(logit(runif(n)) < exposure/100 - .1),
+    response = as.numeric(logit(stats::runif(n)) < exposure/100 - .1),
     sex = factor(sample(rep(c("Male", "Female"), c(n/2, n/2))))
   )
   attr(lr_dat$id, "label") <- "Subject ID"

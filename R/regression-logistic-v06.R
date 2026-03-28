@@ -60,7 +60,7 @@ lr_predict <- function(object, newdata, conf_level = .95) {
   z_scale <- -stats::qnorm((1 - conf_level)/2)
   out <- newdata |> 
     dplyr::bind_cols(
-      setNames(
+      stats::setNames(
         tibble::as_tibble(stats::predict(object, newdata, se.fit = TRUE, type = "link")[1:2]),
         c('fit_link','se_link')
       )
@@ -133,6 +133,8 @@ lr_simulator <- function(object) {
 #' @param exposure Exposure variable (unquoted)
 #' @param response Response variable (unquoted)
 #' @param exp_bins Exposure bin variable (unquoted)
+#' @param shade description
+#' @param plt description
 #' @param ... Other arguments
 #'
 #' @returns A plot
