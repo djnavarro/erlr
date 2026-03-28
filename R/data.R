@@ -7,14 +7,14 @@ make_lr_data <- function(seed) {
     id = 1:n,
     dose = sample(rep(c(0, 100, 200), c(n/3, n/3, n/3))),
     exposure = stats::qlnorm(p = stats::runif(n, .05, .95)) * dose,
-    exposure_quartile = cut_exposure_quantile(exposure),
+    quartile = cut_exposure_quantile(exposure),
     response = as.numeric(logit(stats::runif(n)) < exposure/100 - .1),
     sex = factor(sample(rep(c("Male", "Female"), c(n/2, n/2))))
   )
   attr(lr_data$id, "label") <- "Subject ID"
   attr(lr_data$dose, "label") <- "Dose"
   attr(lr_data$exposure, "label") <- "Exposure"
-  attr(lr_data$exposure_quartile, "label") <- "Exposure Group"
+  attr(lr_data$quartile, "label") <- "Exposure Quartile"
   attr(lr_data$response, "label") <- "Response"
   attr(lr_data$sex, "label") <- "Sex"
   return(lr_data)
@@ -31,7 +31,7 @@ make_lr_data <- function(seed) {
 #' \item{id}{Identifier}
 #' \item{dose}{Nominal dose, units not specified}
 #' \item{exposure}{Exposure value, units and metric not specified}
-#' \item{exposure_quartile}{Exposure quartile, with placebo group separate}
+#' \item{quartile}{Exposure quartile, with placebo group separate}
 #' \item{response}{Continuous response value (units not specified)}
 #' \item{sex}{Sex}
 #' }

@@ -10,7 +10,7 @@ A data frame with columns:
 \item{id}{Identifier}
 \item{dose}{Nominal dose, units not specified}
 \item{exposure}{Exposure value, units and metric not specified}
-\item{exposure_quartile}{Exposure quartile, with placebo group separate}
+\item{quartile}{Exposure quartile, with placebo group separate}
 \item{response}{Continuous response value (units not specified)}
 \item{sex}{Sex}
 }
