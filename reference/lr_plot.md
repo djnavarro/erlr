@@ -9,7 +9,9 @@ lr_plot(data, exposure, response, ...)
 
 lr_plot_add_quantiles(object, bins = 4, conf_level = 0.95)
 
-lr_plot_add_strips(object, color = NULL)
+lr_plot_add_strips(object, color_by = NULL)
+
+lr_plot_add_boxplot(object, group_by)
 ```
 
 ## Arguments
@@ -42,9 +44,13 @@ lr_plot_add_strips(object, color = NULL)
 
   Confidence level for Clopper-Pearson intervals
 
-- color:
+- color_by:
 
   Variable (unquoted) to assign colors to strip plot dots
+
+- group_by:
+
+  Variable (unquoted) to use to stratify exposure boxplots
 
 ## Value
 

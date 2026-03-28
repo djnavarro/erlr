@@ -48,7 +48,9 @@
 <span></span>
 <span><span class="fu">lr_plot_add_quantiles</span><span class="op">(</span><span class="va">object</span>, bins <span class="op">=</span> <span class="fl">4</span>, conf_level <span class="op">=</span> <span class="fl">0.95</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">lr_plot_add_strips</span><span class="op">(</span><span class="va">object</span>, color <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">lr_plot_add_strips</span><span class="op">(</span><span class="va">object</span>, color_by <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">lr_plot_add_boxplot</span><span class="op">(</span><span class="va">object</span>, <span class="va">group_by</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -83,8 +85,12 @@
 <dd><p>Confidence level for Clopper-Pearson intervals</p></dd>
 
 
-<dt id="arg-color">color<a class="anchor" aria-label="anchor" href="#arg-color"></a></dt>
+<dt id="arg-color-by">color_by<a class="anchor" aria-label="anchor" href="#arg-color-by"></a></dt>
 <dd><p>Variable (unquoted) to assign colors to strip plot dots</p></dd>
+
+
+<dt id="arg-group-by">group_by<a class="anchor" aria-label="anchor" href="#arg-group-by"></a></dt>
+<dd><p>Variable (unquoted) to use to stratify exposure boxplots</p></dd>
 
 </dl></div>
     <div class="section level2">
