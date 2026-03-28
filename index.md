@@ -15,6 +15,15 @@ pak::pak("djnavarro/erlr")
 
 ``` r
 library(erlr)
+library(dplyr)
+#> 
+#> Attaching package: 'dplyr'
+#> The following objects are masked from 'package:stats':
+#> 
+#>     filter, lag
+#> The following objects are masked from 'package:base':
+#> 
+#>     intersect, setdiff, setequal, union
 library(tibble)
 
 lr_data
@@ -46,4 +55,15 @@ mod
 #> Degrees of Freedom: 299 Total (i.e. Null);  298 Residual
 #> Null Deviance:       341.7 
 #> Residual Deviance: 283.9     AIC: 287.9
+
+lr_data |> 
+  filter(exposure > 0) |> 
+  lr_plot(exposure, response) |> 
+  lr_plot_add_quantiles(bins = 4) |> 
+  lr_plot_add_strips(color = sex) |> 
+  print()
+#> Warning: annotation$theme is not a valid theme.
+#> Please use `theme()` to construct themes.
 ```
+
+![](reference/figures/README-example-1.png)

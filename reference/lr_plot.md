@@ -7,7 +7,7 @@ Builds an exposure-response plot for a logistic regression model
 ``` r
 lr_plot(data, exposure, response, ...)
 
-lr_plot_add_base(object, bins = 4)
+lr_plot_add_quantiles(object, bins = 4, conf.level = 0.95)
 
 lr_plot_add_strips(object, color = NULL)
 
