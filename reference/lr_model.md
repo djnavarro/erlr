@@ -30,4 +30,16 @@ A glm object
 
 ``` r
 mod <- lr_model(response ~ exposure, lr_data)
+mod
+#> 
+#> Call:  stats::glm(formula = formula, family = stats::binomial(link = "logit"), 
+#>     data = data)
+#> 
+#> Coefficients:
+#> (Intercept)     exposure  
+#>     0.15078      0.01112  
+#> 
+#> Degrees of Freedom: 299 Total (i.e. Null);  298 Residual
+#> Null Deviance:       341.7 
+#> Residual Deviance: 283.9     AIC: 287.9
 ```

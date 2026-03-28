@@ -30,7 +30,8 @@ A tibble
 
 ``` r
 mod <- lr_model(response ~ exposure, lr_data)
-lr_predict(mod, lr_data)
+prd <- lr_predict(mod, lr_data)
+prd
 #> # A tibble: 300 × 11
 #>       id  dose exposure quartile response sex    fit_link se_link fit_resp
 #>    <int> <dbl>    <dbl> <fct>       <dbl> <fct>     <dbl>   <dbl>    <dbl>

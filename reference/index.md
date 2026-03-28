@@ -19,3 +19,5 @@
   Predictions and confidence intervals for logistic regression
 - [`lr_simulator()`](https://erlr.djnavarro.net/reference/lr_simulator.md)
   : Simulate from a logistic regression model
+- [`lr_vpc_sim()`](https://erlr.djnavarro.net/reference/lr_vpc_sim.md) :
+  VPC simulations for logistic regression models
