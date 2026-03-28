@@ -13,7 +13,6 @@
 - [`lr_plot()`](https://erlr.djnavarro.net/reference/lr_plot.md)
   [`lr_plot_add_quantiles()`](https://erlr.djnavarro.net/reference/lr_plot.md)
   [`lr_plot_add_strips()`](https://erlr.djnavarro.net/reference/lr_plot.md)
-  [`print(`*`<erlr_plot>`*`)`](https://erlr.djnavarro.net/reference/lr_plot.md)
   : Builds an exposure-response plot for a logistic regression model
 - [`lr_predict()`](https://erlr.djnavarro.net/reference/lr_predict.md) :
   Predictions and confidence intervals for logistic regression

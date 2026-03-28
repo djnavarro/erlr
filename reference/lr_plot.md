@@ -7,12 +7,9 @@ Builds an exposure-response plot for a logistic regression model
 ``` r
 lr_plot(data, exposure, response, ...)
 
-lr_plot_add_quantiles(object, bins = 4, conf.level = 0.95)
+lr_plot_add_quantiles(object, bins = 4, conf_level = 0.95)
 
 lr_plot_add_strips(object, color = NULL)
-
-# S3 method for class 'erlr_plot'
-print(x, ...)
 ```
 
 ## Arguments
@@ -40,6 +37,10 @@ print(x, ...)
 - bins:
 
   Number of exposure bins (not counting placebo)
+
+- conf_level:
+
+  Confidence level for Clopper-Pearson intervals
 
 - color:
 
