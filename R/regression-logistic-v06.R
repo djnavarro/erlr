@@ -151,7 +151,8 @@ cut_exposure_quantile <- function(exposure, n = 4, is_placebo = NULL) {
 #' @param response Response variable (unquoted)
 #' @param bins Number of exposure bins (not counting placebo)
 #' @param conf_level Confidence level for Clopper-Pearson intervals
-#' @param color Variable (unquoted) to assign colors to strip plot dots
+#' @param color_by Variable (unquoted) to assign colors to strip plot dots
+#' @param group_by Variable (unquoted) to use to stratify exposure boxplots
 #' @param object Partially constructed plot (has S3 class `erlr_plot`)
 #' @param ... Other arguments
 #'
@@ -163,11 +164,9 @@ cut_exposure_quantile <- function(exposure, n = 4, is_placebo = NULL) {
 
 #' @export
 #' @rdname lr_plot
-lr_plot <- function(data,        # observed data for the points 
-                    exposure,    # exposure variable (unquoted)
-                    response,    # response variable (unquoted)
-                    ...          # passed to theme()
-                    ) {
+#' 
+lr_plot <- function(data, exposure, response, ...) {
+
   object <- list(
     obs_data = data,
     prd_data = NULL,
@@ -219,6 +218,7 @@ lr_plot <- function(data,        # observed data for the points
   
   object$strip <- list(upper = NULL, lower = NULL)
   object$box <- NULL  
+  object$n_boxes <- numeric()
 
   return(structure(.Data = object, class = "erlr_plot"))
 }
@@ -236,7 +236,10 @@ lr_plot_add_quantiles <- function(object, bins = 4, conf_level = 0.95) {
 
   percent <- scales::label_percent(accuracy = 1)
   object$bins <- bins
-  object$obs_data[[".bins"]] <- cut_exposure_quantile(object$obs_data[[object$exp_name]], n = bins)
+  object$obs_data[[".bins"]] <- cut_exposure_quantile(
+    exposure = object$obs_data[[object$exp_name]], 
+    n = bins
+  )
 
   object$quantiles <- object$obs_data |> 
     dplyr::summarise(
@@ -269,7 +272,7 @@ lr_plot_add_quantiles <- function(object, bins = 4, conf_level = 0.95) {
 
 #' @rdname lr_plot
 #' @export
-lr_plot_add_strips <- function(object, color = NULL) {
+lr_plot_add_strips <- function(object, color_by = NULL) {
 
   strip <- function(dd) {
     is_upr <- dplyr::pull(dd, !!dplyr::sym(object$rsp_name))[1] == 1
@@ -277,7 +280,10 @@ lr_plot_add_strips <- function(object, color = NULL) {
     dd |> 
       ggplot2::ggplot() +
       ggplot2::geom_dotplot(
-        mapping = ggplot2::aes(x = !!dplyr::sym(object$exp_name), fill = {{color}}),
+        mapping = ggplot2::aes(
+          x = !!dplyr::sym(object$exp_name), 
+          fill = {{color_by}}
+        ),
         binwidth = (object$xlim[2] - object$xlim[1]) / nbin,
         dotsize = 1,
         method = "histodot",
@@ -303,8 +309,31 @@ lr_plot_add_strips <- function(object, color = NULL) {
   )
   return(object)
 }
+
+#' @rdname lr_plot
+#' @export
+lr_plot_add_boxplot <- function(object, group_by) {
+
+  grp <- rlang::as_name(rlang::enquo(group_by))
+  plt <- object$obs_data |> 
+    ggplot2::ggplot(ggplot2::aes(
+      x = !!dplyr::sym(object$exp_name),
+      y = {{group_by}}
+    )) + 
+    ggplot2::geom_boxplot() + 
+    ggplot2::theme_bw()
+
+  if (is.null(object$box)) object$box <- list()
+  pos <- length(object$box) + 1L
+  object$box[[pos]] <- plt
+  object$n_boxes <- c(
+    object$n_boxes, 
+    length(unique(object$obs_data[[grp]]))
+  )
+  return(object)  
+}
     
-lr_plot_build <- function(object) {
+lr_plot_build <- function(object, base_height = 4, strip_height = 2, box_height = 2) {
   if (is.null(object$base)) return(invisible(object))
 
   margins <- ggplot2::margin(t = 5.5, r = 5.5, b = 5.5, l = 5.5, unit = "pt")
@@ -324,14 +353,14 @@ lr_plot_build <- function(object) {
   }
 
   plt_list <- list(base = object$base + ggplot2::theme(margins = base_margins))
-  plt_size <- 4
+  plt_size <- base_height
 
   if (!is.null(object$strip$upper)) {
     plt_list <- c(
       list(upper = object$strip$upper + ggplot2::theme(margins = upper_strip_margins)),
       plt_list
     )
-    plt_size <- c(1, plt_size)
+    plt_size <- c(strip_height / 2, plt_size)
   }
 
   if (!is.null(object$strip$lower)) {
@@ -342,7 +371,18 @@ lr_plot_build <- function(object) {
         ggplot2::guides(fill = ggplot2::guide_none()) # avoid duplication
       )
     )
-    plt_size <- c(plt_size, 1)
+    plt_size <- c(plt_size, strip_height / 2)
+  }
+
+  if (!is.null(object$box)) {
+    for(b in seq_along(object$box)) {
+      plt_list <- c(
+        plt_list,
+        list(object$box[[b]] + ggplot2::theme(margins = margins))
+      )
+      box_prop <- object$n_boxes[b] / sum(object$n_boxes)
+      plt_size <- c(plt_size, box_height * box_prop)
+    }
   }
 
   if (length(plt_list) == 1) return(object$base)
@@ -358,15 +398,16 @@ lr_plot_build <- function(object) {
 }
 
 #' @exportS3Method base::print
-print.erlr_plot <- function(x, ...) lr_plot_build(x)
+print.erlr_plot <- function(x, ...) lr_plot_build(x, ...)
 
 if (FALSE) {
   lr_data |> 
     dplyr::filter(exposure > 0) |> 
     lr_plot(exposure, response) |> 
     lr_plot_add_quantiles(bins = 4) |> 
-    lr_plot_add_strips(color = sex) |> 
-    print()
-
+    lr_plot_add_strips(color_by = sex) |> 
+    lr_plot_add_boxplot(group_by = quartile) |> 
+    lr_plot_add_boxplot(group_by = sex) |> 
+    print(box_height = 3)
 }
 

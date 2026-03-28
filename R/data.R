@@ -14,7 +14,7 @@ make_lr_data <- function(seed) {
   attr(lr_data$id, "label") <- "Subject ID"
   attr(lr_data$dose, "label") <- "Dose"
   attr(lr_data$exposure, "label") <- "Exposure"
-  attr(lr_data$quartile, "label") <- "Exposure Quartile"
+  attr(lr_data$quartile, "label") <- "Quartile"
   attr(lr_data$response, "label") <- "Response"
   attr(lr_data$sex, "label") <- "Sex"
   return(lr_data)

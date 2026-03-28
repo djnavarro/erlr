@@ -4,13 +4,16 @@
 \alias{lr_plot}
 \alias{lr_plot_add_quantiles}
 \alias{lr_plot_add_strips}
+\alias{lr_plot_add_boxplot}
 \title{Builds an exposure-response plot for a logistic regression model}
 \usage{
 lr_plot(data, exposure, response, ...)
 
 lr_plot_add_quantiles(object, bins = 4, conf_level = 0.95)
 
-lr_plot_add_strips(object, color = NULL)
+lr_plot_add_strips(object, color_by = NULL)
+
+lr_plot_add_boxplot(object, group_by)
 }
 \arguments{
 \item{data}{Observed data}
@@ -27,7 +30,9 @@ lr_plot_add_strips(object, color = NULL)
 
 \item{conf_level}{Confidence level for Clopper-Pearson intervals}
 
-\item{color}{Variable (unquoted) to assign colors to strip plot dots}
+\item{color_by}{Variable (unquoted) to assign colors to strip plot dots}
+
+\item{group_by}{Variable (unquoted) to use to stratify exposure boxplots}
 }
 \value{
 Plot object of class \code{erlr_plot}
