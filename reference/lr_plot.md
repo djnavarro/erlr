@@ -5,24 +5,21 @@ Builds an exposure-response plot for a logistic regression model
 ## Usage
 
 ``` r
-lr_plot(obs_data, prd_data, exposure, response, exp_bins, ...)
+lr_plot(data, exposure, response, ...)
 
-lr_plot_add_base(plt)
+lr_plot_add_base(object, bins = 4)
 
-lr_plot_add_strips(plt, shade = NULL)
+lr_plot_add_strips(object, color = NULL)
 
-lr_plot_build(plt)
+# S3 method for class 'erlr_plot'
+print(x, ...)
 ```
 
 ## Arguments
 
-- obs_data:
+- data:
 
   Observed data
-
-- prd_data:
-
-  Prediction data
 
 - exposure:
 
@@ -32,25 +29,25 @@ lr_plot_build(plt)
 
   Response variable (unquoted)
 
-- exp_bins:
-
-  Exposure bin variable (unquoted)
-
 - ...:
 
   Other arguments
 
-- plt:
+- object:
 
-  description
+  Partially constructed plot (has S3 class `erlr_plot`)
 
-- shade:
+- bins:
 
-  description
+  Number of exposure bins (not counting placebo)
+
+- color:
+
+  Variable (unquoted) to assign colors to strip plot dots
 
 ## Value
 
-A plot
+Plot object of class `erlr_plot`
 
 ## Examples
 
