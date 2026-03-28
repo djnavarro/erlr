@@ -1,0 +1,77 @@
+# erlr
+
+Provides estimation and plotting tools for exposure-response models that
+use logistic regression for binary responses.
+
+## Installation
+
+You can install the development version of erlr like so:
+
+``` r
+pak::pak("djnavarro/erlr")
+```
+
+## Example
+
+``` r
+library(erlr)
+library(tibble)
+
+lr_dat
+#> # A tibble: 300 × 6
+#>       id  dose exposure exposure_quartile response sex   
+#>    <int> <dbl>    <dbl> <fct>                <dbl> <fct> 
+#>  1     1   100    112.  Q2                       1 Female
+#>  2     2     0      0   Placebo                  0 Female
+#>  3     3     0      0   Placebo                  1 Female
+#>  4     4     0      0   Placebo                  1 Male  
+#>  5     5     0      0   Placebo                  1 Female
+#>  6     6     0      0   Placebo                  0 Female
+#>  7     7     0      0   Placebo                  1 Female
+#>  8     8   100     40.7 Q1                       1 Female
+#>  9     9   100    204.  Q3                       1 Male  
+#> 10    10     0      0   Placebo                  0 Female
+#> # ℹ 290 more rows
+
+mod <- lr_model(response ~ exposure, lr_dat)
+mod
+#> 
+#> Call:  stats::glm(formula = formula, family = stats::binomial(link = "logit"), 
+#>     data = data)
+#> 
+#> Coefficients:
+#> (Intercept)     exposure  
+#>     0.03472      0.00740  
+#> 
+#> Degrees of Freedom: 299 Total (i.e. Null);  298 Residual
+#> Null Deviance:       379.1 
+#> Residual Deviance: 338.7     AIC: 342.7
+```
+
+# Package index
+
+## All functions
+
+- [`logit()`](https://erlr.djnavarro.net/reference/logit.md)
+  [`invlogit()`](https://erlr.djnavarro.net/reference/logit.md) : Logit
+  and inverse logit functions
+- [`lr_dat`](https://erlr.djnavarro.net/reference/lr_dat.md) : Sample
+  simulated data for logistic regression exposure-response models with
+  covariates.
+- [`lr_model()`](https://erlr.djnavarro.net/reference/lr_model.md) : Fit
+  a logistic regression function
+- [`lr_plot()`](https://erlr.djnavarro.net/reference/lr_plot.md)
+  [`lr_plot_add_base()`](https://erlr.djnavarro.net/reference/lr_plot.md)
+  [`lr_plot_add_strips()`](https://erlr.djnavarro.net/reference/lr_plot.md)
+  [`lr_plot_build()`](https://erlr.djnavarro.net/reference/lr_plot.md) :
+  Builds an exposure-response plot for a logistic regression model
+- [`lr_predict()`](https://erlr.djnavarro.net/reference/lr_predict.md) :
+  Predictions and confidence intervals for logistic regression
+- [`lr_simulator()`](https://erlr.djnavarro.net/reference/lr_simulator.md)
+  : Takes a fitted glm object as input and returns a function that will
+  evaluate the underlying structural model with user-specified
+  parameters or data (e.g., for VPCs or other counterfactual simulation
+  scenarios). In principle this should work for glms more generally, not
+  merely logistic regressions, but has not been tested except for
+  logistic regression models Simulate from a logistic regression model
+
