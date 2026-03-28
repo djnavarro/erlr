@@ -39,4 +39,5 @@ lr_dat
 
 mod <- lr_model(response ~ exposure, lr_dat)
 mod
+
 ```
