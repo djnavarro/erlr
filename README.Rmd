@@ -55,4 +55,9 @@ lr_data |>
   lr_plot_add_boxplot(group_by = quartile) |> 
   lr_plot_add_boxplot(group_by = sex) |> 
   print(box_height = 2)
+
+mod <- lr_model(response ~ exposure + sex, lr_data)
+sim <- lr_vpc_sim(mod)
+sim
+
 ```

@@ -34,6 +34,7 @@ invlogit <- function(x) 1 / (1 + exp(-x))
 #' @export
 #' @examples
 #' mod <- lr_model(response ~ exposure, lr_data)
+#' mod
 #' 
 lr_model <- function(formula, data, ...) {
   stats::glm(formula = formula, data = data, family = stats::binomial(link = "logit"), ...)
@@ -53,7 +54,8 @@ lr_model <- function(formula, data, ...) {
 #' @export
 #' @examples
 #' mod <- lr_model(response ~ exposure, lr_data)
-#' lr_predict(mod, lr_data)
+#' prd <- lr_predict(mod, lr_data)
+#' prd
 #' 
 lr_predict <- function(object, newdata, conf_level = .95) {
   inverse_link <- stats::family(object)$linkinv
@@ -403,14 +405,49 @@ lr_plot_build <- function(object, base_height = 4, strip_height = 2, box_height 
 #' @exportS3Method base::print
 print.erlr_plot <- function(x, ...) lr_plot_build(x, ...)
 
-if (FALSE) {
-  lr_data |> 
-    dplyr::filter(exposure > 0) |> 
-    lr_plot(exposure, response) |> 
-    lr_plot_add_quantiles(bins = 4) |> 
-    lr_plot_add_strips(color_by = sex) |> 
-    lr_plot_add_boxplot(group_by = quartile) |> 
-    lr_plot_add_boxplot(group_by = sex) |> 
-    print(box_height = 3)
+# vpc helpers -------------------------------------------------------------
+
+#' VPC simulations for logistic regression models
+#'
+#' @param object Logistic regression model
+#' @param nsim Number of replicates
+#' @param seed RNG state
+#'
+#' @returns A data frame or tibble
+#'
+#' @export
+#' @examples
+#' mod <- lr_model(response ~ exposure + sex, lr_data)
+#' sim <- lr_vpc_sim(mod)
+#' sim
+#' 
+lr_vpc_sim <- function(object, nsim = 100, seed = NULL) {
+
+  ff <- object$formula
+  vv <- all.vars(ff)
+  exp_var <- vv[2]
+  rsp_var <- vv[1]
+  fn <- lr_simulator(object)
+  dd <- object$data[, vv]
+
+  if (!is.null(seed)) set.seed(seed)
+  par <- mvtnorm::rmvnorm(
+    n = nsim, 
+    mean = stats::coef(object),
+    sigma = stats::vcov(object)
+  )
+  sim <- list()
+  for (ii in 1:nsim) {
+    dd_sim <- dd |> 
+      dplyr::mutate(
+        row_id = dplyr::row_number(),
+        sim_id = ii
+      )
+    dd_sim[[rsp_var]] <- fn(param = par[ii,], dd_sim)
+    sim[[ii]] <- dd_sim
+  }
+  sim <- dplyr::bind_rows(sim)
+
+  return(sim)
 }
 

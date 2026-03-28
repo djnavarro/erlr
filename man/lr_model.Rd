@@ -21,5 +21,6 @@ Fit a logistic regression function
 }
 \examples{
 mod <- lr_model(response ~ exposure, lr_data)
+mod
 
 }
