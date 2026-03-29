@@ -299,7 +299,8 @@ lr_plot <- function(data, exposure, response, ...) {
     ggplot2::labs(
       x = attr(object$obs_data[[object$exp_name]], "label"),
       y = attr(object$obs_data[[object$rsp_name]], "label")
-    )
+    ) +
+    NULL
   
   object$strip <- list(upper = NULL, lower = NULL)
   object$box <- NULL  
@@ -359,7 +360,8 @@ lr_plot_add_quantiles <- function(object, bins = 4, conf_level = 0.95) {
       mapping = ggplot2::aes(x_mid, y_lbl, label = y_mid_lbl),
       inherit.aes = FALSE,
       size = 3
-    )
+    ) +
+    NULL
   
   return(object)
 }
@@ -384,17 +386,18 @@ lr_plot_add_dotplot_strips <- function(object, color_by = NULL) {
         stackgroups = TRUE,
         #stackdir = if (is_upr) "up" else "down"
         stackdir = "centerwhole"
-    ) +
-    ggplot2::coord_cartesian(xlim = object$xlim, clip = "off") +
-    ggplot2::theme_bw() +
-    ggplot2::theme(
-      panel.grid.major.y = ggplot2::element_blank(),
-      panel.grid.minor.y = ggplot2::element_blank(),
-      axis.title.y = ggplot2::element_blank(),
-      axis.ticks.y = ggplot2::element_blank(),
-      axis.text.y = ggplot2::element_blank(),
-      panel.border = ggplot2::element_rect(fill = NA, color = "grey80", linewidth = .5),
-    )
+      ) +
+      ggplot2::coord_cartesian(xlim = object$xlim, clip = "off") +
+      ggplot2::theme_bw() +
+      ggplot2::theme(
+        panel.grid.major.y = ggplot2::element_blank(),
+        panel.grid.minor.y = ggplot2::element_blank(),
+        axis.title.y = ggplot2::element_blank(),
+        axis.ticks.y = ggplot2::element_blank(),
+        axis.text.y = ggplot2::element_blank(),
+        panel.border = ggplot2::element_rect(fill = NA, color = "grey80", linewidth = .5),
+      ) +
+      NULL
   }
     
   object$strip <- list(
@@ -421,21 +424,18 @@ lr_plot_add_jitter_strips <- function(object, color_by = NULL) {
         width = 0,
         height = 0.1,
         size = 1
-    ) +
-    ggplot2::coord_cartesian(
-      xlim = object$xlim, 
-      ylim = c(-0.1, 0.1),
-      clip = "off"
-    ) +
-    ggplot2::theme_bw() +
-    ggplot2::theme(
-      panel.grid.major.y = ggplot2::element_blank(),
-      panel.grid.minor.y = ggplot2::element_blank(),
-      axis.title.y = ggplot2::element_blank(),
-      axis.ticks.y = ggplot2::element_blank(),
-      axis.text.y = ggplot2::element_blank(),
-      panel.border = ggplot2::element_rect(fill = NA, color = "grey80", linewidth = .5),
-    )
+      ) +
+      ggplot2::coord_cartesian(xlim = object$xlim, ylim = c(-0.1, 0.1), clip = "off") +
+      ggplot2::theme_bw() +
+      ggplot2::theme(
+        panel.grid.major.y = ggplot2::element_blank(),
+        panel.grid.minor.y = ggplot2::element_blank(),
+        axis.title.y = ggplot2::element_blank(),
+        axis.ticks.y = ggplot2::element_blank(),
+        axis.text.y = ggplot2::element_blank(),
+        panel.border = ggplot2::element_rect(fill = NA, color = "grey80", linewidth = .5),
+      ) + 
+      NULL
   }
     
   object$strip <- list(
@@ -458,21 +458,27 @@ lr_plot_add_boxplot <- function(object, group_by) {
       n = sum(!is.na(.data[[object$exp_name]])),
       lbl = paste0("N=", n),
       .by = {{group_by}}
-    )
-  
-  plt <- object$obs_data |> 
+    ) |> 
+    dplyr::mutate(lvl = paste0({{group_by}}, " (", lbl, ")")) |> 
+    dplyr::arrange({{group_by}}) # sort by factor order to allow label merge
+    
+  plt_data <- object$obs_data
+  levels(plt_data[[grp]]) <- cnt$lvl
+
+  plt <- plt_data |> 
     ggplot2::ggplot(ggplot2::aes(x = .data[[object$exp_name]], y = {{group_by}})) + 
     ggplot2::geom_boxplot() +
-    ggplot2::geom_text(
-      data = cnt,
-      mapping = ggplot2::aes(x = x_off, label = lbl),
-      hjust = "left",
-      size = 3,
-      show.legend = FALSE
-    ) +
+    # ggplot2::geom_text(
+    #   data = cnt,
+    #   mapping = ggplot2::aes(x = x_off, label = lbl),
+    #   hjust = "left",
+    #   size = 3,
+    #   show.legend = FALSE
+    # ) +
     ggplot2::coord_cartesian(xlim = object$xlim, clip = "off") +
     ggplot2::theme_bw() +
-    ggplot2::theme(panel.border = ggplot2::element_rect(fill = NA, color = "grey80", linewidth = .5))
+    ggplot2::theme(panel.border = ggplot2::element_rect(fill = NA, color = "grey80", linewidth = .5)) +
+    NULL
 
   if (is.null(object$box)) object$box <- list()
   pos <- length(object$box) + 1L
@@ -698,7 +704,8 @@ lr_vpc_plot <- function(object, sim, group_by, conf_level = 0.95) {
       position = ggplot2::position_dodge2(width = .2),
       size = 2
     ) +
-    ggplot2::theme_bw()
+    ggplot2::theme_bw() + 
+    NULL
 
   return(plt)
 }
