@@ -7,7 +7,7 @@
   and inverse logit functions
 - [`lr_data`](https://erlr.djnavarro.net/reference/lr_data.md) : Sample
   simulated data for logistic regression exposure-response models with
-  covariates.
+  covariates
 - [`lr_model()`](https://erlr.djnavarro.net/reference/lr_model.md) : Fit
   a logistic regression function
 - [`lr_plot()`](https://erlr.djnavarro.net/reference/lr_plot.md)

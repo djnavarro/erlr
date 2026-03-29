@@ -1,7 +1,7 @@
-# Sample simulated data for logistic regression exposure-response models with covariates.
+# Sample simulated data for logistic regression exposure-response models with covariates
 
 Sample simulated data for logistic regression exposure-response models
-with covariates.
+with covariates
 
 ## Usage
 
