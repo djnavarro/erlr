@@ -12,5 +12,12 @@ utils::globalVariables(c(
   "y_mid",
   ".data",
   "Source",
-  "y"
+  "y",
+  "x",
+  "lbl",
+  "exposure_1",
+  "tl_dist",
+  "tr_dist",
+  "bl_dist",
+  "br_dist"
 ))

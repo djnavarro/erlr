@@ -1,6 +1,6 @@
 test_that("lr_model works", {
-  expect_no_error(lr_model(response ~ exposure + sex, lr_data))
-  mod1 <- lr_model(response ~ exposure + sex, lr_data)
+  expect_no_error(lr_model(response_1 ~ exposure_1 + sex, lr_data))
+  mod1 <- lr_model(response_1 ~ exposure_1 + sex, lr_data)
   expect_s3_class(mod1, "glm")
 })
 

@@ -9,8 +9,8 @@
 #' @param x Numeric vector
 #' @returns Numeric vector
 #' @examples
-#' logit(lr_data$exposure)
-#' invlogit(lr_data$response)
+#' logit(lr_data$exposure_1)
+#' invlogit(lr_data$response_1)
 #' @name logit
 NULL
 
@@ -167,21 +167,21 @@ cut_exposure_quantile <- function(exposure, n = 4, is_placebo = NULL) {
 #' lr_data |> 
 #'   lr_plot(exposure_1, response_1) |> 
 #'   lr_plot_add_quantiles(bins = 4) |> 
-#'   lr_plot_add_boxplot(group_by = quartile) |> 
+#'   lr_plot_add_boxplot(group_by = quartile_1) |> 
 #'   print()
 #' 
 #' lr_data |> 
 #'   lr_plot(exposure_1, response_1) |> 
 #'   lr_plot_add_quantiles(bins = 4) |> 
 #'   lr_plot_add_jitter_strips(color_by = sex) |> 
-#'   lr_plot_add_boxplot(group_by = quartile) |> 
+#'   lr_plot_add_boxplot(group_by = quartile_1) |> 
 #'   print()  
 #' 
 #' lr_data[1:70,] |> 
 #'   lr_plot(exposure_1, response_1) |> 
 #'   lr_plot_add_quantiles(bins = 4) |> 
 #'   lr_plot_add_dotplot_strips(color_by = sex) |> 
-#'   lr_plot_add_boxplot(group_by = quartile) |> 
+#'   lr_plot_add_boxplot(group_by = quartile_1) |> 
 #'   lr_plot_add_boxplot(group_by = sex) |> 
 #'   print(box_height = 2)
 #' 
