@@ -461,34 +461,27 @@ lr_plot_add_boxplot <- function(object, group_by) {
     )
   
   plt <- object$obs_data |> 
-    ggplot2::ggplot(ggplot2::aes(
-      x = .data[[object$exp_name]],
-      y = {{group_by}}
-    )) + 
+    ggplot2::ggplot(ggplot2::aes(x = .data[[object$exp_name]], y = {{group_by}})) + 
+    ggplot2::geom_boxplot() +
     ggplot2::geom_text(
       data = cnt,
       mapping = ggplot2::aes(x = x_off, label = lbl),
       hjust = "left",
-      size = 2
+      size = 3,
+      show.legend = FALSE
     ) +
-    ggplot2::geom_boxplot() + 
-
+    ggplot2::coord_cartesian(xlim = object$xlim, clip = "off") +
     ggplot2::theme_bw() +
-    ggplot2::theme(
-      panel.border = ggplot2::element_rect(fill = NA, color = "grey80", linewidth = .5),
-    )
+    ggplot2::theme(panel.border = ggplot2::element_rect(fill = NA, color = "grey80", linewidth = .5))
 
   if (is.null(object$box)) object$box <- list()
   pos <- length(object$box) + 1L
   object$box[[pos]] <- plt
-  object$n_boxes <- c(
-    object$n_boxes, 
-    length(unique(object$obs_data[[grp]]))
-  )
+  object$n_boxes <- c(object$n_boxes, length(unique(object$obs_data[[grp]])))
   return(object)  
 }
     
-lr_plot_build <- function(object, base_height = 4, strip_height = 2, box_height = 2) {
+lr_plot_build <- function(object, base_height = 6, strip_height = 2, box_height = 3) {
   if (is.null(object$base)) return(invisible(object))
 
   margins <- ggplot2::margin(t = 5.5, r = 5.5, b = 5.5, l = 5.5, unit = "pt")
