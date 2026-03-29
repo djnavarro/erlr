@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">erlr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.6.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.7.9000</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -34,7 +34,7 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Sample simulated data for logistic regression exposure-response models with covariates.</h1>
-      <small class="dont-index">Source: <a href="https://github.com/djnavarro/erlr/blob/main/R/data.R" class="external-link"><code>R/data.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/djnavarro/erlr/blob/main/R/regression-logistic-data-v07.R" class="external-link"><code>R/regression-logistic-data-v07.R</code></a></small>
       <div class="d-none name"><code>lr_data.Rd</code></div>
     </div>
 
@@ -55,14 +55,17 @@
 <dt>dose</dt>
 <dd><p>Nominal dose, units not specified</p></dd>
 
-<dt>exposure</dt>
-<dd><p>Exposure value, units and metric not specified</p></dd>
+<dt>exposure_1</dt>
+<dd><p>Exposure 1 value, units and metric not specified</p></dd>
 
-<dt>quartile</dt>
-<dd><p>Exposure quartile, with placebo group separate</p></dd>
+<dt>quartile_1</dt>
+<dd><p>Exposure 1 quartile, with placebo group separate</p></dd>
 
-<dt>response</dt>
-<dd><p>Continuous response value (units not specified)</p></dd>
+<dt>response_1</dt>
+<dd><p>Binary response 1 value</p></dd>
+
+<dt>response_2</dt>
+<dd><p>Binary response 2 value</p></dd>
 
 <dt>sex</dt>
 <dd><p>Sex</p></dd>
@@ -78,19 +81,19 @@ You can find the data generating code in the package source code</p>
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">lr_data</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 300 × 6</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       id  dose exposure quartile response sex   </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span>     1   100    148.  Q3              1 Male  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span>     2   100     79.7 Q1              1 Male  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span>     3   200    212.  Q3              1 Male  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span>     4   200    236.  Q3              0 Female</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span>     5     0      0   Placebo         1 Female</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span>     6   200     71.0 Q1              1 Male  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span>     7   100    173.  Q3              1 Male  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span>     8   100    123.  Q2              0 Female</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span>     9     0      0   Placebo         0 Male  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span>    10   200    165.  Q3              1 Male  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 300 × 7</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       id  dose exposure_1 quartile_1 response_1 response_2 sex   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span>     1   100      148.  Q3                  1          1 Male  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span>     2   100       79.7 Q1                  1          0 Male  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span>     3   200      212.  Q3                  1          0 Male  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span>     4   200      236.  Q3                  0          0 Female</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span>     5     0        0   Placebo             1          0 Male  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span>     6   200       71.0 Q1                  1          0 Female</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span>     7   100      173.  Q3                  1          0 Male  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span>     8   100      123.  Q2                  0          0 Female</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span>     9     0        0   Placebo             0          0 Male  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span>    10   200      165.  Q3                  1          0 Female</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 290 more rows</span></span>
 </code></pre></div>
     </div>

@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">erlr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.6.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.7.9000</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -34,7 +34,7 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Builds an exposure-response plot for a logistic regression model</h1>
-      <small class="dont-index">Source: <a href="https://github.com/djnavarro/erlr/blob/main/R/regression-logistic-v06.R" class="external-link"><code>R/regression-logistic-v06.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/djnavarro/erlr/blob/main/R/regression-logistic-v07.R" class="external-link"><code>R/regression-logistic-v07.R</code></a></small>
       <div class="d-none name"><code>lr_plot.Rd</code></div>
     </div>
 
@@ -103,28 +103,37 @@
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">lr_data</span> <span class="op">|&gt;</span> </span></span>
-<span class="r-in"><span>  <span class="fu">lr_plot</span><span class="op">(</span><span class="va">exposure</span>, <span class="va">response</span><span class="op">)</span> <span class="op">|&gt;</span> </span></span>
+<span class="r-in"><span>  <span class="fu">lr_plot</span><span class="op">(</span><span class="va">exposure_1</span>, <span class="va">response_1</span><span class="op">)</span> <span class="op">|&gt;</span> </span></span>
 <span class="r-in"><span>  <span class="fu">lr_plot_add_quantiles</span><span class="op">(</span>bins <span class="op">=</span> <span class="fl">4</span><span class="op">)</span> <span class="op">|&gt;</span> </span></span>
 <span class="r-in"><span>  <span class="fu">lr_plot_add_boxplot</span><span class="op">(</span>group_by <span class="op">=</span> <span class="va">quartile</span><span class="op">)</span> <span class="op">|&gt;</span> </span></span>
 <span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="lr_plot-1.png" alt="" width="700" height="433"></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in ggplot2::geom_boxplot():</span> Problem while computing aesthetics.</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Error occurred in the 1st layer.</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold;">Caused by error:</span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> object 'quartile' not found</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">lr_data</span> <span class="op">|&gt;</span> </span></span>
-<span class="r-in"><span>  <span class="fu">lr_plot</span><span class="op">(</span><span class="va">exposure</span>, <span class="va">response</span><span class="op">)</span> <span class="op">|&gt;</span> </span></span>
+<span class="r-in"><span>  <span class="fu">lr_plot</span><span class="op">(</span><span class="va">exposure_1</span>, <span class="va">response_1</span><span class="op">)</span> <span class="op">|&gt;</span> </span></span>
 <span class="r-in"><span>  <span class="fu">lr_plot_add_quantiles</span><span class="op">(</span>bins <span class="op">=</span> <span class="fl">4</span><span class="op">)</span> <span class="op">|&gt;</span> </span></span>
 <span class="r-in"><span>  <span class="fu">lr_plot_add_jitter_strips</span><span class="op">(</span>color_by <span class="op">=</span> <span class="va">sex</span><span class="op">)</span> <span class="op">|&gt;</span> </span></span>
 <span class="r-in"><span>  <span class="fu">lr_plot_add_boxplot</span><span class="op">(</span>group_by <span class="op">=</span> <span class="va">quartile</span><span class="op">)</span> <span class="op">|&gt;</span> </span></span>
 <span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="op">)</span>  </span></span>
-<span class="r-plt img"><img src="lr_plot-2.png" alt="" width="700" height="433"></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in ggplot2::geom_boxplot():</span> Problem while computing aesthetics.</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Error occurred in the 1st layer.</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold;">Caused by error:</span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> object 'quartile' not found</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">lr_data</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">70</span>,<span class="op">]</span> <span class="op">|&gt;</span> </span></span>
-<span class="r-in"><span>  <span class="fu">lr_plot</span><span class="op">(</span><span class="va">exposure</span>, <span class="va">response</span><span class="op">)</span> <span class="op">|&gt;</span> </span></span>
+<span class="r-in"><span>  <span class="fu">lr_plot</span><span class="op">(</span><span class="va">exposure_1</span>, <span class="va">response_1</span><span class="op">)</span> <span class="op">|&gt;</span> </span></span>
 <span class="r-in"><span>  <span class="fu">lr_plot_add_quantiles</span><span class="op">(</span>bins <span class="op">=</span> <span class="fl">4</span><span class="op">)</span> <span class="op">|&gt;</span> </span></span>
 <span class="r-in"><span>  <span class="fu">lr_plot_add_dotplot_strips</span><span class="op">(</span>color_by <span class="op">=</span> <span class="va">sex</span><span class="op">)</span> <span class="op">|&gt;</span> </span></span>
 <span class="r-in"><span>  <span class="fu">lr_plot_add_boxplot</span><span class="op">(</span>group_by <span class="op">=</span> <span class="va">quartile</span><span class="op">)</span> <span class="op">|&gt;</span> </span></span>
 <span class="r-in"><span>  <span class="fu">lr_plot_add_boxplot</span><span class="op">(</span>group_by <span class="op">=</span> <span class="va">sex</span><span class="op">)</span> <span class="op">|&gt;</span> </span></span>
 <span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span>box_height <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="lr_plot-3.png" alt="" width="700" height="433"></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in ggplot2::geom_boxplot():</span> Problem while computing aesthetics.</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Error occurred in the 1st layer.</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold;">Caused by error:</span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> object 'quartile' not found</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

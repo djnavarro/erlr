@@ -33,9 +33,9 @@ A ggplot2 object
 ## Examples
 
 ``` r
-mod <- lr_model(response ~ exposure + sex, lr_data)
+mod <- lr_model(response_1 ~ exposure_1 + sex, lr_data)
 sim <- lr_vpc_sim(mod)
-lr_vpc_plot(mod, sim, group_by = exposure)
+lr_vpc_plot(mod, sim, group_by = exposure_1)
 
 lr_vpc_plot(mod, sim, group_by = sex)
 

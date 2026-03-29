@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">erlr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.6.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.7.9000</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -34,7 +34,7 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Fit a logistic regression function</h1>
-      <small class="dont-index">Source: <a href="https://github.com/djnavarro/erlr/blob/main/R/regression-logistic-v06.R" class="external-link"><code>R/regression-logistic-v06.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/djnavarro/erlr/blob/main/R/regression-logistic-v07.R" class="external-link"><code>R/regression-logistic-v07.R</code></a></small>
       <div class="d-none name"><code>lr_model.Rd</code></div>
     </div>
 
@@ -70,14 +70,14 @@
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">mod</span> <span class="op">&lt;-</span> <span class="fu">lr_model</span><span class="op">(</span><span class="va">response</span> <span class="op">~</span> <span class="va">exposure</span>, <span class="va">lr_data</span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">mod</span> <span class="op">&lt;-</span> <span class="fu">lr_model</span><span class="op">(</span><span class="va">response_1</span> <span class="op">~</span> <span class="va">exposure_1</span>, <span class="va">lr_data</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">mod</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Call:  stats::glm(formula = formula, family = stats::binomial(link = "logit"), </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     data = data)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Coefficients:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> (Intercept)     exposure  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> (Intercept)   exposure_1  </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     0.15078      0.01112  </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Degrees of Freedom: 299 Total (i.e. Null);  298 Residual</span>

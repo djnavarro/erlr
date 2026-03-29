@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">erlr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.6.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.7.9000</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -34,7 +34,7 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Plot VPC simulations for logistic regression models</h1>
-      <small class="dont-index">Source: <a href="https://github.com/djnavarro/erlr/blob/main/R/regression-logistic-v06.R" class="external-link"><code>R/regression-logistic-v06.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/djnavarro/erlr/blob/main/R/regression-logistic-v07.R" class="external-link"><code>R/regression-logistic-v07.R</code></a></small>
       <div class="d-none name"><code>lr_vpc_plot.Rd</code></div>
     </div>
 
@@ -74,9 +74,9 @@
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">mod</span> <span class="op">&lt;-</span> <span class="fu"><a href="lr_model.html">lr_model</a></span><span class="op">(</span><span class="va">response</span> <span class="op">~</span> <span class="va">exposure</span> <span class="op">+</span> <span class="va">sex</span>, <span class="va">lr_data</span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">mod</span> <span class="op">&lt;-</span> <span class="fu"><a href="lr_model.html">lr_model</a></span><span class="op">(</span><span class="va">response_1</span> <span class="op">~</span> <span class="va">exposure_1</span> <span class="op">+</span> <span class="va">sex</span>, <span class="va">lr_data</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">sim</span> <span class="op">&lt;-</span> <span class="fu"><a href="lr_vpc_sim.html">lr_vpc_sim</a></span><span class="op">(</span><span class="va">mod</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu">lr_vpc_plot</span><span class="op">(</span><span class="va">mod</span>, <span class="va">sim</span>, group_by <span class="op">=</span> <span class="va">exposure</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">lr_vpc_plot</span><span class="op">(</span><span class="va">mod</span>, <span class="va">sim</span>, group_by <span class="op">=</span> <span class="va">exposure_1</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="lr_vpc_plot-1.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="fu">lr_vpc_plot</span><span class="op">(</span><span class="va">mod</span>, <span class="va">sim</span>, group_by <span class="op">=</span> <span class="va">sex</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="lr_vpc_plot-2.png" alt="" width="700" height="433"></span>
