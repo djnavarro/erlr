@@ -19,5 +19,11 @@ utils::globalVariables(c(
   "tl_dist",
   "tr_dist",
   "bl_dist",
-  "br_dist"
+  "br_dist",
+  "n",
+  "x_off",
+  "y_lwr_lbl",
+  "y_upr_lbl",
+  "y_lbl",
+  "y_mid_lbl"
 ))

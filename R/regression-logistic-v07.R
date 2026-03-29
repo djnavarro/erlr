@@ -450,12 +450,29 @@ lr_plot_add_jitter_strips <- function(object, color_by = NULL) {
 lr_plot_add_boxplot <- function(object, group_by) {
 
   grp <- rlang::as_name(rlang::enquo(group_by))
+
+  cnt <- object$obs_data |> 
+    dplyr::summarise(
+      x = max(.data[[object$exp_name]], na.rm = TRUE),
+      x_off = x + .025 * (object$xlim[2] - object$xlim[1]),
+      n = sum(!is.na(.data[[object$exp_name]])),
+      lbl = paste0("N=", n),
+      .by = {{group_by}}
+    )
+  
   plt <- object$obs_data |> 
     ggplot2::ggplot(ggplot2::aes(
       x = .data[[object$exp_name]],
       y = {{group_by}}
     )) + 
+    ggplot2::geom_text(
+      data = cnt,
+      mapping = ggplot2::aes(x = x_off, label = lbl),
+      hjust = "left",
+      size = 2
+    ) +
     ggplot2::geom_boxplot() + 
+
     ggplot2::theme_bw() +
     ggplot2::theme(
       panel.border = ggplot2::element_rect(fill = NA, color = "grey80", linewidth = .5),
