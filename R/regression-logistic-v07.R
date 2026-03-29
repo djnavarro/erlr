@@ -334,7 +334,10 @@ lr_plot_add_quantiles <- function(object, bins = 4, conf_level = 0.95) {
       y_mid = n1 / (n0 + n1),
       y_mid_lbl = percent(n1 / (n0 + n1)),
       ci_lower = clopper_pearson(n1, n0 + n1, conf_level)["lower"], 
-      ci_upper = clopper_pearson(n1, n0 + n1, conf_level)["upper"], 
+      ci_upper = clopper_pearson(n1, n0 + n1, conf_level)["upper"],
+      y_lwr_lbl = ci_lower - 0.05,
+      y_upr_lbl = ci_upper + 0.05,
+      y_lbl = dplyr::if_else(y_lwr_lbl > 1 - y_upr_lbl, y_lwr_lbl, y_upr_lbl),
       .by = ".bins"
     )
 
@@ -350,7 +353,13 @@ lr_plot_add_quantiles <- function(object, bins = 4, conf_level = 0.95) {
       mapping = ggplot2::aes(x_mid, ymin = ci_lower, ymax = ci_upper),
       inherit.aes = FALSE,
       width = 0.025 * (object$xlim[2] - object$xlim[1])
-    ) 
+    ) +
+    ggplot2::geom_text(
+      data = object$quantiles,
+      mapping = ggplot2::aes(x_mid, y_lbl, label = y_mid_lbl),
+      inherit.aes = FALSE,
+      size = 3
+    )
   
   return(object)
 }
