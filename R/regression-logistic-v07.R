@@ -211,6 +211,65 @@ lr_plot <- function(data, exposure, response, ...) {
   names(prd) <- object$exp_name 
   object$prd_data <- lr_predict(object$model, prd)
 
+  smm <- summary(object$model)
+  object$model_p <- smm$coefficients[2, "Pr(>|z|)"]
+  p_value <- scales::label_pvalue(accuracy = .001, add_p = TRUE)
+
+  object$corner_dist <- object$prd_data |> 
+    dplyr::select(dplyr::all_of(c(object$exp_name, "fit_resp"))) |> 
+    dplyr::rename(y = fit_resp, x = .data[[object$exp_name]]) |> 
+    dplyr::mutate(
+      x = x / sum(x),
+      tl_dist = sqrt(x^2 + (1-y)^2),
+      tr_dist = sqrt((1-x)^2 + (1-y)^2),
+      bl_dist = sqrt(x^2 + y^2),
+      br_dist = sqrt((1-x)^2 + y^2)
+    ) |> 
+    dplyr::summarise(
+      tl = min(tl_dist, na.rm = TRUE),
+      tr = min(tr_dist, na.rm = TRUE),
+      bl = min(bl_dist, na.rm = TRUE),
+      br = min(br_dist, na.rm = TRUE)
+    ) |> 
+    unlist()
+
+  corner_p <- names(sort(object$corner_dist)[4])
+
+  layer_p <- function(cnr) {
+    pval <- tibble::tibble(
+      lbl = p_value(object$model_p),
+      cnr = cnr
+    )
+    if (cnr == "tl") {
+      return(ggplot2::geom_label(
+        data = pval,
+        mapping = ggplot2::aes(x = I(.05), y = I(.95), label = lbl),
+        hjust = 0, vjust = 1
+      ))
+    }
+    if (cnr == "tr") {
+      return(ggplot2::geom_label(
+        data = pval,
+        mapping = ggplot2::aes(x = I(.95), y = I(.95), label = lbl),
+        hjust = 1, vjust = 1
+      ))
+    }
+    if (cnr == "bl") {
+      return(ggplot2::geom_label(
+        data = pval,
+        mapping = ggplot2::aes(x = I(.05), y = I(.05), label = lbl),
+        hjust = 0, vjust = 0
+      ))
+    }
+    if (cnr == "br") {
+      return(ggplot2::geom_label(
+        data = pval,
+        mapping = ggplot2::aes(x = I(.95), y = I(.05), label = lbl),
+        hjust = 1, vjust = 0
+      ))
+    }
+  }
+
   object$base <- ggplot2::ggplot() +
     ggplot2::geom_ribbon(
       data = object$prd_data,
@@ -227,6 +286,7 @@ lr_plot <- function(data, exposure, response, ...) {
       mapping = ggplot2::aes(.data[[object$exp_name]], fit_resp),
       linewidth = 1
     ) +
+    layer_p(corner_p) +
     ggplot2::scale_y_continuous(
       oob = scales::oob_keep, 
       expand = ggplot2::expansion(mult = .01, add = 0)

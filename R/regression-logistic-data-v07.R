@@ -9,7 +9,7 @@ make_lr_data <- function(seed) {
     exposure_1 = stats::qlnorm(p = stats::runif(n, .05, .95)) * dose,
     quartile_1 = cut_exposure_quantile(exposure_1),
     response_1 = as.numeric(logit(stats::runif(n)) < exposure_1/100 - 0.1),
-    response_2 = as.numeric(logit(stats::runif(n)) < exposure_1/300 - 2.0),
+    response_2 = as.numeric(logit(stats::runif(n)) < exposure_1/500 - 2.0),
     sex = factor(sample(rep(c("Male", "Female"), c(n/2, n/2))))
   )
   attr(lr_data$id, "label") <- "Subject ID"
