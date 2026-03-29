@@ -33,7 +33,7 @@ invlogit <- function(x) 1 / (1 + exp(-x))
 #' @returns A glm object
 #' @export
 #' @examples
-#' mod <- lr_model(response ~ exposure, lr_data)
+#' mod <- lr_model(response_1 ~ exposure_1, lr_data)
 #' mod
 #' 
 lr_model <- function(formula, data, ...) {
@@ -56,7 +56,7 @@ lr_model <- function(formula, data, ...) {
 #'
 #' @export
 #' @examples
-#' mod <- lr_model(response ~ exposure, lr_data)
+#' mod <- lr_model(response_1 ~ exposure_1, lr_data)
 #' prd <- lr_predict(mod, lr_data)
 #' prd
 #' 
@@ -97,7 +97,7 @@ lr_predict <- function(object, newdata, conf_level = .95) {
 #' logistic regression models
 #'  
 #' @examples
-#' mod1 <- lr_model(response ~ exposure + sex, lr_data)
+#' mod1 <- lr_model(response_1 ~ exposure_1 + sex, lr_data)
 #' par1 <- coef(mod1)
 #' mod1_sim <- lr_simulator(mod1)
 #' 
@@ -165,20 +165,20 @@ cut_exposure_quantile <- function(exposure, n = 4, is_placebo = NULL) {
 #'
 #' @examples
 #' lr_data |> 
-#'   lr_plot(exposure, response) |> 
+#'   lr_plot(exposure_1, response_1) |> 
 #'   lr_plot_add_quantiles(bins = 4) |> 
 #'   lr_plot_add_boxplot(group_by = quartile) |> 
 #'   print()
 #' 
 #' lr_data |> 
-#'   lr_plot(exposure, response) |> 
+#'   lr_plot(exposure_1, response_1) |> 
 #'   lr_plot_add_quantiles(bins = 4) |> 
 #'   lr_plot_add_jitter_strips(color_by = sex) |> 
 #'   lr_plot_add_boxplot(group_by = quartile) |> 
 #'   print()  
 #' 
 #' lr_data[1:70,] |> 
-#'   lr_plot(exposure, response) |> 
+#'   lr_plot(exposure_1, response_1) |> 
 #'   lr_plot_add_quantiles(bins = 4) |> 
 #'   lr_plot_add_dotplot_strips(color_by = sex) |> 
 #'   lr_plot_add_boxplot(group_by = quartile) |> 
@@ -484,7 +484,7 @@ print.erlr_plot <- function(x, ...) lr_plot_build(x, ...)
 #'
 #' @export
 #' @examples
-#' mod <- lr_model(response ~ exposure + sex, lr_data)
+#' mod <- lr_model(response_1 ~ exposure_1 + sex, lr_data)
 #' sim <- lr_vpc_sim(mod)
 #' sim
 #' 
@@ -528,9 +528,9 @@ lr_vpc_sim <- function(object, nsim = 100, seed = NULL) {
 #' @returns A ggplot2 object
 #'
 #' @examples
-#' mod <- lr_model(response ~ exposure + sex, lr_data)
+#' mod <- lr_model(response_1 ~ exposure_1 + sex, lr_data)
 #' sim <- lr_vpc_sim(mod)
-#' lr_vpc_plot(mod, sim, group_by = exposure)
+#' lr_vpc_plot(mod, sim, group_by = exposure_1)
 #' lr_vpc_plot(mod, sim, group_by = sex)
 #' 
 #' @export
