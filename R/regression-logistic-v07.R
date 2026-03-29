@@ -215,7 +215,7 @@ lr_plot <- function(data, exposure, response, ...) {
     ggplot2::geom_ribbon(
       data = object$prd_data,
       mapping = ggplot2::aes(
-        x = !!dplyr::sym(object$exp_name),
+        x = .data[[object$exp_name]],
         ymin = ci_lower,
         ymax = ci_upper
       ),
@@ -224,7 +224,7 @@ lr_plot <- function(data, exposure, response, ...) {
     ) +
     ggplot2::geom_path(
       data = object$prd_data,
-      mapping = ggplot2::aes(!!dplyr::sym(object$exp_name), fit_resp),
+      mapping = ggplot2::aes(.data[[object$exp_name]], fit_resp),
       linewidth = 1
     ) +
     ggplot2::scale_y_continuous(
@@ -268,9 +268,9 @@ lr_plot_add_quantiles <- function(object, bins = 4, conf_level = 0.95) {
 
   object$quantiles <- object$obs_data |> 
     dplyr::summarise(
-      n1 = sum(!!dplyr::sym(object$rsp_name) == 1, na.rm = TRUE),
-      n0 = sum(!!dplyr::sym(object$rsp_name) == 0, na.rm = TRUE),
-      x_mid = mean(!!dplyr::sym(object$exp_name), na.rm = TRUE),
+      n1 = sum(.data[[object$rsp_name]] == 1, na.rm = TRUE),
+      n0 = sum(.data[[object$rsp_name]] == 0, na.rm = TRUE),
+      x_mid = mean(.data[[object$exp_name]], na.rm = TRUE),
       y_mid = n1 / (n0 + n1),
       y_mid_lbl = percent(n1 / (n0 + n1)),
       ci_lower = clopper_pearson(n1, n0 + n1, conf_level)["lower"], 
@@ -300,13 +300,13 @@ lr_plot_add_quantiles <- function(object, bins = 4, conf_level = 0.95) {
 lr_plot_add_dotplot_strips <- function(object, color_by = NULL) {
 
   strip <- function(dd) {
-    is_upr <- dplyr::pull(dd, !!dplyr::sym(object$rsp_name))[1] == 1
+    is_upr <- dplyr::pull(dd, .data[[object$rsp_name]])[1] == 1
     nbin <- 100
     dd |> 
       ggplot2::ggplot() +
       ggplot2::geom_dotplot(
         mapping = ggplot2::aes(
-          x = !!dplyr::sym(object$exp_name), 
+          x = .data[[object$exp_name]], 
           fill = {{color_by}}
         ),
         binwidth = (object$xlim[2] - object$xlim[1]) / nbin,
@@ -329,8 +329,8 @@ lr_plot_add_dotplot_strips <- function(object, color_by = NULL) {
   }
     
   object$strip <- list(
-    upper = object$obs_data |> dplyr::filter(!!dplyr::sym(object$rsp_name) == 1) |> strip(),
-    lower = object$obs_data |> dplyr::filter(!!dplyr::sym(object$rsp_name) == 0) |> strip()
+    upper = object$obs_data |> dplyr::filter(.data[[object$rsp_name]] == 1) |> strip(),
+    lower = object$obs_data |> dplyr::filter(.data[[object$rsp_name]] == 0) |> strip()
   )
   return(object)
 }
@@ -340,12 +340,12 @@ lr_plot_add_dotplot_strips <- function(object, color_by = NULL) {
 lr_plot_add_jitter_strips <- function(object, color_by = NULL) {
 
   strip <- function(dd) {
-    is_upr <- dplyr::pull(dd, !!dplyr::sym(object$rsp_name))[1] == 1
+    is_upr <- dplyr::pull(dd, .data[[object$rsp_name]])[1] == 1
     dd |> 
       ggplot2::ggplot() +
       ggplot2::geom_jitter(
         mapping = ggplot2::aes(
-          x = !!dplyr::sym(object$exp_name), 
+          x = .data[[object$exp_name]], 
           y = 0, # the panel has its own scale 
           color = {{color_by}}
         ),
@@ -370,8 +370,8 @@ lr_plot_add_jitter_strips <- function(object, color_by = NULL) {
   }
     
   object$strip <- list(
-    upper = object$obs_data |> dplyr::filter(!!dplyr::sym(object$rsp_name) == 1) |> strip(),
-    lower = object$obs_data |> dplyr::filter(!!dplyr::sym(object$rsp_name) == 0) |> strip()
+    upper = object$obs_data |> dplyr::filter(.data[[object$rsp_name]] == 1) |> strip(),
+    lower = object$obs_data |> dplyr::filter(.data[[object$rsp_name]] == 0) |> strip()
   )
   return(object)
 }
@@ -383,7 +383,7 @@ lr_plot_add_boxplot <- function(object, group_by) {
   grp <- rlang::as_name(rlang::enquo(group_by))
   plt <- object$obs_data |> 
     ggplot2::ggplot(ggplot2::aes(
-      x = !!dplyr::sym(object$exp_name),
+      x = .data[[object$exp_name]],
       y = {{group_by}}
     )) + 
     ggplot2::geom_boxplot() + 
