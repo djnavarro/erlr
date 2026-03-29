@@ -29,9 +29,11 @@ You can install the development version of erlr like so:
 pak::pak("djnavarro/erlr")
 ```
 
-## Example
+## Models
 
-```{r example}
+```{r}
+#| label: lr-model
+
 library(erlr)
 library(dplyr)
 library(tibble)
@@ -40,6 +42,13 @@ lr_data
 
 mod <- lr_model(response_1 ~ exposure_1, lr_data)
 mod
+```
+
+## Plots
+
+```{r}
+#| fig-height: 8
+#| label: lr-plot
 
 lr_data |> 
   lr_plot(exposure_1, response_1) |> 
@@ -61,12 +70,17 @@ lr_data[1:70,] |>
   lr_plot_add_boxplot(group_by = quartile_1) |> 
   lr_plot_add_boxplot(group_by = sex) |> 
   print(box_height = 2)
+```
 
+## VPC/Simulation
+
+```{r}
+#| label: lr-vpc
 mod <- lr_model(response_1 ~ exposure_1 + sex, lr_data)
 sim <- lr_vpc_sim(mod)
 sim
 
 lr_vpc_plot(mod, sim, group_by = exposure_1)
 lr_vpc_plot(mod, sim, group_by = sex)
-
 ```
+

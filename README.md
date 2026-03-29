@@ -22,7 +22,7 @@ You can install the development version of erlr like so:
 pak::pak("djnavarro/erlr")
 ```
 
-## Example
+## Models
 
 ``` r
 library(erlr)
@@ -66,7 +66,11 @@ mod
 #> Degrees of Freedom: 299 Total (i.e. Null);  298 Residual
 #> Null Deviance:       341.7 
 #> Residual Deviance: 283.9     AIC: 287.9
+```
 
+## Plots
+
+``` r
 lr_data |> 
   lr_plot(exposure_1, response_1) |> 
   lr_plot_add_quantiles(bins = 4) |> 
@@ -76,7 +80,7 @@ lr_data |>
 #> Please use `theme()` to construct themes.
 ```
 
-<img src="man/figures/README-example-1.png" width="100%" />
+<img src="man/figures/README-lr-plot-1.png" width="100%" />
 
 ``` r
 
@@ -90,7 +94,7 @@ lr_data |>
 #> Please use `theme()` to construct themes.
 ```
 
-<img src="man/figures/README-example-2.png" width="100%" />
+<img src="man/figures/README-lr-plot-2.png" width="100%" />
 
 ``` r
 
@@ -105,35 +109,36 @@ lr_data[1:70,] |>
 #> Please use `theme()` to construct themes.
 ```
 
-<img src="man/figures/README-example-3.png" width="100%" />
+<img src="man/figures/README-lr-plot-3.png" width="100%" />
+
+## VPC/Simulation
 
 ``` r
-
 mod <- lr_model(response_1 ~ exposure_1 + sex, lr_data)
 sim <- lr_vpc_sim(mod)
 sim
 #> # A tibble: 30,000 × 5
 #>    response_1 exposure_1 sex    row_id sim_id
 #>         <dbl>      <dbl> <fct>   <int>  <int>
-#>  1      0.886      148.  Male        1      1
-#>  2      0.766       79.7 Male        2      1
-#>  3      0.945      212.  Male        3      1
-#>  4      0.937      236.  Female      4      1
-#>  5      0.545        0   Male        5      1
-#>  6      0.653       71.0 Female      6      1
-#>  7      0.914      173.  Male        7      1
-#>  8      0.784      123.  Female      8      1
-#>  9      0.545        0   Male        9      1
-#> 10      0.860      165.  Female     10      1
+#>  1      0.938      148.  Male        1      1
+#>  2      0.873       79.7 Male        2      1
+#>  3      0.969      212.  Male        3      1
+#>  4      0.930      236.  Female      4      1
+#>  5      0.731        0   Male        5      1
+#>  6      0.662       71.0 Female      6      1
+#>  7      0.953      173.  Male        7      1
+#>  8      0.783      123.  Female      8      1
+#>  9      0.731        0   Male        9      1
+#> 10      0.854      165.  Female     10      1
 #> # ℹ 29,990 more rows
 
 lr_vpc_plot(mod, sim, group_by = exposure_1)
 ```
 
-<img src="man/figures/README-example-4.png" width="100%" />
+<img src="man/figures/README-lr-vpc-1.png" width="100%" />
 
 ``` r
 lr_vpc_plot(mod, sim, group_by = sex)
 ```
 
-<img src="man/figures/README-example-5.png" width="100%" />
+<img src="man/figures/README-lr-vpc-2.png" width="100%" />
