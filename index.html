@@ -68,7 +68,7 @@
 <code class="sourceCode R"><span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pak.html" class="external-link">pak</a></span><span class="op">(</span><span class="st">"djnavarro/erlr"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="example">Example<a class="anchor" aria-label="anchor" href="#example"></a>
+<h2 id="models">Models<a class="anchor" aria-label="anchor" href="#models"></a>
 </h2>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/djnavarro/erlr" class="external-link">erlr</a></span><span class="op">)</span></span>
@@ -111,17 +111,21 @@
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Degrees of Freedom: 299 Total (i.e. Null);  298 Residual</span></span>
 <span><span class="co">#&gt; Null Deviance:       341.7 </span></span>
-<span><span class="co">#&gt; Residual Deviance: 283.9     AIC: 287.9</span></span>
-<span></span>
-<span><span class="va">lr_data</span> <span class="op">|&gt;</span> </span>
+<span><span class="co">#&gt; Residual Deviance: 283.9     AIC: 287.9</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="plots">Plots<a class="anchor" aria-label="anchor" href="#plots"></a>
+</h2>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">lr_data</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="reference/lr_plot.html">lr_plot</a></span><span class="op">(</span><span class="va">exposure_1</span>, <span class="va">response_1</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="reference/lr_plot.html">lr_plot_add_quantiles</a></span><span class="op">(</span>bins <span class="op">=</span> <span class="fl">4</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="reference/lr_plot.html">lr_plot_add_boxplot</a></span><span class="op">(</span>group_by <span class="op">=</span> <span class="va">quartile_1</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Warning: annotation$theme is not a valid theme.</span></span>
 <span><span class="co">#&gt; Please use `theme()` to construct themes.</span></span></code></pre></div>
-<p><img src="reference/figures/README-example-1.png" width="100%"></p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<p><img src="reference/figures/README-lr-plot-1.png" width="100%"></p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="va">lr_data</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="reference/lr_plot.html">lr_plot</a></span><span class="op">(</span><span class="va">exposure_1</span>, <span class="va">response_1</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
@@ -131,8 +135,8 @@
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="op">)</span>  </span>
 <span><span class="co">#&gt; Warning: annotation$theme is not a valid theme.</span></span>
 <span><span class="co">#&gt; Please use `theme()` to construct themes.</span></span></code></pre></div>
-<p><img src="reference/figures/README-example-2.png" width="100%"></p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<p><img src="reference/figures/README-lr-plot-2.png" width="100%"></p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="va">lr_data</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">70</span>,<span class="op">]</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="reference/lr_plot.html">lr_plot</a></span><span class="op">(</span><span class="va">exposure_1</span>, <span class="va">response_1</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
@@ -143,32 +147,35 @@
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span>box_height <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Warning: annotation$theme is not a valid theme.</span></span>
 <span><span class="co">#&gt; Please use `theme()` to construct themes.</span></span></code></pre></div>
-<p><img src="reference/figures/README-example-3.png" width="100%"></p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span></span>
-<span><span class="va">mod</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/lr_model.html">lr_model</a></span><span class="op">(</span><span class="va">response_1</span> <span class="op">~</span> <span class="va">exposure_1</span> <span class="op">+</span> <span class="va">sex</span>, <span class="va">lr_data</span><span class="op">)</span></span>
+<p><img src="reference/figures/README-lr-plot-3.png" width="100%"></p>
+</div>
+<div class="section level2">
+<h2 id="vpcsimulation">VPC/Simulation<a class="anchor" aria-label="anchor" href="#vpcsimulation"></a>
+</h2>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">mod</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/lr_model.html">lr_model</a></span><span class="op">(</span><span class="va">response_1</span> <span class="op">~</span> <span class="va">exposure_1</span> <span class="op">+</span> <span class="va">sex</span>, <span class="va">lr_data</span><span class="op">)</span></span>
 <span><span class="va">sim</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/lr_vpc_sim.html">lr_vpc_sim</a></span><span class="op">(</span><span class="va">mod</span><span class="op">)</span></span>
 <span><span class="va">sim</span></span>
 <span><span class="co">#&gt; # A tibble: 30,000 × 5</span></span>
 <span><span class="co">#&gt;    response_1 exposure_1 sex    row_id sim_id</span></span>
 <span><span class="co">#&gt;         &lt;dbl&gt;      &lt;dbl&gt; &lt;fct&gt;   &lt;int&gt;  &lt;int&gt;</span></span>
-<span><span class="co">#&gt;  1      0.886      148.  Male        1      1</span></span>
-<span><span class="co">#&gt;  2      0.766       79.7 Male        2      1</span></span>
-<span><span class="co">#&gt;  3      0.945      212.  Male        3      1</span></span>
-<span><span class="co">#&gt;  4      0.937      236.  Female      4      1</span></span>
-<span><span class="co">#&gt;  5      0.545        0   Male        5      1</span></span>
-<span><span class="co">#&gt;  6      0.653       71.0 Female      6      1</span></span>
-<span><span class="co">#&gt;  7      0.914      173.  Male        7      1</span></span>
-<span><span class="co">#&gt;  8      0.784      123.  Female      8      1</span></span>
-<span><span class="co">#&gt;  9      0.545        0   Male        9      1</span></span>
-<span><span class="co">#&gt; 10      0.860      165.  Female     10      1</span></span>
+<span><span class="co">#&gt;  1      0.878      148.  Male        1      1</span></span>
+<span><span class="co">#&gt;  2      0.781       79.7 Male        2      1</span></span>
+<span><span class="co">#&gt;  3      0.932      212.  Male        3      1</span></span>
+<span><span class="co">#&gt;  4      0.912      236.  Female      4      1</span></span>
+<span><span class="co">#&gt;  5      0.612        0   Male        5      1</span></span>
+<span><span class="co">#&gt;  6      0.657       71.0 Female      6      1</span></span>
+<span><span class="co">#&gt;  7      0.903      173.  Male        7      1</span></span>
+<span><span class="co">#&gt;  8      0.766      123.  Female      8      1</span></span>
+<span><span class="co">#&gt;  9      0.612        0   Male        9      1</span></span>
+<span><span class="co">#&gt; 10      0.834      165.  Female     10      1</span></span>
 <span><span class="co">#&gt; # ℹ 29,990 more rows</span></span>
 <span></span>
 <span><span class="fu"><a href="reference/lr_vpc_plot.html">lr_vpc_plot</a></span><span class="op">(</span><span class="va">mod</span>, <span class="va">sim</span>, group_by <span class="op">=</span> <span class="va">exposure_1</span><span class="op">)</span></span></code></pre></div>
-<p><img src="reference/figures/README-example-4.png" width="100%"></p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<p><img src="reference/figures/README-lr-vpc-1.png" width="100%"></p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/lr_vpc_plot.html">lr_vpc_plot</a></span><span class="op">(</span><span class="va">mod</span>, <span class="va">sim</span>, group_by <span class="op">=</span> <span class="va">sex</span><span class="op">)</span></span></code></pre></div>
-<p><img src="reference/figures/README-example-5.png" width="100%"></p>
+<p><img src="reference/figures/README-lr-vpc-2.png" width="100%"></p>
 </div>
 </div>
   </main><aside class="col-md-3"><div class="links">
