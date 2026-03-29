@@ -25,7 +25,7 @@ make_lr_data <- function(seed) {
 #lr_data <- make_lr_data(seed = 2407L)
 #usethis::use_data(lr_data, overwrite = TRUE)
 
-#' Sample simulated data for logistic regression exposure-response models with covariates.
+#' Sample simulated data for logistic regression exposure-response models with covariates
 #'
 #' @name lr_data
 #' @format A data frame with columns:
