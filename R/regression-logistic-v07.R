@@ -9,8 +9,9 @@
 #' @param x Numeric vector
 #' @returns Numeric vector
 #' @examples
-#' logit(lr_data$exposure_1)
-#' invlogit(lr_data$response_1)
+#' logit((1:9)/10)
+#' invlogit(-3:3)
+#' logit(invlogit(-3:3))
 #' @name logit
 NULL
 
