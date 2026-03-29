@@ -5,7 +5,7 @@ test_that("lr_model works", {
 })
 
 test_that("lr_simulator returns a function", {
-  mod1 <- lr_model(response ~ exposure + sex, lr_data)
+  mod1 <- lr_model(response_1 ~ exposure_1 + sex, lr_data)
   expect_no_error(lr_simulator(mod1))
   mod1_sim <- lr_simulator(mod1)
   expect_type(mod1_sim, "closure")
@@ -14,7 +14,7 @@ test_that("lr_simulator returns a function", {
 test_that("lr_simulator works", {
 
   # simulator setup
-  mod1 <- lr_model(response ~ exposure + sex, lr_data)
+  mod1 <- lr_model(response_1 ~ exposure_1 + sex, lr_data)
   par1 <- coef(mod1)
   mod1_sim <- lr_simulator(mod1)
 
