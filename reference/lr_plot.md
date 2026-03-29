@@ -64,33 +64,24 @@ Plot object of class `erlr_plot`
 lr_data |> 
   lr_plot(exposure_1, response_1) |> 
   lr_plot_add_quantiles(bins = 4) |> 
-  lr_plot_add_boxplot(group_by = quartile) |> 
+  lr_plot_add_boxplot(group_by = quartile_1) |> 
   print()
-#> Error in ggplot2::geom_boxplot(): Problem while computing aesthetics.
-#> ℹ Error occurred in the 1st layer.
-#> Caused by error:
-#> ! object 'quartile' not found
+
 
 lr_data |> 
   lr_plot(exposure_1, response_1) |> 
   lr_plot_add_quantiles(bins = 4) |> 
   lr_plot_add_jitter_strips(color_by = sex) |> 
-  lr_plot_add_boxplot(group_by = quartile) |> 
+  lr_plot_add_boxplot(group_by = quartile_1) |> 
   print()  
-#> Error in ggplot2::geom_boxplot(): Problem while computing aesthetics.
-#> ℹ Error occurred in the 1st layer.
-#> Caused by error:
-#> ! object 'quartile' not found
+
 
 lr_data[1:70,] |> 
   lr_plot(exposure_1, response_1) |> 
   lr_plot_add_quantiles(bins = 4) |> 
   lr_plot_add_dotplot_strips(color_by = sex) |> 
-  lr_plot_add_boxplot(group_by = quartile) |> 
+  lr_plot_add_boxplot(group_by = quartile_1) |> 
   lr_plot_add_boxplot(group_by = sex) |> 
   print(box_height = 2)
-#> Error in ggplot2::geom_boxplot(): Problem while computing aesthetics.
-#> ℹ Error occurred in the 1st layer.
-#> Caused by error:
-#> ! object 'quartile' not found
+
 ```

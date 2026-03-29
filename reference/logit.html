@@ -64,12 +64,76 @@
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">logit</span><span class="op">(</span><span class="va">lr_data</span><span class="op">$</span><span class="va">exposure</span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Unknown or uninitialised column: `exposure`.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> numeric(0)</span>
-<span class="r-in"><span><span class="fu">invlogit</span><span class="op">(</span><span class="va">lr_data</span><span class="op">$</span><span class="va">response</span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Unknown or uninitialised column: `response`.</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in -x:</span> invalid argument to unary operator</span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">logit</span><span class="op">(</span><span class="va">lr_data</span><span class="op">$</span><span class="va">exposure_1</span><span class="op">)</span></span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>NaNs produced</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   [1]  NaN  NaN  NaN  NaN -Inf  NaN  NaN  NaN -Inf  NaN -Inf  NaN  NaN  NaN -Inf</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [16] -Inf  NaN -Inf  NaN  NaN  NaN -Inf -Inf  NaN -Inf  NaN  NaN  NaN  NaN  NaN</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [31]  NaN  NaN  NaN  NaN  NaN  NaN  NaN  NaN  NaN -Inf  NaN  NaN -Inf -Inf  NaN</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [46]  NaN  NaN  NaN  NaN  NaN  NaN -Inf -Inf  NaN  NaN -Inf  NaN  NaN  NaN  NaN</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [61]  NaN  NaN -Inf  NaN -Inf -Inf  NaN  NaN  NaN  NaN  NaN  NaN  NaN  NaN  NaN</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [76] -Inf -Inf -Inf -Inf  NaN  NaN  NaN -Inf -Inf  NaN  NaN  NaN -Inf -Inf -Inf</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [91]  NaN  NaN  NaN -Inf -Inf  NaN  NaN  NaN  NaN -Inf  NaN  NaN  NaN  NaN  NaN</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [106]  NaN  NaN  NaN -Inf -Inf  NaN -Inf  NaN  NaN -Inf  NaN  NaN -Inf  NaN  NaN</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [121]  NaN  NaN  NaN  NaN  NaN -Inf  NaN  NaN  NaN  NaN -Inf -Inf -Inf  NaN  NaN</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [136] -Inf  NaN  NaN  NaN  NaN -Inf  NaN  NaN  NaN  NaN  NaN  NaN  NaN  NaN -Inf</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [151] -Inf  NaN  NaN -Inf  NaN  NaN  NaN -Inf  NaN -Inf  NaN -Inf -Inf -Inf -Inf</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [166]  NaN  NaN -Inf  NaN  NaN  NaN  NaN  NaN  NaN  NaN  NaN -Inf -Inf  NaN  NaN</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [181] -Inf  NaN  NaN  NaN -Inf  NaN -Inf -Inf  NaN  NaN  NaN  NaN -Inf  NaN  NaN</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [196]  NaN  NaN -Inf  NaN  NaN  NaN  NaN  NaN  NaN -Inf  NaN  NaN -Inf  NaN -Inf</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [211]  NaN  NaN  NaN  NaN  NaN  NaN -Inf -Inf  NaN -Inf -Inf -Inf  NaN  NaN -Inf</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [226]  NaN  NaN  NaN  NaN -Inf  NaN -Inf -Inf  NaN  NaN  NaN -Inf -Inf -Inf  NaN</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [241]  NaN  NaN -Inf  NaN -Inf -Inf -Inf  NaN  NaN  NaN  NaN -Inf -Inf -Inf -Inf</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [256] -Inf -Inf  NaN -Inf  NaN  NaN  NaN -Inf  NaN -Inf  NaN  NaN  NaN  NaN -Inf</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [271] -Inf -Inf  NaN  NaN -Inf  NaN  NaN  NaN  NaN  NaN  NaN  NaN  NaN  NaN -Inf</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [286]  NaN -Inf -Inf  NaN -Inf -Inf  NaN -Inf -Inf  NaN  NaN  NaN -Inf -Inf  NaN</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"label")</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Exposure 1"</span>
+<span class="r-in"><span><span class="fu">invlogit</span><span class="op">(</span><span class="va">lr_data</span><span class="op">$</span><span class="va">response_1</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   [1] 0.7310586 0.7310586 0.7310586 0.5000000 0.7310586 0.7310586 0.7310586</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   [8] 0.5000000 0.5000000 0.7310586 0.7310586 0.7310586 0.7310586 0.7310586</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [15] 0.7310586 0.5000000 0.5000000 0.5000000 0.7310586 0.7310586 0.7310586</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [22] 0.7310586 0.7310586 0.7310586 0.5000000 0.7310586 0.5000000 0.7310586</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [29] 0.7310586 0.7310586 0.7310586 0.7310586 0.7310586 0.7310586 0.7310586</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [36] 0.7310586 0.7310586 0.7310586 0.7310586 0.5000000 0.7310586 0.7310586</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [43] 0.7310586 0.5000000 0.5000000 0.5000000 0.7310586 0.5000000 0.7310586</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [50] 0.7310586 0.7310586 0.7310586 0.7310586 0.5000000 0.5000000 0.5000000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [57] 0.7310586 0.7310586 0.7310586 0.5000000 0.7310586 0.7310586 0.5000000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [64] 0.5000000 0.7310586 0.5000000 0.7310586 0.7310586 0.7310586 0.7310586</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [71] 0.5000000 0.7310586 0.7310586 0.7310586 0.5000000 0.5000000 0.7310586</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [78] 0.5000000 0.7310586 0.7310586 0.7310586 0.7310586 0.7310586 0.7310586</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [85] 0.7310586 0.7310586 0.7310586 0.7310586 0.5000000 0.5000000 0.7310586</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [92] 0.7310586 0.7310586 0.7310586 0.5000000 0.5000000 0.7310586 0.7310586</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [99] 0.7310586 0.7310586 0.7310586 0.7310586 0.7310586 0.7310586 0.7310586</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [106] 0.7310586 0.5000000 0.7310586 0.7310586 0.5000000 0.7310586 0.7310586</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [113] 0.7310586 0.7310586 0.5000000 0.7310586 0.7310586 0.5000000 0.5000000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [120] 0.7310586 0.7310586 0.7310586 0.7310586 0.7310586 0.7310586 0.7310586</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [127] 0.7310586 0.7310586 0.7310586 0.7310586 0.7310586 0.7310586 0.7310586</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [134] 0.7310586 0.7310586 0.5000000 0.7310586 0.7310586 0.7310586 0.7310586</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [141] 0.5000000 0.7310586 0.7310586 0.7310586 0.7310586 0.7310586 0.7310586</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [148] 0.7310586 0.7310586 0.7310586 0.7310586 0.7310586 0.7310586 0.5000000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [155] 0.7310586 0.7310586 0.7310586 0.5000000 0.7310586 0.7310586 0.7310586</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [162] 0.7310586 0.7310586 0.5000000 0.7310586 0.7310586 0.7310586 0.5000000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [169] 0.7310586 0.7310586 0.7310586 0.7310586 0.7310586 0.7310586 0.7310586</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [176] 0.5000000 0.7310586 0.7310586 0.7310586 0.7310586 0.5000000 0.7310586</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [183] 0.5000000 0.5000000 0.5000000 0.7310586 0.5000000 0.5000000 0.7310586</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [190] 0.7310586 0.7310586 0.7310586 0.7310586 0.7310586 0.7310586 0.7310586</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [197] 0.7310586 0.5000000 0.7310586 0.7310586 0.7310586 0.5000000 0.7310586</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [204] 0.7310586 0.5000000 0.7310586 0.7310586 0.5000000 0.7310586 0.5000000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [211] 0.7310586 0.7310586 0.7310586 0.7310586 0.5000000 0.7310586 0.5000000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [218] 0.5000000 0.7310586 0.5000000 0.5000000 0.7310586 0.7310586 0.7310586</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [225] 0.7310586 0.7310586 0.7310586 0.7310586 0.7310586 0.7310586 0.7310586</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [232] 0.5000000 0.5000000 0.7310586 0.7310586 0.7310586 0.7310586 0.7310586</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [239] 0.5000000 0.7310586 0.7310586 0.5000000 0.7310586 0.7310586 0.7310586</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [246] 0.5000000 0.5000000 0.7310586 0.7310586 0.7310586 0.7310586 0.7310586</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [253] 0.7310586 0.7310586 0.7310586 0.7310586 0.5000000 0.7310586 0.7310586</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [260] 0.7310586 0.7310586 0.7310586 0.5000000 0.7310586 0.5000000 0.5000000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [267] 0.7310586 0.5000000 0.5000000 0.7310586 0.5000000 0.7310586 0.7310586</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [274] 0.7310586 0.5000000 0.7310586 0.5000000 0.7310586 0.7310586 0.7310586</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [281] 0.7310586 0.7310586 0.5000000 0.7310586 0.7310586 0.7310586 0.7310586</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [288] 0.7310586 0.7310586 0.5000000 0.5000000 0.7310586 0.7310586 0.5000000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [295] 0.7310586 0.5000000 0.7310586 0.7310586 0.5000000 0.7310586</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"label")</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Response 1"</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
