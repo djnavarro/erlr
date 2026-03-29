@@ -617,6 +617,7 @@ lr_vpc_sim <- function(object, nsim = 100, seed = NULL) {
 lr_vpc_plot <- function(object, sim, group_by, conf_level = 0.95) {
 
   ff <- object$formula
+  ll <- purrr::imap(object$data, \(x,l) attr(x, "label"))
   vv <- all.vars(ff)
   exp_var <- vv[2]
   rsp_var <- vv[1]
@@ -635,16 +636,14 @@ lr_vpc_plot <- function(object, sim, group_by, conf_level = 0.95) {
   if (is.numeric(dat[[grp_var]])) {
     if (grp_var == exp_var) dat[[".is_placebo"]] <- dat[[exp_var]] == 0
     if (grp_var != exp_var) dat[[".is_placebo"]] <- rep(FALSE, nrow(dat))
-
     dat <- dat |> dplyr::mutate(
       .quantile = cut_exposure_quantile(
-        exposure = .data[[grp_var]], 
-        n = 4, 
+        exposure = .data[[grp_var]], n = 4, 
         is_placebo = .data[[".is_placebo"]]
       ),
       .by = "Source"
     )
-    attr(dat[[".quantile"]], "label") <- attr(dat[[grp_var]], "label")
+    ll[[".quantile"]] <- ll[[grp_var]]
     grp_var <- ".quantile"
   }
 
@@ -678,6 +677,8 @@ lr_vpc_plot <- function(object, sim, group_by, conf_level = 0.95) {
     )
 
   smm <- dplyr::bind_rows(smm_obs, smm_sim)
+  attr(smm[["y_mid"]], "label") <- ll[[rsp_var]]
+  attr(smm[[grp_var]], "label") <- ll[[grp_var]]
 
   plt <- smm |> 
     ggplot2::ggplot(ggplot2::aes(

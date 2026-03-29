@@ -15,6 +15,7 @@ Imports:
     ggplot2,
     mvtnorm,
     patchwork,
+    purrr,
     rlang,
     scales,
     stats,
