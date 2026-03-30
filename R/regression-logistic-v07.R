@@ -462,9 +462,14 @@ lr_plot_add_boxplot <- function(object, group_by) {
     ) |> 
     dplyr::mutate(lvl = paste0({{group_by}}, " (", lbl, ")")) |> 
     dplyr::arrange({{group_by}}) # sort by factor order to allow label merge
-    
+   
+  # handles case when factor levels aren't represented: drop the level, but
+  # preserve the label metadata
   plt_data <- object$obs_data
+  ll <- attr(plt_data[[grp]], "label")
+  plt_data <- plt_data |> dplyr::mutate({{group_by}} := droplevels({{group_by}}))
   levels(plt_data[[grp]]) <- cnt$lvl
+  attr(plt_data[[grp]], "label") <- ll
 
   plt <- plt_data |> 
     ggplot2::ggplot(ggplot2::aes(x = .data[[object$exp_name]], y = {{group_by}})) + 
