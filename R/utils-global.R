@@ -25,5 +25,8 @@ utils::globalVariables(c(
   "y_lwr_lbl",
   "y_upr_lbl",
   "y_lbl",
-  "y_mid_lbl"
+  "y_mid_lbl",
+  "iteration",
+  "model_updated",
+  ":="
 ))
