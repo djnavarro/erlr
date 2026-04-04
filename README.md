@@ -6,6 +6,8 @@
 <!-- badges: start -->
 
 [![R-CMD-check](https://github.com/djnavarro/erlr/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/djnavarro/erlr/actions/workflows/R-CMD-check.yaml)
+[![Codecov test
+coverage](https://codecov.io/gh/djnavarro/erlr/graph/badge.svg)](https://app.codecov.io/gh/djnavarro/erlr)
 <!-- badges: end -->
 
 Provides estimation and plotting tools for exposure-response models that
@@ -137,16 +139,16 @@ sim
 #> # A tibble: 30,000 × 5
 #>    response_1 exposure_1 sex    row_id sim_id
 #>         <dbl>      <dbl> <fct>   <int>  <int>
-#>  1      0.896      148.  Male        1      1
-#>  2      0.804       79.7 Male        2      1
-#>  3      0.945      212.  Male        3      1
-#>  4      0.919      236.  Female      4      1
-#>  5      0.633        0   Male        5      1
-#>  6      0.653       71.0 Female      6      1
-#>  7      0.919      173.  Male        7      1
-#>  8      0.769      123.  Female      8      1
-#>  9      0.633        0   Male        9      1
-#> 10      0.840      165.  Female     10      1
+#>  1      0.858      148.  Male        1      1
+#>  2      0.746       79.7 Male        2      1
+#>  3      0.922      212.  Male        3      1
+#>  4      0.924      236.  Female      4      1
+#>  5      0.558        0   Male        5      1
+#>  6      0.679       71.0 Female      6      1
+#>  7      0.888      173.  Male        7      1
+#>  8      0.787      123.  Female      8      1
+#>  9      0.558        0   Male        9      1
+#> 10      0.852      165.  Female     10      1
 #> # ℹ 29,990 more rows
 
 lr_vpc_plot(mod, sim, group_by = exposure_1)
