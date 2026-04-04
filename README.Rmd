@@ -72,6 +72,14 @@ lr_data[1:70,] |>
   print(box_height = 2)
 ```
 
+## Stepwise covariate modelling
+
+```{r}
+mod1 <- lr_model(response_1 ~ exposure_1 + sex + dose, lr_data)
+mod2 <- lr_scm_backward(mod1, candidates = c("sex", "dose"))
+lr_scm_history(mod2)
+```
+
 ## VPC/Simulation
 
 ```{r}
