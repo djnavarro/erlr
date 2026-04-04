@@ -39,7 +39,8 @@ lr_model <- function(formula, data, ...) {
 #' prd <- lr_predict(mod, lr_data)
 #' prd
 #' 
-lr_predict <- function(object, newdata, conf_level = .95) {
+lr_predict <- function(object, newdata = NULL, conf_level = .95) {
+  if (is.null(newdata)) newdata <- object$data
   inverse_link <- stats::family(object)$linkinv
   z_scale <- -stats::qnorm((1 - conf_level)/2)
   out <- newdata |> 

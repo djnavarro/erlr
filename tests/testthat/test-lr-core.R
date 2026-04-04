@@ -38,3 +38,34 @@ test_that("lr_simulator works", {
   
 })
 
+test_that("lr_predict works with default data", {
+  mod <- lr_model(response_1 ~ exposure_1 + sex, lr_data)
+  expect_no_error(lr_predict(mod))
+  prd <- lr_predict(mod)
+  pr_resp <- predict(mod, type = "response", se.fit = TRUE)
+  pr_link <- predict(mod, type = "link", se.fit = TRUE)
+  expect_equal(prd$fit_resp, pr_resp$fit)
+  expect_equal(prd$fit_link, pr_link$fit)
+  expect_equal(prd$se_link, pr_link$se.fit)
+})
+
+test_that("lr_predict works with modified data", {
+  mod <- lr_model(response_1 ~ exposure_1 + sex, lr_data)
+  dat_1 <- lr_data[1:20,]
+  expect_no_error(lr_predict(mod, newdata = dat_1))
+  prd <- lr_predict(mod, newdata = dat_1)
+  pr_resp <- predict(mod, newdata = dat_1, type = "response", se.fit = TRUE)
+  pr_link <- predict(mod, newdata = dat_1, type = "link", se.fit = TRUE)
+  expect_equal(prd$fit_resp, pr_resp$fit)
+  expect_equal(prd$fit_link, pr_link$fit)
+  expect_equal(prd$se_link, pr_link$se.fit)
+})
+
+test_that("lr_predict can adjust confidence level", {
+  mod <- lr_model(response_1 ~ exposure_1 + sex, lr_data)
+  expect_no_error(lr_predict(mod, conf_level = 0))
+  prd0 <- lr_predict(mod, conf_level = 0)
+  expect_equal(prd0$ci_lower, prd0$fit_resp)
+  expect_equal(prd0$ci_upper, prd0$fit_resp)
+})
+
