@@ -38,36 +38,59 @@
 #' @name lr_plot
 NULL
 
-#' @rdname lr_plot
-#' @export
-lr_plot <- function(data, exposure, response, ...) {
+lr_plot_setup <- function(data, exp_name, rsp_name, ...) {
 
   object <- list(
-    obs_data = data,
-    prd_data = NULL,
-    exp_name = rlang::as_name(rlang::enquo(exposure)),
-    rsp_name = rlang::as_name(rlang::enquo(response)),
-    bins = NULL,
-    theme_args = list(...)
+    data    = list(observed = data, predicted = NULL),
+    name    = list(exposure = exp_name, response = rsp_name),
+    label   = list(exposure = NULL, response = NULL),
+    formula = NULL,
+    model   = NULL,
+    plot    = list(base = NULL, strip = list(lower = NULL, upper = NULL), box = list()),
+    info    = list(),
+    output  = NULL
   )
-  object$formula <- stats::as.formula(paste(object$rsp_name, object$exp_name, sep = "~"))
-  object$model <- lr_model(formula = object$formula, data = object$obs_data)
-  object$exp_lbl = attr(object$obs_data[[object$exp_name]], "label")
-  object$rsp_lbl = attr(object$obs_data[[object$rsp_name]], "label")
-  object$xlim <- range(data[[object$exp_name]])
 
-  rng <- range(object$obs_data[[object$exp_name]])
-  prd <- data.frame(x = seq(rng[1], rng[2], length.out = 100))
-  names(prd) <- object$exp_name 
-  object$prd_data <- lr_predict(object$model, prd)
+  object$label <- list(
+    exposure = attr(object$data$observed[[object$name$exposure]], "label"),
+    response = attr(object$data$observed[[object$name$response]], "label")
+  )
 
-  smm <- summary(object$model)
-  object$model_p <- smm$coefficients[2, "Pr(>|z|)"]
-  p_value <- scales::label_pvalue(accuracy = .001, add_p = TRUE)
+  object$formula <- stats::as.formula(paste(
+    object$name$response, 
+    object$name$exposure, 
+    sep = "~"
+  ))
 
-  object$corner_dist <- object$prd_data |> 
-    dplyr::select(dplyr::all_of(c(object$exp_name, "fit_resp"))) |> 
-    dplyr::rename(y = fit_resp, x = .data[[object$exp_name]]) |> 
+  object$model <- lr_model(
+    formula = object$formula, 
+    data = object$data$observed
+  )
+
+  object$info$exposure_min <- min(object$data$observed[[object$name$exposure]], na.rm = TRUE)
+  object$info$exposure_max <- max(object$data$observed[[object$name$exposure]], na.rm = TRUE)
+  object$info$exposure_prd <- seq(object$info$exposure_min, object$info$exposure_max, length.out = 100)
+  object$info$model_p   <- summary(object$model)$coefficients[2, "Pr(>|z|)"]
+  object$info$format_p  <- scales::label_pvalue(accuracy = .001, add_p = TRUE)
+  object$info$format_percent <- scales::label_percent(accuracy = 1)
+  object$info$n_bins    <- NA_integer_
+  object$info$n_boxes   <- numeric()
+  object$info$quantiles <- NULL
+  object$info$plot_size <- numeric()
+
+  object$data$predicted <- lr_predict(
+    object$model, 
+    stats::setNames(data.frame(object$info$exposure_prd), object$name$exposure)
+  )
+  
+  return(structure(.Data = object, class = "erlr_plot"))
+}
+
+lr_plot_base_p <- function(object) {
+
+  corner_dist <- object$data$predicted |> 
+    dplyr::select(dplyr::all_of(c(object$name$exposure, "fit_resp"))) |> 
+    dplyr::rename(y = fit_resp, x = .data[[object$name$exposure]]) |> 
     dplyr::mutate(
       x = x / sum(x),
       tl_dist = sqrt(x^2 + (1-y)^2),
@@ -83,48 +106,59 @@ lr_plot <- function(data, exposure, response, ...) {
     ) |> 
     unlist()
 
-  corner_p <- names(sort(object$corner_dist)[4])
+  corner_p <- names(sort(corner_dist)[4])
+  pval <- tibble::tibble(
+    lbl = object$info$format_p(object$info$model_p), 
+    cnr = corner_p
+  )
 
-  layer_p <- function(cnr) {
-    pval <- tibble::tibble(
-      lbl = p_value(object$model_p),
-      cnr = cnr
-    )
-    if (cnr == "tl") {
-      return(ggplot2::geom_label(
-        data = pval,
-        mapping = ggplot2::aes(x = I(.05), y = I(.95), label = lbl),
-        hjust = 0, vjust = 1
-      ))
-    }
-    if (cnr == "tr") {
-      return(ggplot2::geom_label(
-        data = pval,
-        mapping = ggplot2::aes(x = I(.95), y = I(.95), label = lbl),
-        hjust = 1, vjust = 1
-      ))
-    }
-    if (cnr == "bl") {
-      return(ggplot2::geom_label(
-        data = pval,
-        mapping = ggplot2::aes(x = I(.05), y = I(.05), label = lbl),
-        hjust = 0, vjust = 0
-      ))
-    }
-    if (cnr == "br") {
-      return(ggplot2::geom_label(
-        data = pval,
-        mapping = ggplot2::aes(x = I(.95), y = I(.05), label = lbl),
-        hjust = 1, vjust = 0
-      ))
-    }
+  if (corner_p == "tl") {
+    return(ggplot2::geom_label(
+      data = pval,
+      mapping = ggplot2::aes(x = I(.05), y = I(.95), label = lbl),
+      hjust = 0, vjust = 1
+    ))
   }
 
-  object$base <- ggplot2::ggplot() +
+  if (corner_p == "tr") {
+    return(ggplot2::geom_label(
+      data = pval,
+      mapping = ggplot2::aes(x = I(.95), y = I(.95), label = lbl),
+      hjust = 1, vjust = 1
+    ))
+  }
+
+  if (corner_p == "bl") {
+    return(ggplot2::geom_label(
+      data = pval,
+      mapping = ggplot2::aes(x = I(.05), y = I(.05), label = lbl),
+      hjust = 0, vjust = 0
+    ))
+  }
+
+  if (corner_p == "br") {
+    return(ggplot2::geom_label(
+      data = pval,
+      mapping = ggplot2::aes(x = I(.95), y = I(.05), label = lbl),
+      hjust = 1, vjust = 0
+    ))
+  }
+      
+}
+
+#' @rdname lr_plot
+#' @export
+lr_plot <- function(data, exposure, response, ...) {
+
+  exp_name <- rlang::as_name(rlang::enquo(exposure))
+  rsp_name <- rlang::as_name(rlang::enquo(response))
+  object <- lr_plot_setup(data, exp_name, rsp_name, ...)
+
+  object$plot$base <- ggplot2::ggplot() +
     ggplot2::geom_ribbon(
-      data = object$prd_data,
+      data = object$data$predicted,
       mapping = ggplot2::aes(
-        x = .data[[object$exp_name]],
+        x = .data[[object$name$exposure]],
         ymin = ci_lower,
         ymax = ci_upper
       ),
@@ -132,51 +166,54 @@ lr_plot <- function(data, exposure, response, ...) {
       alpha = .5
     ) +
     ggplot2::geom_path(
-      data = object$prd_data,
-      mapping = ggplot2::aes(.data[[object$exp_name]], fit_resp),
+      data = object$data$predicted,
+      mapping = ggplot2::aes(
+        x = .data[[object$name$exposure]], 
+        y = fit_resp
+      ),
       linewidth = 1
     ) +
-    layer_p(corner_p) +
+    lr_plot_base_p(object) +
     ggplot2::scale_y_continuous(
       oob = scales::oob_keep, 
       expand = ggplot2::expansion(mult = .01, add = 0)
     )  +
-    ggplot2::coord_cartesian(xlim = object$xlim, ylim = c(0, 1), clip = "off") +
+    ggplot2::coord_cartesian(
+      xlim = c(object$info$exposure_min, object$info$exposure_max), 
+      ylim = c(0, 1), 
+      clip = "off"
+    ) +
     ggplot2::theme_bw() +
     ggplot2::theme(
       panel.border = ggplot2::element_rect(fill = NA, color = "grey80", linewidth = .5),
     ) + 
     ggplot2::labs(
-      x = attr(object$obs_data[[object$exp_name]], "label"),
-      y = attr(object$obs_data[[object$rsp_name]], "label")
+      x = object$label$exposure,
+      y = object$label$response
     ) +
     NULL
   
-  object$strip <- list(upper = NULL, lower = NULL)
-  object$box <- NULL  
-  object$n_boxes <- numeric()
-
-  return(structure(.Data = object, class = "erlr_plot"))
+  return(object)
 }
 
 #' @rdname lr_plot
 #' @export
 lr_plot_add_quantiles <- function(object, bins = 4, conf_level = 0.95) {
+  if (!inherits(object, "erlr_plot")) rlang::abort("`object` must be an erlr plot object")
 
-  percent <- scales::label_percent(accuracy = 1)
-  object$bins <- bins
-  object$obs_data[[".bins"]] <- cut_exposure_quantile(
-    exposure = object$obs_data[[object$exp_name]], 
-    n = bins
+  object$info$n_bins <- bins
+  object$data$observed[[".bins"]] <- cut_exposure_quantile(
+    exposure = object$data$observed[[object$name$exposure]], 
+    n = object$info$n_bins
   )
 
-  object$quantiles <- object$obs_data |> 
+  object$info$quantiles <- object$data$observed |> 
     dplyr::summarise(
-      n1 = sum(.data[[object$rsp_name]] == 1, na.rm = TRUE),
-      n0 = sum(.data[[object$rsp_name]] == 0, na.rm = TRUE),
-      x_mid = mean(.data[[object$exp_name]], na.rm = TRUE),
+      n1 = sum(.data[[object$name$response]] == 1, na.rm = TRUE),
+      n0 = sum(.data[[object$name$response]] == 0, na.rm = TRUE),
+      x_mid = mean(.data[[object$name$exposure]], na.rm = TRUE),
       y_mid = n1 / (n0 + n1),
-      y_mid_lbl = percent(n1 / (n0 + n1)),
+      y_mid_lbl = object$info$format_percent(n1 / (n0 + n1)),
       ci_lower = clopper_pearson(n1, n0 + n1, conf_level)["lower"], 
       ci_upper = clopper_pearson(n1, n0 + n1, conf_level)["upper"],
       y_lwr_lbl = ci_lower - 0.05,
@@ -185,22 +222,22 @@ lr_plot_add_quantiles <- function(object, bins = 4, conf_level = 0.95) {
       .by = ".bins"
     )
 
-  object$base <- object$base + 
+  object$plot$base <- object$plot$base + 
     ggplot2::geom_point(
-      data = object$quantiles,
-      mapping = ggplot2::aes(x_mid, y_mid),
+      data = object$info$quantiles,
+      mapping = ggplot2::aes(x = x_mid, y = y_mid),
       inherit.aes = FALSE,
       size = 2
     ) + 
     ggplot2::geom_errorbar(
-      data = object$quantiles,
-      mapping = ggplot2::aes(x_mid, ymin = ci_lower, ymax = ci_upper),
+      data = object$info$quantiles,
+      mapping = ggplot2::aes(x = x_mid, ymin = ci_lower, ymax = ci_upper),
       inherit.aes = FALSE,
-      width = 0.025 * (object$xlim[2] - object$xlim[1])
+      width = 0.025 * (object$info$exposure_max - object$info$exposure_min)
     ) +
     ggplot2::geom_text(
-      data = object$quantiles,
-      mapping = ggplot2::aes(x_mid, y_lbl, label = y_mid_lbl),
+      data = object$info$quantiles,
+      mapping = ggplot2::aes(x = x_mid, y = y_lbl, label = y_mid_lbl),
       inherit.aes = FALSE,
       size = 3
     ) +
@@ -209,134 +246,140 @@ lr_plot_add_quantiles <- function(object, bins = 4, conf_level = 0.95) {
   return(object)
 }
 
-#' @rdname lr_plot
-#' @export
-lr_plot_add_dotplot_strips <- function(object, color_by = NULL) {
-
-  strip <- function(dd) {
-    is_upr <- dplyr::pull(dd, .data[[object$rsp_name]])[1] == 1
-    nbin <- 100
-    dd |> 
-      ggplot2::ggplot() +
-      ggplot2::geom_dotplot(
-        mapping = ggplot2::aes(
-          x = .data[[object$exp_name]], 
-          fill = {{color_by}}
-        ),
-        binwidth = (object$xlim[2] - object$xlim[1]) / nbin,
-        dotsize = 1,
-        method = "histodot",
-        stackgroups = TRUE,
-        #stackdir = if (is_upr) "up" else "down"
-        stackdir = "centerwhole"
-      ) +
-      ggplot2::coord_cartesian(xlim = object$xlim, clip = "off") +
-      ggplot2::theme_bw() +
-      ggplot2::theme(
-        panel.grid.major.y = ggplot2::element_blank(),
-        panel.grid.minor.y = ggplot2::element_blank(),
-        axis.title.y = ggplot2::element_blank(),
-        axis.ticks.y = ggplot2::element_blank(),
-        axis.text.y = ggplot2::element_blank(),
-        panel.border = ggplot2::element_rect(fill = NA, color = "grey80", linewidth = .5),
-      ) +
-      NULL
-  }
-    
-  object$strip <- list(
-    upper = object$obs_data |> dplyr::filter(.data[[object$rsp_name]] == 1) |> strip(),
-    lower = object$obs_data |> dplyr::filter(.data[[object$rsp_name]] == 0) |> strip()
-  )
-  return(object)
+lr_strip_dot <- function(object, color_by, panel) {
+  is_upr <- panel == "upper"
+  if (is_upr)  dd <- object$data$observed |> dplyr::filter(.data[[object$name$response]] == 1)
+  if (!is_upr) dd <- object$data$observed |> dplyr::filter(.data[[object$name$response]] == 0)
+  nbin <- 100
+  dd |> 
+    ggplot2::ggplot() +
+    ggplot2::geom_dotplot(
+      mapping = ggplot2::aes(
+        x = .data[[object$name$exposure]], 
+        fill = {{color_by}}
+      ),
+      binwidth = (object$info$exposure_max - object$info$exposure_min) / nbin,
+      dotsize = 1,
+      method = "histodot",
+      stackgroups = TRUE,
+      #stackdir = if (is_upr) "up" else "down"
+      stackdir = "centerwhole"
+    ) +
+    ggplot2::coord_cartesian(
+      xlim = c(object$info$exposure_min, object$info$exposure_max), 
+      clip = "off"
+    ) +
+    ggplot2::theme_bw() +
+    ggplot2::theme(
+      panel.grid.major.y = ggplot2::element_blank(),
+      panel.grid.minor.y = ggplot2::element_blank(),
+      axis.title.y = ggplot2::element_blank(),
+      axis.ticks.y = ggplot2::element_blank(),
+      axis.text.y = ggplot2::element_blank(),
+      panel.border = ggplot2::element_rect(fill = NA, color = "grey80", linewidth = .5),
+    ) +
+    NULL
 }
 
 #' @rdname lr_plot
 #' @export
-lr_plot_add_jitter_strips <- function(object, color_by = NULL) {
+lr_plot_add_dotplot_strips <- function(object, color_by = NULL, panel = "both") {
+  if (!inherits(object, "erlr_plot")) rlang::abort("`object` must be an erlr plot object")
+  color_by <- rlang::enquo(color_by)
+  if (panel %in% c("lower", "both")) object$plot$strip$lower <- lr_strip_dot(object, !!color_by, "lower")
+  if (panel %in% c("upper", "both")) object$plot$strip$upper <- lr_strip_dot(object, !!color_by, "upper")
+  return(object)
+}
 
-  strip <- function(dd) {
-    is_upr <- dplyr::pull(dd, .data[[object$rsp_name]])[1] == 1
-    dd |> 
-      ggplot2::ggplot() +
-      ggplot2::geom_jitter(
-        mapping = ggplot2::aes(
-          x = .data[[object$exp_name]], 
-          y = 0, # the panel has its own scale 
-          color = {{color_by}}
-        ),
-        width = 0,
-        height = 0.1,
-        size = 1
-      ) +
-      ggplot2::coord_cartesian(xlim = object$xlim, ylim = c(-0.1, 0.1), clip = "off") +
-      ggplot2::theme_bw() +
-      ggplot2::theme(
-        panel.grid.major.y = ggplot2::element_blank(),
-        panel.grid.minor.y = ggplot2::element_blank(),
-        axis.title.y = ggplot2::element_blank(),
-        axis.ticks.y = ggplot2::element_blank(),
-        axis.text.y = ggplot2::element_blank(),
-        panel.border = ggplot2::element_rect(fill = NA, color = "grey80", linewidth = .5),
-      ) + 
-      NULL
-  }
-    
-  object$strip <- list(
-    upper = object$obs_data |> dplyr::filter(.data[[object$rsp_name]] == 1) |> strip(),
-    lower = object$obs_data |> dplyr::filter(.data[[object$rsp_name]] == 0) |> strip()
-  )
+lr_strip_jitter <- function(object, color_by, panel) {
+  is_upr <- panel == "upper"
+  if (is_upr)  dd <- object$data$observed |> dplyr::filter(.data[[object$name$response]] == 1)
+  if (!is_upr) dd <- object$data$observed |> dplyr::filter(.data[[object$name$response]] == 0)
+  dd |> 
+    ggplot2::ggplot() +
+    ggplot2::geom_jitter(
+      mapping = ggplot2::aes(
+        x = .data[[object$name$exposure]], 
+        y = 0, # the panel has its own scale 
+        color = {{color_by}}
+      ),
+      width = 0,
+      height = 0.1,
+      size = 1
+    ) +
+    ggplot2::coord_cartesian(
+      xlim = c(object$info$exposure_min, object$info$exposure_max), 
+      ylim = c(-0.1, 0.1), 
+      clip = "off"
+    ) +
+    ggplot2::theme_bw() +
+    ggplot2::theme(
+      panel.grid.major.y = ggplot2::element_blank(),
+      panel.grid.minor.y = ggplot2::element_blank(),
+      axis.title.y = ggplot2::element_blank(),
+      axis.ticks.y = ggplot2::element_blank(),
+      axis.text.y = ggplot2::element_blank(),
+      panel.border = ggplot2::element_rect(fill = NA, color = "grey80", linewidth = .5),
+    ) + 
+    NULL
+}
+
+#' @rdname lr_plot
+#' @export
+lr_plot_add_jitter_strips <- function(object, color_by = NULL, panel = "both") {
+  color_by <- rlang::enquo(color_by)
+  if (panel %in% c("lower", "both")) object$plot$strip$lower <- lr_strip_jitter(object, !!color_by, "lower")
+  if (panel %in% c("upper", "both")) object$plot$strip$upper <- lr_strip_jitter(object, !!color_by, "upper")
   return(object)
 }
 
 #' @rdname lr_plot
 #' @export
 lr_plot_add_boxplot <- function(object, group_by) {
+  if (!inherits(object, "erlr_plot")) rlang::abort("`object` must be an erlr plot object")
 
   grp <- rlang::as_name(rlang::enquo(group_by))
 
-  cnt <- object$obs_data |> 
+  cnt <- object$data$observed |> 
     dplyr::summarise(
-      x = max(.data[[object$exp_name]], na.rm = TRUE),
-      x_off = x + .025 * (object$xlim[2] - object$xlim[1]),
-      n = sum(!is.na(.data[[object$exp_name]])),
+      x = max(.data[[object$name$exposure]], na.rm = TRUE),
+      x_off = x + .025 * (object$info$exposure_max - object$info$exposure_min),
+      n = sum(!is.na(.data[[object$name$exposure]])),
       lbl = paste0("N=", n),
       .by = {{group_by}}
     ) |> 
     dplyr::mutate(lvl = paste0({{group_by}}, " (", lbl, ")")) |> 
     dplyr::arrange({{group_by}}) # sort by factor order to allow label merge
    
-  # handles case when factor levels aren't represented: drop the level, but
-  # preserve the label metadata
-  plt_data <- object$obs_data
+  # drop missing levels, and preserve the label metadata
+  plt_data <- object$data$observed
   ll <- attr(plt_data[[grp]], "label")
   plt_data <- plt_data |> dplyr::mutate({{group_by}} := droplevels({{group_by}}))
   levels(plt_data[[grp]]) <- cnt$lvl
   attr(plt_data[[grp]], "label") <- ll
 
   plt <- plt_data |> 
-    ggplot2::ggplot(ggplot2::aes(x = .data[[object$exp_name]], y = {{group_by}})) + 
+    ggplot2::ggplot(ggplot2::aes(
+      x = .data[[object$name$exposure]], 
+      y = {{group_by}}
+    )) + 
     ggplot2::geom_boxplot() +
-    # ggplot2::geom_text(
-    #   data = cnt,
-    #   mapping = ggplot2::aes(x = x_off, label = lbl),
-    #   hjust = "left",
-    #   size = 3,
-    #   show.legend = FALSE
-    # ) +
-    ggplot2::coord_cartesian(xlim = object$xlim, clip = "off") +
+    ggplot2::coord_cartesian(
+      xlim = c(object$info$exposure_min, object$info$exposure_max), 
+      clip = "off"
+    ) +
     ggplot2::theme_bw() +
     ggplot2::theme(panel.border = ggplot2::element_rect(fill = NA, color = "grey80", linewidth = .5)) +
     NULL
 
-  if (is.null(object$box)) object$box <- list()
-  pos <- length(object$box) + 1L
-  object$box[[pos]] <- plt
-  object$n_boxes <- c(object$n_boxes, length(unique(object$obs_data[[grp]])))
+  pos <- length(object$plot$box) + 1L
+  object$plot$box[[pos]] <- plt
+  object$info$n_boxes <- c(object$info$n_boxes, length(unique(plt_data[[grp]])))
   return(object)  
 }
     
 lr_plot_build <- function(object, base_height = 6, strip_height = 2, box_height = 3) {
-  if (is.null(object$base)) return(invisible(object))
+  if (!inherits(object, "erlr_plot")) rlang::abort("`object` must be an erlr plot object")
 
   margins <- ggplot2::margin(t = 5.5, r = 5.5, b = 5.5, l = 5.5, unit = "pt")
   zero_pt <- ggplot2::unit(0, "pt")
@@ -345,30 +388,30 @@ lr_plot_build <- function(object, base_height = 6, strip_height = 2, box_height 
   upper_strip_margins <- margins
   lower_strip_margins <- margins
 
-  if (!is.null(object$strip$upper)) {
+  if (!is.null(object$plot$strip$upper)) {
     base_margins[1] <- zero_pt
     upper_strip_margins[3] <- zero_pt
   }
-  if (!is.null(object$strip$lower)) {
+  if (!is.null(object$plot$strip$lower)) {
     base_margins[3] <- zero_pt
     lower_strip_margins[1] <- zero_pt
   }
 
-  plt_list <- list(base = object$base + ggplot2::theme(margins = base_margins))
-  plt_size <- base_height
+  plot_list <- list(base = object$plot$base + ggplot2::theme(margins = base_margins))
+  object$info$plot_size <- base_height
 
-  if (!is.null(object$strip$upper)) {
-    plt_list <- c(
-      list(upper = object$strip$upper + ggplot2::theme(margins = upper_strip_margins)),
-      plt_list
+  if (!is.null(object$plot$strip$upper)) {
+    plot_list <- c(
+      list(upper = object$plot$strip$upper + ggplot2::theme(margins = upper_strip_margins)),
+      plot_list
     )
-    plt_size <- c(strip_height / 2, plt_size)
+    object$info$plot_size <- c(strip_height / 2, object$info$plot_size)
   }
 
-  if (!is.null(object$strip$lower)) {
-    plt_list <- c(
-      plt_list,
-      list(lower = object$strip$lower + 
+  if (!is.null(object$plot$strip$lower)) {
+    plot_list <- c(
+      plot_list,
+      list(lower = object$plot$strip$lower + 
         ggplot2::theme(margins = lower_strip_margins) + 
         ggplot2::guides(  # avoid duplication
           fill = ggplot2::guide_none(),
@@ -376,31 +419,39 @@ lr_plot_build <- function(object, base_height = 6, strip_height = 2, box_height 
         )
       )
     )
-    plt_size <- c(plt_size, strip_height / 2)
+    object$info$plot_size <- c(object$info$plot_size, strip_height / 2)
   }
 
-  if (!is.null(object$box)) {
-    for(b in seq_along(object$box)) {
-      plt_list <- c(
-        plt_list,
-        list(object$box[[b]] + ggplot2::theme(margins = margins))
+  if (!is.null(object$plot$box)) {
+    for(b in seq_along(object$plot$box)) {
+      plot_list <- c(
+        plot_list,
+        list(object$plot$box[[b]] + ggplot2::theme(margins = margins))
       )
-      box_prop <- object$n_boxes[b] / sum(object$n_boxes)
-      plt_size <- c(plt_size, box_height * box_prop)
+      box_prop <- object$info$n_boxes[b] / sum(object$info$n_boxes)
+      object$info$plot_size <- c(object$info$plot_size, box_height * box_prop)
     }
   }
 
-  if (length(plt_list) == 1) return(object$base)
 
-  plt_merged <- patchwork::wrap_plots(
-    plt_list, 
-    ncol = 1, 
-    heights = plt_size,
-    guides = "collect",
-    axes = "collect"
-  )
-  return(plt_merged)
+  if (length(plot_list) == 1) {
+    object$output <- object$plot$base
+  } else {
+    # suppress patchwork warning
+    out <- patchwork::wrap_plots(
+      plot_list, 
+      ncol = 1, 
+      heights = object$info$plot_size,
+      guides = "collect",
+      axes = "collect"
+    )
+    object$output <- out
+  }
+  return(object)
 }
 
 #' @exportS3Method base::print
-print.erlr_plot <- function(x, ...) lr_plot_build(x, ...)
+print.erlr_plot <- function(x, ...) {
+  object <- lr_plot_build(x, ...)
+  suppressWarnings(print(object$output)) # TODO: remove once patchwork okay
+}

@@ -12,9 +12,9 @@ lr_plot(data, exposure, response, ...)
 
 lr_plot_add_quantiles(object, bins = 4, conf_level = 0.95)
 
-lr_plot_add_dotplot_strips(object, color_by = NULL)
+lr_plot_add_dotplot_strips(object, color_by = NULL, panel = "both")
 
-lr_plot_add_jitter_strips(object, color_by = NULL)
+lr_plot_add_jitter_strips(object, color_by = NULL, panel = "both")
 
 lr_plot_add_boxplot(object, group_by)
 }
