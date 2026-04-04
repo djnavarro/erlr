@@ -94,4 +94,3 @@ lr_vpc_plot(mod, sim, group_by = exposure_1)
 lr_vpc_plot(mod, sim, group_by = sex)
 ```
 
-

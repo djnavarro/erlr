@@ -5,6 +5,7 @@
 #' @param exposure Exposure variable (unquoted)
 #' @param response Response variable (unquoted)
 #' @param bins Number of exposure bins (not counting placebo)
+#' @param panel Character string: "upper", "lower", or "both" (the default)
 #' @param conf_level Confidence level for Clopper-Pearson intervals
 #' @param color_by Variable (unquoted) to assign colors to strip plot dots
 #' @param group_by Variable (unquoted) to use to stratify exposure boxplots

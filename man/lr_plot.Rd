@@ -35,6 +35,8 @@ lr_plot_add_boxplot(object, group_by)
 
 \item{color_by}{Variable (unquoted) to assign colors to strip plot dots}
 
+\item{panel}{Character string: "upper", "lower", or "both" (the default)}
+
 \item{group_by}{Variable (unquoted) to use to stratify exposure boxplots}
 }
 \value{
