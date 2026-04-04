@@ -2,21 +2,31 @@
 % Please edit documentation in R/lr-plot.R
 \name{lr_plot}
 \alias{lr_plot}
+\alias{lr_plot_add_model}
 \alias{lr_plot_add_quantiles}
-\alias{lr_plot_add_dotplot_strips}
-\alias{lr_plot_add_jitter_strips}
+\alias{lr_plot_add_strips}
 \alias{lr_plot_add_boxplot}
 \title{Builds an exposure-response plot for a logistic regression model}
 \usage{
-lr_plot(data, exposure, response, ...)
+lr_plot(data, exposure, response, color_by = NULL, ...)
 
-lr_plot_add_quantiles(object, bins = 4, conf_level = 0.95)
+lr_plot_add_model(object, color_by = "inherit")
 
-lr_plot_add_dotplot_strips(object, color_by = NULL, panel = "both")
+lr_plot_add_quantiles(
+  object,
+  color_by = "inherit",
+  bins = 4,
+  conf_level = 0.95
+)
 
-lr_plot_add_jitter_strips(object, color_by = NULL, panel = "both")
+lr_plot_add_strips(
+  object,
+  color_by = "inherit",
+  style = "jitter",
+  panel = "both"
+)
 
-lr_plot_add_boxplot(object, group_by)
+lr_plot_add_boxplot(object, boxes_by, color_by = "inherit")
 }
 \arguments{
 \item{data}{Observed data}
@@ -24,6 +34,8 @@ lr_plot_add_boxplot(object, group_by)
 \item{exposure}{Exposure variable (unquoted)}
 
 \item{response}{Response variable (unquoted)}
+
+\item{color_by}{Variable (unquoted) to assign colors}
 
 \item{...}{Other arguments}
 
@@ -33,11 +45,11 @@ lr_plot_add_boxplot(object, group_by)
 
 \item{conf_level}{Confidence level for Clopper-Pearson intervals}
 
-\item{color_by}{Variable (unquoted) to assign colors to strip plot dots}
+\item{style}{Character string: "jitter" (the default) or "dotplot"}
 
 \item{panel}{Character string: "upper", "lower", or "both" (the default)}
 
-\item{group_by}{Variable (unquoted) to use to stratify exposure boxplots}
+\item{boxes_by}{Variable (unquoted) to use to stratify exposure boxplots}
 }
 \value{
 Plot object of class \code{erlr_plot}
@@ -48,23 +60,26 @@ Builds an exposure-response plot for a logistic regression model
 \examples{
 lr_data |> 
   lr_plot(exposure_1, response_1) |> 
-  lr_plot_add_quantiles(bins = 4) |> 
-  lr_plot_add_boxplot(group_by = quartile_1) |> 
+  lr_plot_add_model() |> 
+  lr_plot_add_quantiles() |> 
+  lr_plot_add_boxplot(quartile_1) |> 
   print()
 
 lr_data |> 
-  lr_plot(exposure_1, response_1) |> 
-  lr_plot_add_quantiles(bins = 4) |> 
-  lr_plot_add_jitter_strips(color_by = sex) |> 
-  lr_plot_add_boxplot(group_by = quartile_1) |> 
+  lr_plot(exposure_1, response_1, sex) |> 
+  lr_plot_add_model() |> 
+  lr_plot_add_quantiles() |> 
+  lr_plot_add_strips() |> 
+  lr_plot_add_boxplot(quartile_1) |> 
   print()  
 
 lr_data[1:70,] |> 
   lr_plot(exposure_1, response_1) |> 
-  lr_plot_add_quantiles(bins = 4) |> 
-  lr_plot_add_dotplot_strips(color_by = sex) |> 
-  lr_plot_add_boxplot(group_by = quartile_1) |> 
-  lr_plot_add_boxplot(group_by = sex) |> 
+  lr_plot_add_model() |> 
+  lr_plot_add_quantiles(bins = 6) |> 
+  lr_plot_add_strips(sex, style = "dotplot") |> 
+  lr_plot_add_boxplot(quartile_1) |> 
+  lr_plot_add_boxplot(sex) |> 
   print(box_height = 2)
 
 }
