@@ -8,6 +8,8 @@
 [![R-CMD-check](https://github.com/djnavarro/erlr/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/djnavarro/erlr/actions/workflows/R-CMD-check.yaml)
 [![Codecov test
 coverage](https://codecov.io/gh/djnavarro/erlr/graph/badge.svg)](https://app.codecov.io/gh/djnavarro/erlr)
+[![Lifecycle:
+experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 <!-- badges: end -->
 
 Provides estimation and plotting tools for exposure-response models that
@@ -123,8 +125,8 @@ lr_scm_history(mod2)
 #>   iteration attempt step       action term_tested model_tested   model_converged
 #>       <int>   <int> <chr>      <chr>  <chr>       <chr>          <lgl>          
 #> 1         0       0 base model <NA>   <NA>        response_1 ~ … TRUE           
-#> 2         1       1 backward   remove ~dose       response_1 ~ … TRUE           
-#> 3         1       2 backward   remove ~sex        response_1 ~ … TRUE           
+#> 2         1       1 backward   remove ~sex        response_1 ~ … TRUE           
+#> 3         1       2 backward   remove ~dose       response_1 ~ … TRUE           
 #> 4         2       3 backward   remove ~sex        response_1 ~ … TRUE           
 #> # ℹ 4 more variables: term_p_value <dbl>, model_aic <dbl>, model_bic <dbl>,
 #> #   model_updated <int>
@@ -139,16 +141,16 @@ sim
 #> # A tibble: 30,000 × 5
 #>    response_1 exposure_1 sex    row_id sim_id
 #>         <dbl>      <dbl> <fct>   <int>  <int>
-#>  1      0.858      148.  Male        1      1
-#>  2      0.746       79.7 Male        2      1
-#>  3      0.922      212.  Male        3      1
-#>  4      0.924      236.  Female      4      1
-#>  5      0.558        0   Male        5      1
-#>  6      0.679       71.0 Female      6      1
-#>  7      0.888      173.  Male        7      1
-#>  8      0.787      123.  Female      8      1
-#>  9      0.558        0   Male        9      1
-#> 10      0.852      165.  Female     10      1
+#>  1      0.853      148.  Male        1      1
+#>  2      0.752       79.7 Male        2      1
+#>  3      0.914      212.  Male        3      1
+#>  4      0.906      236.  Female      4      1
+#>  5      0.587        0   Male        5      1
+#>  6      0.668       71.0 Female      6      1
+#>  7      0.880      173.  Male        7      1
+#>  8      0.768      123.  Female      8      1
+#>  9      0.587        0   Male        9      1
+#> 10      0.831      165.  Female     10      1
 #> # ℹ 29,990 more rows
 
 lr_vpc_plot(mod, sim, group_by = exposure_1)
