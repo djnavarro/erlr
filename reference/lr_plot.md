@@ -5,15 +5,25 @@ Builds an exposure-response plot for a logistic regression model
 ## Usage
 
 ``` r
-lr_plot(data, exposure, response, ...)
+lr_plot(data, exposure, response, color_by = NULL, ...)
 
-lr_plot_add_quantiles(object, bins = 4, conf_level = 0.95)
+lr_plot_add_model(object, color_by = "inherit")
 
-lr_plot_add_dotplot_strips(object, color_by = NULL, panel = "both")
+lr_plot_add_quantiles(
+  object,
+  color_by = "inherit",
+  bins = 4,
+  conf_level = 0.95
+)
 
-lr_plot_add_jitter_strips(object, color_by = NULL, panel = "both")
+lr_plot_add_strips(
+  object,
+  color_by = "inherit",
+  style = "jitter",
+  panel = "both"
+)
 
-lr_plot_add_boxplot(object, group_by)
+lr_plot_add_boxplot(object, boxes_by, color_by = "inherit")
 ```
 
 ## Arguments
@@ -29,6 +39,10 @@ lr_plot_add_boxplot(object, group_by)
 - response:
 
   Response variable (unquoted)
+
+- color_by:
+
+  Variable (unquoted) to assign colors
 
 - ...:
 
@@ -46,15 +60,15 @@ lr_plot_add_boxplot(object, group_by)
 
   Confidence level for Clopper-Pearson intervals
 
-- color_by:
+- style:
 
-  Variable (unquoted) to assign colors to strip plot dots
+  Character string: "jitter" (the default) or "dotplot"
 
 - panel:
 
   Character string: "upper", "lower", or "both" (the default)
 
-- group_by:
+- boxes_by:
 
   Variable (unquoted) to use to stratify exposure boxplots
 
@@ -67,25 +81,28 @@ Plot object of class `erlr_plot`
 ``` r
 lr_data |> 
   lr_plot(exposure_1, response_1) |> 
-  lr_plot_add_quantiles(bins = 4) |> 
-  lr_plot_add_boxplot(group_by = quartile_1) |> 
+  lr_plot_add_model() |> 
+  lr_plot_add_quantiles() |> 
+  lr_plot_add_boxplot(quartile_1) |> 
   print()
 
 
 lr_data |> 
-  lr_plot(exposure_1, response_1) |> 
-  lr_plot_add_quantiles(bins = 4) |> 
-  lr_plot_add_jitter_strips(color_by = sex) |> 
-  lr_plot_add_boxplot(group_by = quartile_1) |> 
+  lr_plot(exposure_1, response_1, sex) |> 
+  lr_plot_add_model() |> 
+  lr_plot_add_quantiles() |> 
+  lr_plot_add_strips() |> 
+  lr_plot_add_boxplot(quartile_1) |> 
   print()  
 
 
 lr_data[1:70,] |> 
   lr_plot(exposure_1, response_1) |> 
-  lr_plot_add_quantiles(bins = 4) |> 
-  lr_plot_add_dotplot_strips(color_by = sex) |> 
-  lr_plot_add_boxplot(group_by = quartile_1) |> 
-  lr_plot_add_boxplot(group_by = sex) |> 
+  lr_plot_add_model() |> 
+  lr_plot_add_quantiles(bins = 6) |> 
+  lr_plot_add_strips(sex, style = "dotplot") |> 
+  lr_plot_add_boxplot(quartile_1) |> 
+  lr_plot_add_boxplot(sex) |> 
   print(box_height = 2)
 
 ```
