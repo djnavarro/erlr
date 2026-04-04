@@ -69,8 +69,6 @@ lr_data |>
   lr_plot_add_quantiles(bins = 4) |> 
   lr_plot_add_boxplot(group_by = quartile_1) |> 
   print()
-#> Warning: annotation$theme is not a valid theme.
-#> Please use `theme()` to construct themes.
 ```
 
 ![](reference/figures/README-lr-plot-1.png)
@@ -83,8 +81,6 @@ lr_data |>
   lr_plot_add_jitter_strips(color_by = sex) |> 
   lr_plot_add_boxplot(group_by = quartile_1) |> 
   print()  
-#> Warning: annotation$theme is not a valid theme.
-#> Please use `theme()` to construct themes.
 ```
 
 ![](reference/figures/README-lr-plot-2.png)
@@ -98,8 +94,6 @@ lr_data[1:70,] |>
   lr_plot_add_boxplot(group_by = quartile_1) |> 
   lr_plot_add_boxplot(group_by = sex) |> 
   print(box_height = 2)
-#> Warning: annotation$theme is not a valid theme.
-#> Please use `theme()` to construct themes.
 ```
 
 ![](reference/figures/README-lr-plot-3.png)
@@ -114,8 +108,8 @@ lr_scm_history(mod2)
 #>   iteration attempt step       action term_tested model_tested   model_converged
 #>       <int>   <int> <chr>      <chr>  <chr>       <chr>          <lgl>          
 #> 1         0       0 base model <NA>   <NA>        response_1 ~ … TRUE           
-#> 2         1       1 backward   remove ~sex        response_1 ~ … TRUE           
-#> 3         1       2 backward   remove ~dose       response_1 ~ … TRUE           
+#> 2         1       1 backward   remove ~dose       response_1 ~ … TRUE           
+#> 3         1       2 backward   remove ~sex        response_1 ~ … TRUE           
 #> 4         2       3 backward   remove ~sex        response_1 ~ … TRUE           
 #> # ℹ 4 more variables: term_p_value <dbl>, model_aic <dbl>, model_bic <dbl>,
 #> #   model_updated <int>
@@ -130,16 +124,16 @@ sim
 #> # A tibble: 30,000 × 5
 #>    response_1 exposure_1 sex    row_id sim_id
 #>         <dbl>      <dbl> <fct>   <int>  <int>
-#>  1      0.853      148.  Male        1      1
-#>  2      0.752       79.7 Male        2      1
-#>  3      0.914      212.  Male        3      1
-#>  4      0.906      236.  Female      4      1
-#>  5      0.587        0   Male        5      1
-#>  6      0.668       71.0 Female      6      1
-#>  7      0.880      173.  Male        7      1
-#>  8      0.768      123.  Female      8      1
-#>  9      0.587        0   Male        9      1
-#> 10      0.831      165.  Female     10      1
+#>  1      0.912      148.  Male        1      1
+#>  2      0.827       79.7 Male        2      1
+#>  3      0.955      212.  Male        3      1
+#>  4      0.918      236.  Female      4      1
+#>  5      0.660        0   Male        5      1
+#>  6      0.636       71.0 Female      6      1
+#>  7      0.932      173.  Male        7      1
+#>  8      0.760      123.  Female      8      1
+#>  9      0.660        0   Male        9      1
+#> 10      0.835      165.  Female     10      1
 #> # ℹ 29,990 more rows
 
 lr_vpc_plot(mod, sim, group_by = exposure_1)

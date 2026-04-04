@@ -5,7 +5,7 @@ Predictions and confidence intervals for logistic regression
 ## Usage
 
 ``` r
-lr_predict(object, newdata, conf_level = 0.95)
+lr_predict(object, newdata = NULL, conf_level = 0.95)
 ```
 
 ## Arguments
