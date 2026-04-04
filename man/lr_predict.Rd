@@ -4,7 +4,7 @@
 \alias{lr_predict}
 \title{Predictions and confidence intervals for logistic regression}
 \usage{
-lr_predict(object, newdata, conf_level = 0.95)
+lr_predict(object, newdata = NULL, conf_level = 0.95)
 }
 \arguments{
 \item{object}{A logistic regression model}
