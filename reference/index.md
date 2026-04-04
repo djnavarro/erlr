@@ -18,6 +18,10 @@
   : Builds an exposure-response plot for a logistic regression model
 - [`lr_predict()`](https://erlr.djnavarro.net/reference/lr_predict.md) :
   Predictions and confidence intervals for logistic regression
+- [`lr_scm_forward()`](https://erlr.djnavarro.net/reference/lr_scm.md)
+  [`lr_scm_backward()`](https://erlr.djnavarro.net/reference/lr_scm.md)
+  [`lr_scm_history()`](https://erlr.djnavarro.net/reference/lr_scm.md) :
+  Stepwise covariate modelling for logistic regression
 - [`lr_simulator()`](https://erlr.djnavarro.net/reference/lr_simulator.md)
   : Simulate from a logistic regression model
 - [`lr_vpc_plot()`](https://erlr.djnavarro.net/reference/lr_vpc_plot.md)
