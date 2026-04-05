@@ -129,11 +129,6 @@ lr_plot <- function(data, exposure, response, color_by = NULL) {
   object$style$theme <- function(object) {
     ggplot2::theme_bw() +
     ggplot2::theme(
-      panel.grid.major.y = ggplot2::element_blank(),
-      panel.grid.minor.y = ggplot2::element_blank(),
-      axis.title.y = ggplot2::element_blank(),
-      axis.ticks.y = ggplot2::element_blank(),
-      axis.text.y = ggplot2::element_blank(),
       panel.border = ggplot2::element_rect(fill = NA, color = "grey80", linewidth = .5),
     ) 
   }
@@ -316,6 +311,11 @@ lr_plot_add_boxplot <- function(object, boxes_by, color_by = "inherit") {
   object$part$box <- list()
   for(b in names(box_cols)) {
     object$part$box[[b]] <- list()
+    object$part$box[[b]]$y <- erlr_variable(
+      name = b,
+      label = get_label(object$data[[b]]) %||% b,
+      role = paste("box", b, sep = "_")
+    )
     object$part$box[[b]]$counts <- object$data |> 
       dplyr::summarise(
         n   = sum(!is.na(.data[[object$exposure$name]])),
@@ -456,7 +456,8 @@ apply_labels <- function(object) {
   if (!is.null(p$box)) {
     for(bb in names(p$box)) {
       p$box[[bb]] <- p$box[[bb]] + ggplot2::labs(
-        x = object$exposure$label
+        x = object$exposure$label,
+        y = object$part$box[[bb]]$y$label
       )
     }
   }
