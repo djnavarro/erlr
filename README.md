@@ -30,15 +30,6 @@ pak::pak("djnavarro/erlr")
 
 ``` r
 library(erlr)
-library(dplyr)
-#> 
-#> Attaching package: 'dplyr'
-#> The following objects are masked from 'package:stats':
-#> 
-#>     filter, lag
-#> The following objects are masked from 'package:base':
-#> 
-#>     intersect, setdiff, setequal, union
 library(tibble)
 
 lr_data
@@ -121,8 +112,8 @@ lr_scm_history(mod2)
 #>   iteration attempt step       action term_tested model_tested   model_converged
 #>       <int>   <int> <chr>      <chr>  <chr>       <chr>          <lgl>          
 #> 1         0       0 base model <NA>   <NA>        response_1 ~ … TRUE           
-#> 2         1       1 backward   remove ~dose       response_1 ~ … TRUE           
-#> 3         1       2 backward   remove ~sex        response_1 ~ … TRUE           
+#> 2         1       1 backward   remove ~sex        response_1 ~ … TRUE           
+#> 3         1       2 backward   remove ~dose       response_1 ~ … TRUE           
 #> 4         2       3 backward   remove ~sex        response_1 ~ … TRUE           
 #> # ℹ 4 more variables: term_p_value <dbl>, model_aic <dbl>, model_bic <dbl>,
 #> #   model_updated <int>
@@ -137,16 +128,16 @@ sim
 #> # A tibble: 30,000 × 5
 #>    response_1 exposure_1 sex    row_id sim_id
 #>         <dbl>      <dbl> <fct>   <int>  <int>
-#>  1      0.891      148.  Male        1      1
-#>  2      0.760       79.7 Male        2      1
-#>  3      0.952      212.  Male        3      1
-#>  4      0.940      236.  Female      4      1
-#>  5      0.510        0   Male        5      1
-#>  6      0.613       71.0 Female      6      1
-#>  7      0.921      173.  Male        7      1
-#>  8      0.767      123.  Female      8      1
-#>  9      0.510        0   Male        9      1
-#> 10      0.855      165.  Female     10      1
+#>  1      0.833      148.  Male        1      1
+#>  2      0.759       79.7 Male        2      1
+#>  3      0.885      212.  Male        3      1
+#>  4      0.860      236.  Female      4      1
+#>  5      0.647        0   Male        5      1
+#>  6      0.668       71.0 Female      6      1
+#>  7      0.855      173.  Male        7      1
+#>  8      0.742      123.  Female      8      1
+#>  9      0.647        0   Male        9      1
+#> 10      0.792      165.  Female     10      1
 #> # ℹ 29,990 more rows
 
 lr_vpc_plot(mod, sim, group_by = exposure_1)

@@ -37,7 +37,6 @@ pak::pak("djnavarro/erlr")
 #| label: lr-model
 
 library(erlr)
-library(dplyr)
 library(tibble)
 
 lr_data
