@@ -8,7 +8,7 @@
 \alias{lr_plot_add_boxplot}
 \title{Builds an exposure-response plot for a logistic regression model}
 \usage{
-lr_plot(data, exposure, response, color_by = NULL, ...)
+lr_plot(data, exposure, response, color_by = NULL, labels = NULL, ...)
 
 lr_plot_add_model(object, color_by = "inherit")
 
@@ -35,7 +35,9 @@ lr_plot_add_boxplot(object, boxes_by, color_by = "inherit")
 
 \item{response}{Response variable (unquoted)}
 
-\item{color_by}{Variable (unquoted) to assign colors}
+\item{color_by}{Stratification variable used for color and fill (unquoted)}
+
+\item{labels}{Named list of labels}
 
 \item{...}{Other arguments}
 
@@ -49,7 +51,7 @@ lr_plot_add_boxplot(object, boxes_by, color_by = "inherit")
 
 \item{panel}{Character string: "upper", "lower", or "both" (the default)}
 
-\item{boxes_by}{Variable (unquoted) to use to stratify exposure boxplots}
+\item{boxes_by}{Stratification variable to define groups for boxplots (unquoted)}
 }
 \value{
 Plot object of class \code{erlr_plot}

@@ -1,15 +1,15 @@
 
-test_that("lr_plot_setup creates an erlr_plot", {
-  expect_no_error(lr_plot_setup(lr_data, "exposure_1", "response_1", NULL))
-  plt <- lr_plot_setup(lr_data, "exposure_1", "response_1", NULL)
+test_that("lr_plot creates an erlr_plot", {
+  expect_no_error(lr_plot(lr_data, "exposure_1", "response_1", NULL))
+  plt <- lr_plot(lr_data, "exposure_1", "response_1", NULL)
   expect_s3_class(plt, "erlr_plot")
   expect_named(plt, c("data", "name", "label", "formula", "model", "plot", "info", "output"))
   expect_type(plt$data, "list")
   expect_type(plt$name, "list")
   expect_type(plt$label, "list")
   expect_named(plt$data, c("observed", "predicted"))
-  expect_named(plt$name, c("exposure", "response", "color"))
-  expect_named(plt$label, c("exposure", "response", "color"))
+  expect_named(plt$name, c("exposure", "response", "strata"))
+  expect_named(plt$label, c("exposure", "response", "strata"))
   expect_type(plt$plot, "list")
   expect_named(plt$plot, c("base", "strip", "box"))
   expect_type(plt$info, "list")
@@ -42,8 +42,8 @@ test_that("lr_add_boxplot creates a box ggplot", {
 
 test_that("lr_plot_add_strips style=jitter creates a strip ggplot", {
   base_plt <- lr_data |> lr_plot(exposure_1, response_1)
-  expect_no_error(base_plt |> lr_plot_add_strips(color_by = sex, style = "jitter"))
-  plt <- base_plt |> lr_plot_add_strips(color_by = sex, style = "jitter")
+  expect_no_error(base_plt |> lr_plot_add_strips(sex, style = "jitter"))
+  plt <- base_plt |> lr_plot_add_strips(sex, style = "jitter")
   expect_s3_class(plt, "erlr_plot")
   expect_true(inherits(plt$plot$strip$upper, "ggplot"))
   expect_true(inherits(plt$plot$strip$lower, "ggplot"))
@@ -52,8 +52,8 @@ test_that("lr_plot_add_strips style=jitter creates a strip ggplot", {
 
 test_that("lr_plot_add_strips style=dotplot creates a strip ggplot", {
   base_plt <- lr_data |> lr_plot(exposure_1, response_1)
-  expect_no_error(base_plt |> lr_plot_add_strips(color_by = sex, style = "dotplot"))
-  plt <- base_plt |> lr_plot_add_strips(color_by = sex, style = "dotplot")
+  expect_no_error(base_plt |> lr_plot_add_strips(sex, style = "dotplot"))
+  plt <- base_plt |> lr_plot_add_strips(sex, style = "dotplot")
   expect_s3_class(plt, "erlr_plot")
   expect_true(inherits(plt$plot$strip$upper, "ggplot"))
   expect_true(inherits(plt$plot$strip$lower, "ggplot"))

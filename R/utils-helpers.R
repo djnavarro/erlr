@@ -1,4 +1,11 @@
 
+`%||%` <- function(x, y) {
+  if (is.null(x)) return(y)
+  x
+}
+
+get_label <- function(x) attr(x, "label")
+set_label <- function(x, lbl) {attr(x, "label") <- lbl; x}
 
 # simple helpers ----------------------------------------------------------
 
@@ -20,7 +27,6 @@ logit <- function(x) log(x / (1-x))
 #' @export
 #' @rdname logit
 invlogit <- function(x) 1 / (1 + exp(-x))
-
 
 clopper_pearson <- function(x, n, conf_level = 0.95) {
   alpha <- 1 - conf_level

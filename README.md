@@ -138,16 +138,16 @@ sim
 #> # A tibble: 30,000 × 5
 #>    response_1 exposure_1 sex    row_id sim_id
 #>         <dbl>      <dbl> <fct>   <int>  <int>
-#>  1      0.898      148.  Male        1      1
-#>  2      0.804       79.7 Male        2      1
-#>  3      0.948      212.  Male        3      1
-#>  4      0.922      236.  Female      4      1
-#>  5      0.624        0   Male        5      1
-#>  6      0.649       71.0 Female      6      1
-#>  7      0.922      173.  Male        7      1
-#>  8      0.770      123.  Female      8      1
-#>  9      0.624        0   Male        9      1
-#> 10      0.843      165.  Female     10      1
+#>  1      0.893      148.  Male        1      1
+#>  2      0.808       79.7 Male        2      1
+#>  3      0.941      212.  Male        3      1
+#>  4      0.913      236.  Female      4      1
+#>  5      0.653        0   Male        5      1
+#>  6      0.665       71.0 Female      6      1
+#>  7      0.916      173.  Male        7      1
+#>  8      0.771      123.  Female      8      1
+#>  9      0.653        0   Male        9      1
+#> 10      0.837      165.  Female     10      1
 #> # ℹ 29,990 more rows
 
 lr_vpc_plot(mod, sim, group_by = exposure_1)

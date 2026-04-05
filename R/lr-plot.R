@@ -4,12 +4,13 @@
 #' @param data Observed data
 #' @param exposure Exposure variable (unquoted)
 #' @param response Response variable (unquoted)
+#' @param color_by Stratification variable used for color and fill (unquoted)
+#' @param boxes_by Stratification variable to define groups for boxplots (unquoted)
+#' @param labels Named list of labels
 #' @param bins Number of exposure bins (not counting placebo)
 #' @param style Character string: "jitter" (the default) or "dotplot"
 #' @param panel Character string: "upper", "lower", or "both" (the default)
 #' @param conf_level Confidence level for Clopper-Pearson intervals
-#' @param color_by Variable (unquoted) to assign colors
-#' @param boxes_by Variable (unquoted) to use to stratify exposure boxplots
 #' @param object Partially constructed plot (has S3 class `erlr_plot`)
 #' @param ... Other arguments
 #'
@@ -48,15 +49,52 @@ NULL
 
 #' @rdname lr_plot
 #' @export
-lr_plot <- function(data, exposure, response, color_by = NULL, ...) {
+lr_plot <- function(data, exposure, response, color_by = NULL, labels = NULL, ...) {
 
-  exp_name <- rlang::as_name(rlang::enquo(exposure))
-  rsp_name <- rlang::as_name(rlang::enquo(response))
-  clr_name <- rlang::enquo(color_by)
-  if (rlang::quo_is_null(clr_name)) { clr_name <- NULL
-  } else { clr_name <- rlang::as_name(clr_name) }
-  object <- lr_plot_setup(data, exp_name, rsp_name, clr_name, ...)
+  # empty plot object
+  object <- structure(
+    list(
+      data    = list(observed = NULL, predicted = NULL),
+      name    = list(exposure = NULL, response = NULL, strata = NULL),
+      label   = list(exposure = NULL, response = NULL, strata = NULL),
+      formula = NULL,
+      model   = NULL,
+      plot    = list(base = NULL, strip = list(lower = NULL, upper = NULL), box = list()),
+      info    = list(),
+      output  = NULL
+    ),
+    class = "erlr_plot"
+  )
 
+  # store observed data
+  object$data$observed <- data
+
+  # store variable names
+  object$name$exposure <- rlang::as_name(rlang::enquo(exposure))
+  object$name$response <- rlang::as_name(rlang::enquo(response)) 
+  strata_name <- rlang::enquo(color_by)
+  if (!rlang::quo_is_null(strata_name)) object$name$strata <- rlang::as_name(strata_name)
+  
+  # fallback for variable labels, using attributes
+  if (is.null(labels)) labels <- list(exposure = NULL, response = NULL, strata = NULL)
+  object$label$exposure <- labels$exposure %||% get_label(object$data$observed[[object$name$exposure]])
+  object$label$response <- labels$response %||% get_label(object$data$observed[[object$name$response]])
+  if (!is.null(object$name$strata)) {
+    object$label$strata <- labels$strata   %||% get_label(object$data$observed[[object$name$strata]])
+  }
+
+  # start populating the miscellaneous information store
+  object$info$exposure_min   <- min(object$data$observed[[object$name$exposure]], na.rm = TRUE)
+  object$info$exposure_max   <- max(object$data$observed[[object$name$exposure]], na.rm = TRUE)
+  object$info$exposure_prd   <- seq(object$info$exposure_min, object$info$exposure_max, length.out = 300)
+  object$info$format_p       <- scales::label_pvalue(accuracy = .001, add_p = TRUE)
+  object$info$format_percent <- scales::label_percent(accuracy = 1)
+  object$info$n_bins         <- NA_integer_
+  object$info$n_boxes        <- numeric()
+  object$info$quantiles      <- NULL
+  object$info$plot_size      <- numeric()
+
+  # initialise the base plot
   object$plot$base <- ggplot2::ggplot() +
     ggplot2::scale_y_continuous(
       oob = scales::oob_keep, 
@@ -80,96 +118,84 @@ lr_plot <- function(data, exposure, response, color_by = NULL, ...) {
   return(object)
 }
 
-lr_plot_setup <- function(data, exp_name, rsp_name, clr_name, ...) {
-
-  object <- list(
-    data    = list(observed = data, predicted = NULL),
-    name    = list(exposure = exp_name, response = rsp_name, color = clr_name),
-    label   = list(exposure = NULL, response = NULL, color = NULL),
-    formula = NULL,
-    model   = NULL,
-    plot    = list(base = NULL, strip = list(lower = NULL, upper = NULL), box = list()),
-    info    = list(),
-    output  = NULL
-  )
-
-  object$label <- list(
-    exposure = attr(object$data$observed[[object$name$exposure]], "label"),
-    response = attr(object$data$observed[[object$name$response]], "label"),
-    color = if (is.null(object$name$color)) NULL else attr(object$data$observed[[object$name$color]], "label")
-  )
-
-  object$info$exposure_min <- min(object$data$observed[[object$name$exposure]], na.rm = TRUE)
-  object$info$exposure_max <- max(object$data$observed[[object$name$exposure]], na.rm = TRUE)
-  object$info$exposure_prd <- seq(object$info$exposure_min, object$info$exposure_max, length.out = 100)
-  object$info$format_p  <- scales::label_pvalue(accuracy = .001, add_p = TRUE)
-  object$info$format_percent <- scales::label_percent(accuracy = 1)
-  object$info$n_bins    <- NA_integer_
-  object$info$n_boxes   <- numeric()
-  object$info$quantiles <- NULL
-  object$info$plot_size <- numeric()
-
-  return(structure(.Data = object, class = "erlr_plot"))
-}
-
 
 # model -----------------------------------------------------------------------
+
+lr_contextual_strata <- function(object, strata) {
+  strata_quo <- rlang::enquo(strata)
+  strata_val <- rlang::eval_tidy(
+    rlang::quo_set_env(
+      quo = strata_quo, 
+      env = rlang::as_environment(object$data$observed)
+    )
+  )
+  if (rlang::quo_is_null(strata_quo)) { # if strata is NULL
+    strata_name  <- NULL
+    strata_label <- NULL
+  } else if (rlang::quo_is_symbol(strata_quo)) { # if strata is a variable name
+    strata_name <- rlang::as_name(strata_quo)
+    strata_label <- get_label(object$data$observed[[strata_name]])
+  } else if (strata_val == "inherit") { # use cached value
+    strata_name <- object$name$strata
+    strata_label <- object$label$strata
+  } 
+  return(list(name = strata_name, label = strata_label))
+}
 
 #' @rdname lr_plot
 #' @export
 lr_plot_add_model <- function(object, color_by = "inherit") {
+
   if (!inherits(object, "erlr_plot")) rlang::abort("`object` must be an erlr plot object")
+  strata <- lr_contextual_strata(object, !!rlang::enquo(color_by))
 
-  clr_name <- rlang::enquo(color_by)
-  if (rlang::quo_is_symbol(clr_name)) { 
-    clr_name <- rlang::as_name(clr_name)
-    clr_label <- attr(object$data$observed[[clr_name]], "label")
-  } else if (color_by == "inherit") { 
-    clr_name <- object$name$color
-    clr_label <- object$label$color
-  } else {
-    clr_name <- NULL
-    clr_label <- NULL
-  }
-
+  # model formula
   fml <- paste(object$name$response, object$name$exposure, sep = " ~ ")
-  if (!is.null(clr_name)) fml <- paste(fml, clr_name, sep = " + ")
+  if (!is.null(strata$name)) fml <- paste(fml, strata$name, sep = " + ")
   object$formula <- stats::as.formula(fml)
 
+  # model
   object$model <- lr_model(
     formula = object$formula, 
     data = object$data$observed
   )
-  object$info$model_p <- summary(object$model)$coefficients[2, "Pr(>|z|)"]
 
-  pred_dat <- stats::setNames(data.frame(object$info$exposure_prd), object$name$exposure)
-  if (!is.null(clr_name)) {
+  # p-value is different depending on stratification: currently only supported when no strata
+  if (is.null(strata$name)) {
+    object$info$model_p <- summary(object$model)$coefficients[2, "Pr(>|z|)"]
+  }
+
+  # model predictions data
+  pred_dat <- stats::setNames(
+    data.frame(object$info$exposure_prd), 
+    object$name$exposure
+  )
+  if (!is.null(strata$name)) {
     pred_dat <- dplyr::cross_join(
       pred_dat, 
       stats::setNames(
-        data.frame(unique(object$data$observed[[clr_name]])), 
-        clr_name
+        data.frame(unique(object$data$observed[[strata$name]])), 
+        strata$name
       )
     )
   }
   object$data$predicted <- lr_predict(object$model, pred_dat)
 
   object$plot$base <- object$plot$base +  
-    lr_plot_model_ribbon(object, clr_name, clr_label) +
-    lr_plot_model_line(object, clr_name, clr_label) +
-    lr_plot_model_p(object, clr_name, clr_label)
+    lr_plot_model_ribbon(object, strata) +
+    lr_plot_model_line(object, strata) +
+    lr_plot_model_p(object, strata)
   
-  if (!is.null(clr_name)) {
+  if (!is.null(strata$name)) {
     object$plot$base <- object$plot$base +
-      ggplot2::labs(color = clr_label, fill = clr_label)
+      ggplot2::labs(color = strata$label, fill = strata$label)
   }
 
   return(object)
 }
 
-lr_plot_model_ribbon <- function(object, clr_name, clr_label) {
-
-  if (is.null(clr_name)) {
+lr_plot_model_ribbon <- function(object, strata) {
+  if (is.null(strata$name)) {
     return(
       ggplot2::geom_ribbon(
         data = object$data$predicted,
@@ -183,12 +209,11 @@ lr_plot_model_ribbon <- function(object, clr_name, clr_label) {
       )
     )
   }
-
   ggplot2::geom_ribbon(
     data = object$data$predicted,
     mapping = ggplot2::aes(
       x = .data[[object$name$exposure]],
-      fill = .data[[clr_name]],
+      fill = .data[[strata$name]],
       ymin = ci_lower,
       ymax = ci_upper
     ),
@@ -196,9 +221,8 @@ lr_plot_model_ribbon <- function(object, clr_name, clr_label) {
   )
 }
 
-lr_plot_model_line <- function(object, clr_name, clr_label) {
-
-  if (is.null(clr_name)) {
+lr_plot_model_line <- function(object, strata) {
+  if (is.null(strata$name)) {
     return(
       ggplot2::geom_path(
         data = object$data$predicted,
@@ -210,21 +234,20 @@ lr_plot_model_line <- function(object, clr_name, clr_label) {
       )
     )
   }
-
   ggplot2::geom_path(
     data = object$data$predicted,
     mapping = ggplot2::aes(
       x = .data[[object$name$exposure]], 
       y = fit_resp,
-      color = .data[[clr_name]]
+      color = .data[[strata$name]]
     ),
     linewidth = 1
   )
 }
 
-lr_plot_model_p <- function(object, clr_name, clr_label) {
+lr_plot_model_p <- function(object, strata) {
 
-  corner_dist <- object$data$predicted |> 
+  distance_from_corners <- object$data$predicted |> 
     dplyr::select(dplyr::all_of(c(object$name$exposure, "fit_resp"))) |> 
     dplyr::rename(y = fit_resp, x = .data[[object$name$exposure]]) |> 
     dplyr::mutate(
@@ -235,51 +258,77 @@ lr_plot_model_p <- function(object, clr_name, clr_label) {
       br_dist = sqrt((1-x)^2 + y^2)
     ) |> 
     dplyr::summarise(
-      tl = min(tl_dist, na.rm = TRUE),
-      tr = min(tr_dist, na.rm = TRUE),
-      bl = min(bl_dist, na.rm = TRUE),
-      br = min(br_dist, na.rm = TRUE)
+      top_left     = min(tl_dist, na.rm = TRUE),
+      top_right    = min(tr_dist, na.rm = TRUE),
+      bottom_left  = min(bl_dist, na.rm = TRUE),
+      bottom_right = min(br_dist, na.rm = TRUE)
     ) |> 
     unlist()
 
-  corner_p <- names(sort(corner_dist)[4])
+  which_corner <- names(sort(distance_from_corners)[4])
   pval <- tibble::tibble(
     lbl = object$info$format_p(object$info$model_p), 
-    cnr = corner_p
+    cnr = which_corner
   )
 
-  if (corner_p == "tl") {
+  if (which_corner == "top_left") {
+    return(
+      ggplot2::geom_label(
+        data = pval,
+        mapping = ggplot2::aes(
+          x = I(.05), 
+          y = I(.95), 
+          label = lbl
+        ),
+        hjust = 0, 
+        vjust = 1
+      )
+    )
+  }
+
+  if (which_corner == "top_right") {
+    return(
+      ggplot2::geom_label(
+        data = pval,
+        mapping = ggplot2::aes(
+          x = I(.95), 
+          y = I(.95), 
+          label = lbl
+        ),
+        hjust = 1, 
+        vjust = 1
+      )
+    )
+  }
+
+  if (which_corner == "bottom_left") {
     return(ggplot2::geom_label(
       data = pval,
-      mapping = ggplot2::aes(x = I(.05), y = I(.95), label = lbl),
-      hjust = 0, vjust = 1
+      mapping = ggplot2::aes(
+        x = I(.05), 
+        y = I(.05), 
+        label = lbl
+      ),
+      hjust = 0, 
+      vjust = 0
     ))
   }
 
-  if (corner_p == "tr") {
-    return(ggplot2::geom_label(
-      data = pval,
-      mapping = ggplot2::aes(x = I(.95), y = I(.95), label = lbl),
-      hjust = 1, vjust = 1
-    ))
-  }
+  if (which_corner == "bottom_right") {
+    return(
+      ggplot2::geom_label(
+        data = pval,
+        mapping = ggplot2::aes(
+          x = I(.95), 
+          y = I(.05), 
+          label = lbl
+        ),
+        hjust = 1, 
+        vjust = 0
+      )
+    )
+  }   
 
-  if (corner_p == "bl") {
-    return(ggplot2::geom_label(
-      data = pval,
-      mapping = ggplot2::aes(x = I(.05), y = I(.05), label = lbl),
-      hjust = 0, vjust = 0
-    ))
-  }
-
-  if (corner_p == "br") {
-    return(ggplot2::geom_label(
-      data = pval,
-      mapping = ggplot2::aes(x = I(.95), y = I(.05), label = lbl),
-      hjust = 1, vjust = 0
-    ))
-  }
-      
 }
 
 
@@ -288,19 +337,9 @@ lr_plot_model_p <- function(object, clr_name, clr_label) {
 #' @rdname lr_plot
 #' @export
 lr_plot_add_quantiles <- function(object, color_by = "inherit", bins = 4, conf_level = 0.95) {
-  if (!inherits(object, "erlr_plot")) rlang::abort("`object` must be an erlr plot object")
 
-  clr_name <- rlang::enquo(color_by)
-  if (rlang::quo_is_symbol(clr_name)) { 
-    clr_name <- rlang::as_name(clr_name)
-    clr_label <- attr(object$data$observed[[clr_name]], "label")
-  } else if (color_by == "inherit") { 
-    clr_name <- object$name$color
-    clr_label <- object$label$color
-  } else {
-    clr_name <- NULL
-    clr_label <- NULL
-  }
+  if (!inherits(object, "erlr_plot")) rlang::abort("`object` must be an erlr plot object")
+  strata <- lr_contextual_strata(object, !!rlang::enquo(color_by))
 
   object$info$n_bins <- bins
   object$data$observed[[".bins"]] <- cut_exposure_quantile(
@@ -308,7 +347,8 @@ lr_plot_add_quantiles <- function(object, color_by = "inherit", bins = 4, conf_l
     n = object$info$n_bins
   )
 
-  if (is.null(clr_name)) {
+  # unstratified version
+  if (is.null(strata$name)) {
 
     object$info$quantiles <- object$data$observed |> 
       dplyr::summarise(
@@ -348,7 +388,8 @@ lr_plot_add_quantiles <- function(object, color_by = "inherit", bins = 4, conf_l
 
   }
 
-  if (!is.null(clr_name)) {
+  # stratified version
+  if (!is.null(strata$name)) {
 
     object$info$quantiles <- object$data$observed |> 
       dplyr::summarise(
@@ -362,7 +403,7 @@ lr_plot_add_quantiles <- function(object, color_by = "inherit", bins = 4, conf_l
         y_lwr_lbl = ci_lower - 0.05,
         y_upr_lbl = ci_upper + 0.05,
         y_lbl = dplyr::if_else(y_lwr_lbl > 1 - y_upr_lbl, y_lwr_lbl, y_upr_lbl),
-        .by = c(".bins", clr_name)
+        .by = c(".bins", strata$name)
       )
     
     object$plot$base <- object$plot$base + 
@@ -371,7 +412,7 @@ lr_plot_add_quantiles <- function(object, color_by = "inherit", bins = 4, conf_l
         mapping = ggplot2::aes(
           x = x_mid, 
           y = y_mid,
-          color = .data[[clr_name]]
+          color = .data[[strata$name]]
         ),
         inherit.aes = FALSE,
         size = 2
@@ -382,7 +423,7 @@ lr_plot_add_quantiles <- function(object, color_by = "inherit", bins = 4, conf_l
           x = x_mid, 
           ymin = ci_lower, 
           ymax = ci_upper,
-          color = .data[[clr_name]]  
+          color = .data[[strata$name]]  
         ),
         inherit.aes = FALSE,
         width = 0.025 * (object$info$exposure_max - object$info$exposure_min)
@@ -406,36 +447,29 @@ lr_plot_add_quantiles <- function(object, color_by = "inherit", bins = 4, conf_l
 #' @rdname lr_plot
 #' @export
 lr_plot_add_strips <- function(object, color_by = "inherit", style = "jitter", panel = "both") {
+
   if (!inherits(object, "erlr_plot")) rlang::abort("`object` must be an erlr plot object")
+  strata <- lr_contextual_strata(object, !!rlang::enquo(color_by))
   
-  clr_name <- rlang::enquo(color_by)
-  if (rlang::quo_is_symbol(clr_name)) { 
-    clr_name <- rlang::as_name(clr_name)
-    clr_label <- attr(object$data$observed[[clr_name]], "label")
-  } else if (color_by == "inherit") { 
-    clr_name <- object$name$color
-    clr_label <- object$label$color
-  } else {
-    clr_name <- NULL
-    clr_label <- NULL
-  }
   if (style == "jitter") lr_strip <- lr_strip_jitter
   if (style == "dotplot") lr_strip <- lr_strip_dot
 
-  if (panel %in% c("lower", "both")) object$plot$strip$lower <- lr_strip(object, clr_name, clr_label, "lower")
-  if (panel %in% c("upper", "both")) object$plot$strip$upper <- lr_strip(object, clr_name, clr_label, "upper")
+  if (panel %in% c("lower", "both")) object$plot$strip$lower <- lr_strip(object, strata, "lower")
+  if (panel %in% c("upper", "both")) object$plot$strip$upper <- lr_strip(object, strata, "upper")
   return(object)
 }
 
-lr_strip_dot <- function(object, clr_name, clr_label, panel) {
+lr_strip_dot <- function(object, strata, panel) {
+
   is_upr <- panel == "upper"
   if (is_upr)  dd <- object$data$observed |> dplyr::filter(.data[[object$name$response]] == 1)
   if (!is_upr) dd <- object$data$observed |> dplyr::filter(.data[[object$name$response]] == 0)
-  if (!is.null(clr_name)) {
-    attr(dd[[clr_name]], "label") <- clr_label
+  
+  if (!is.null(strata$name)) {
+    set_label(dd[[strata$name]], strata$label)
     plt_mapping <- ggplot2::aes(
       x = .data[[object$name$exposure]], 
-      fill = .data[[clr_name]]
+      fill = .data[[strata$name]]
     )
   } else {
     plt_mapping <- ggplot2::aes(x = .data[[object$name$exposure]])
@@ -468,20 +502,23 @@ lr_strip_dot <- function(object, clr_name, clr_label, panel) {
     NULL
 }
 
-lr_strip_jitter <- function(object, clr_name, clr_label, panel) {
+lr_strip_jitter <- function(object, strata, panel) {
+
   is_upr <- panel == "upper"
   if (is_upr)  dd <- object$data$observed |> dplyr::filter(.data[[object$name$response]] == 1)
   if (!is_upr) dd <- object$data$observed |> dplyr::filter(.data[[object$name$response]] == 0)
-  if (!is.null(clr_name)) {
-    attr(dd[[clr_name]], "label") <- clr_label
+  
+  if (!is.null(strata$name)) {
+    set_label(dd[[strata$name]], strata$label)
     plt_mapping <- ggplot2::aes(
       x = .data[[object$name$exposure]], 
       y = 0,
-      color = .data[[clr_name]]
+      color = .data[[strata$name]]
     )
   } else {
     plt_mapping <- ggplot2::aes(x = .data[[object$name$exposure]], y = 0)
   }
+
   dd |> 
     ggplot2::ggplot() +
     ggplot2::geom_jitter(
@@ -513,19 +550,9 @@ lr_strip_jitter <- function(object, clr_name, clr_label, panel) {
 #' @rdname lr_plot
 #' @export
 lr_plot_add_boxplot <- function(object, boxes_by, color_by = "inherit") {
-  if (!inherits(object, "erlr_plot")) rlang::abort("`object` must be an erlr plot object")
 
-  clr_name <- rlang::enquo(color_by)
-  if (rlang::quo_is_symbol(clr_name)) { 
-    clr_name <- rlang::as_name(clr_name)
-    clr_label <- attr(object$data$observed[[clr_name]], "label")
-  } else if (is.character(color_by) && color_by[1] == "inherit") { 
-    clr_name <- object$name$color
-    clr_label <- object$label$color
-  } else {
-    clr_name <- NULL
-    clr_label <- NULL
-  }
+  if (!inherits(object, "erlr_plot")) rlang::abort("`object` must be an erlr plot object")
+  strata <- lr_contextual_strata(object, !!rlang::enquo(color_by))
 
   boxby_name <- rlang::as_name(rlang::enquo(boxes_by))
 
@@ -547,7 +574,7 @@ lr_plot_add_boxplot <- function(object, boxes_by, color_by = "inherit") {
   levels(plt_data[[boxby_name]]) <- cnt$lvl
   attr(plt_data[[boxby_name]], "label") <- ll
 
-  if (is.null(clr_name)) {
+  if (is.null(strata$name)) {
     plt_mapping <- ggplot2::aes(
       x = .data[[object$name$exposure]], 
       y = .data[[boxby_name]]
@@ -556,7 +583,7 @@ lr_plot_add_boxplot <- function(object, boxes_by, color_by = "inherit") {
     plt_mapping <- ggplot2::aes(
       x = .data[[object$name$exposure]], 
       y = .data[[boxby_name]],
-      fill = .data[[clr_name]]
+      fill = .data[[strata$name]]
     )
   }
 
@@ -571,8 +598,8 @@ lr_plot_add_boxplot <- function(object, boxes_by, color_by = "inherit") {
     ggplot2::theme(panel.border = ggplot2::element_rect(fill = NA, color = "grey80", linewidth = .5)) +
     NULL
 
-  if (!is.null(clr_name)) {
-    fml <- stats::as.formula(paste0(clr_name, " ~ ."))
+  if (!is.null(strata$name)) {
+    fml <- stats::as.formula(paste0(strata$name, " ~ ."))
     plt <- plt + ggplot2::facet_grid(fml)
   }
 
