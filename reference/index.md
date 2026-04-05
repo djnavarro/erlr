@@ -11,6 +11,7 @@
 - [`lr_model()`](https://erlr.djnavarro.net/reference/lr_model.md) : Fit
   a logistic regression function
 - [`lr_plot()`](https://erlr.djnavarro.net/reference/lr_plot.md)
+  [`lr_plot_style()`](https://erlr.djnavarro.net/reference/lr_plot.md)
   [`lr_plot_add_model()`](https://erlr.djnavarro.net/reference/lr_plot.md)
   [`lr_plot_add_quantiles()`](https://erlr.djnavarro.net/reference/lr_plot.md)
   [`lr_plot_add_strips()`](https://erlr.djnavarro.net/reference/lr_plot.md)
