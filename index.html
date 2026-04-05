@@ -156,8 +156,8 @@
 <span><span class="co">#&gt;   iteration attempt step       action term_tested model_tested   model_converged</span></span>
 <span><span class="co">#&gt;       &lt;int&gt;   &lt;int&gt; &lt;chr&gt;      &lt;chr&gt;  &lt;chr&gt;       &lt;chr&gt;          &lt;lgl&gt;          </span></span>
 <span><span class="co">#&gt; 1         0       0 base model &lt;NA&gt;   &lt;NA&gt;        response_1 ~ … TRUE           </span></span>
-<span><span class="co">#&gt; 2         1       1 backward   remove ~sex        response_1 ~ … TRUE           </span></span>
-<span><span class="co">#&gt; 3         1       2 backward   remove ~dose       response_1 ~ … TRUE           </span></span>
+<span><span class="co">#&gt; 2         1       1 backward   remove ~dose       response_1 ~ … TRUE           </span></span>
+<span><span class="co">#&gt; 3         1       2 backward   remove ~sex        response_1 ~ … TRUE           </span></span>
 <span><span class="co">#&gt; 4         2       3 backward   remove ~sex        response_1 ~ … TRUE           </span></span>
 <span><span class="co">#&gt; # ℹ 4 more variables: term_p_value &lt;dbl&gt;, model_aic &lt;dbl&gt;, model_bic &lt;dbl&gt;,</span></span>
 <span><span class="co">#&gt; #   model_updated &lt;int&gt;</span></span></code></pre></div>
@@ -172,16 +172,16 @@
 <span><span class="co">#&gt; # A tibble: 30,000 × 5</span></span>
 <span><span class="co">#&gt;    response_1 exposure_1 sex    row_id sim_id</span></span>
 <span><span class="co">#&gt;         &lt;dbl&gt;      &lt;dbl&gt; &lt;fct&gt;   &lt;int&gt;  &lt;int&gt;</span></span>
-<span><span class="co">#&gt;  1      0.889      148.  Male        1      1</span></span>
-<span><span class="co">#&gt;  2      0.801       79.7 Male        2      1</span></span>
-<span><span class="co">#&gt;  3      0.938      212.  Male        3      1</span></span>
-<span><span class="co">#&gt;  4      0.912      236.  Female      4      1</span></span>
-<span><span class="co">#&gt;  5      0.645        0   Male        5      1</span></span>
-<span><span class="co">#&gt;  6      0.666       71.0 Female      6      1</span></span>
-<span><span class="co">#&gt;  7      0.912      173.  Male        7      1</span></span>
-<span><span class="co">#&gt;  8      0.771      123.  Female      8      1</span></span>
-<span><span class="co">#&gt;  9      0.645        0   Male        9      1</span></span>
-<span><span class="co">#&gt; 10      0.836      165.  Female     10      1</span></span>
+<span><span class="co">#&gt;  1      0.891      148.  Male        1      1</span></span>
+<span><span class="co">#&gt;  2      0.760       79.7 Male        2      1</span></span>
+<span><span class="co">#&gt;  3      0.952      212.  Male        3      1</span></span>
+<span><span class="co">#&gt;  4      0.940      236.  Female      4      1</span></span>
+<span><span class="co">#&gt;  5      0.510        0   Male        5      1</span></span>
+<span><span class="co">#&gt;  6      0.613       71.0 Female      6      1</span></span>
+<span><span class="co">#&gt;  7      0.921      173.  Male        7      1</span></span>
+<span><span class="co">#&gt;  8      0.767      123.  Female      8      1</span></span>
+<span><span class="co">#&gt;  9      0.510        0   Male        9      1</span></span>
+<span><span class="co">#&gt; 10      0.855      165.  Female     10      1</span></span>
 <span><span class="co">#&gt; # ℹ 29,990 more rows</span></span>
 <span></span>
 <span><span class="fu"><a href="reference/lr_vpc_plot.html">lr_vpc_plot</a></span><span class="op">(</span><span class="va">mod</span>, <span class="va">sim</span>, group_by <span class="op">=</span> <span class="va">exposure_1</span><span class="op">)</span></span></code></pre></div>
