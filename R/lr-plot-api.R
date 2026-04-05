@@ -18,26 +18,26 @@
 #' @examples
 #' lr_data |> 
 #'   lr_plot(exposure_1, response_1) |> 
-#'   lr_plot_add_model() |> 
-#'   lr_plot_add_quantiles() |> 
-#'   lr_plot_add_boxplot(quartile_1) |> 
+#'   lr_plot_show_model() |> 
+#'   lr_plot_show_quantiles() |> 
+#'   lr_plot_show_groups(quartile_1) |> 
 #'   print()
 #' 
 #' lr_data |> 
 #'   lr_plot(exposure_1, response_1, sex) |> 
-#'   lr_plot_add_model() |> 
-#'   lr_plot_add_quantiles() |> 
-#'   lr_plot_add_strips() |> 
-#'   lr_plot_add_boxplot(quartile_1) |> 
+#'   lr_plot_show_model() |> 
+#'   lr_plot_show_quantiles() |> 
+#'   lr_plot_show_datastrip() |> 
+#'   lr_plot_show_groups(quartile_1) |> 
 #'   print()  
 #' 
 #' lr_data[1:70,] |> 
 #'   lr_plot(exposure_1, response_1) |> 
-#'   lr_plot_add_model() |> 
-#'   lr_plot_add_quantiles(bins = 6) |> 
-#'   lr_plot_add_strips(sex, style = "dotplot") |> 
-#'   lr_plot_add_boxplot(quartile_1) |> 
-#'   lr_plot_add_boxplot(sex) |> 
+#'   lr_plot_show_model() |> 
+#'   lr_plot_show_quantiles(bins = 6) |> 
+#'   lr_plot_show_datastrip(sex, style = "dotplot") |> 
+#'   lr_plot_show_groups(quartile_1) |> 
+#'   lr_plot_show_groups(sex) |> 
 #'   print(box_height = 2)
 #' 
 #' @name lr_plot
@@ -177,7 +177,7 @@ contextual_strata <- function(object, strata, context) {
 
 #' @rdname lr_plot
 #' @export
-lr_plot_add_model <- function(object, color_by = "inherit", conf_level = 0.95) {
+lr_plot_show_model <- function(object, color_by = "inherit", conf_level = 0.95) {
 
   if (!inherits(object, "erlr_plot")) rlang::abort("`object` must be an erlr plot object")
   object$part$model <- list()
@@ -236,7 +236,7 @@ model_predictions <- function(object) {
 
 #' @rdname lr_plot
 #' @export
-lr_plot_add_quantiles <- function(object, color_by = "inherit", bins = 4, conf_level = 0.95) {
+lr_plot_show_quantiles <- function(object, color_by = "inherit", bins = 4, conf_level = 0.95) {
 
   if (!inherits(object, "erlr_plot")) rlang::abort("`object` must be an erlr plot object")
   object$strata$quantile <- contextual_strata(object, {{color_by}}, "quantile_strata")
@@ -278,7 +278,7 @@ strata_values <- function(data, name) {
 
 #' @rdname lr_plot
 #' @export
-lr_plot_add_strips <- function(object, color_by = "inherit", style = "jitter", panel = "both") {
+lr_plot_show_datastrip <- function(object, color_by = "inherit", style = "jitter", panel = "both") {
 
   if (!inherits(object, "erlr_plot")) rlang::abort("`object` must be an erlr plot object")
   object$strata$strip <- contextual_strata(object, {{color_by}}, "strip_strata")
@@ -302,7 +302,7 @@ lr_plot_add_strips <- function(object, color_by = "inherit", style = "jitter", p
 
 #' @rdname lr_plot
 #' @export
-lr_plot_add_boxplot <- function(object, boxes_by, color_by = "inherit") {
+lr_plot_show_groups <- function(object, boxes_by, color_by = "inherit") {
 
   if (!inherits(object, "erlr_plot")) rlang::abort("`object` must be an erlr plot object")
   object$strata$box <- contextual_strata(object, {{color_by}}, "box_strata")

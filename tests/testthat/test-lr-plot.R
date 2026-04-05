@@ -9,17 +9,17 @@ test_that("lr_plot creates an erlr_plot (all parts)", {
   expect_no_error(
     lr_data |> 
       lr_plot(exposure_1, response_1) |> 
-      lr_plot_add_model() |> 
-      lr_plot_add_quantiles()  |> 
-      lr_plot_add_strips()  |> 
-      lr_plot_add_boxplot(c(quartile_1, dose))
+      lr_plot_show_model() |> 
+      lr_plot_show_quantiles()  |> 
+      lr_plot_show_datastrip()  |> 
+      lr_plot_show_groups(c(quartile_1, dose))
   )
   plt <- lr_data |> 
     lr_plot(exposure_1, response_1) |> 
-    lr_plot_add_model() |> 
-    lr_plot_add_quantiles()  |> 
-    lr_plot_add_strips()  |> 
-    lr_plot_add_boxplot(c(quartile_1, dose))
+    lr_plot_show_model() |> 
+    lr_plot_show_quantiles()  |> 
+    lr_plot_show_datastrip()  |> 
+    lr_plot_show_groups(c(quartile_1, dose))
   expect_s3_class(plt, "erlr_plot")
 })
 
@@ -27,36 +27,36 @@ test_that("lr_plot creates an erlr_plot (all parts, all strata)", {
   expect_no_error(
     lr_data |> 
       lr_plot(exposure_1, response_1, sex) |> 
-      lr_plot_add_model() |> 
-      lr_plot_add_quantiles()  |> 
-      lr_plot_add_strips()  |> 
-      lr_plot_add_boxplot(c(quartile_1, dose))
+      lr_plot_show_model() |> 
+      lr_plot_show_quantiles()  |> 
+      lr_plot_show_datastrip()  |> 
+      lr_plot_show_groups(c(quartile_1, dose))
   )
   plt <- lr_data |> 
     lr_plot(exposure_1, response_1, sex) |> 
-    lr_plot_add_model() |> 
-    lr_plot_add_quantiles()  |> 
-    lr_plot_add_strips()  |> 
-    lr_plot_add_boxplot(c(quartile_1, dose))
+    lr_plot_show_model() |> 
+    lr_plot_show_quantiles()  |> 
+    lr_plot_show_datastrip()  |> 
+    lr_plot_show_groups(c(quartile_1, dose))
   expect_s3_class(plt, "erlr_plot")
 })
 
 plt1 <- lr_data |>
   lr_plot(exposure_1, response_1) |> 
-  lr_plot_add_model() 
+  lr_plot_show_model() 
 
 plt2 <- lr_data |> 
   lr_plot(exposure_1, response_1) |> 
-  lr_plot_add_model() |> 
-  lr_plot_add_quantiles()  |> 
-  lr_plot_add_strips()
+  lr_plot_show_model() |> 
+  lr_plot_show_quantiles()  |> 
+  lr_plot_show_datastrip()
 
 plt3 <- lr_data |> 
   lr_plot(exposure_1, response_1) |> 
-  lr_plot_add_model() |> 
-  lr_plot_add_quantiles()  |> 
-  lr_plot_add_strips()  |> 
-  lr_plot_add_boxplot(c(quartile_1, dose))
+  lr_plot_show_model() |> 
+  lr_plot_show_quantiles()  |> 
+  lr_plot_show_datastrip()  |> 
+  lr_plot_show_groups(c(quartile_1, dose))
 
 test_that("lr_plot_build does not error", {
   expect_no_error(lr_plot_build(plt1))

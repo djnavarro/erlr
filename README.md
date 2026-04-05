@@ -68,9 +68,9 @@ mod
 ``` r
 lr_data |> 
   lr_plot(exposure_1, response_1) |> 
-  lr_plot_add_model() |> 
-  lr_plot_add_quantiles(bins = 4) |> 
-  lr_plot_add_boxplot(quartile_1) |> 
+  lr_plot_show_model() |> 
+  lr_plot_show_quantiles(bins = 4) |> 
+  lr_plot_show_groups(quartile_1) |> 
   plot()
 ```
 
@@ -80,10 +80,10 @@ lr_data |>
 
 lr_data |> 
   lr_plot(exposure_1, response_1) |> 
-  lr_plot_add_model() |> 
-  lr_plot_add_quantiles(bins = 4) |> 
-  lr_plot_add_strips(sex) |> 
-  lr_plot_add_boxplot(quartile_1) |> 
+  lr_plot_show_model() |> 
+  lr_plot_show_quantiles(bins = 4) |> 
+  lr_plot_show_datastrip(sex) |> 
+  lr_plot_show_groups(quartile_1) |> 
   plot()  
 ```
 
@@ -93,10 +93,10 @@ lr_data |>
 
 lr_data[1:70,] |> 
   lr_plot(exposure_1, response_1) |> 
-  lr_plot_add_model() |> 
-  lr_plot_add_quantiles(bins = 4) |> 
-  lr_plot_add_strips(sex, style = "dotplot") |> 
-  lr_plot_add_boxplot(c(quartile_1, sex)) |> 
+  lr_plot_show_model() |> 
+  lr_plot_show_quantiles(bins = 4) |> 
+  lr_plot_show_datastrip(sex, style = "dotplot") |> 
+  lr_plot_show_groups(c(quartile_1, sex)) |> 
   plot()
 ```
 
