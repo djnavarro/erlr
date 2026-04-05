@@ -80,7 +80,7 @@ lr_data |>
   lr_plot_add_model() |> 
   lr_plot_add_quantiles(bins = 4) |> 
   lr_plot_add_boxplot(quartile_1) |> 
-  print()
+  plot()
 ```
 
 <img src="man/figures/README-lr-plot-1.png" width="100%" />
@@ -93,7 +93,7 @@ lr_data |>
   lr_plot_add_quantiles(bins = 4) |> 
   lr_plot_add_strips(sex) |> 
   lr_plot_add_boxplot(quartile_1) |> 
-  print()  
+  plot()  
 ```
 
 <img src="man/figures/README-lr-plot-2.png" width="100%" />
@@ -105,9 +105,8 @@ lr_data[1:70,] |>
   lr_plot_add_model() |> 
   lr_plot_add_quantiles(bins = 4) |> 
   lr_plot_add_strips(sex, style = "dotplot") |> 
-  lr_plot_add_boxplot(quartile_1) |> 
-  lr_plot_add_boxplot(sex) |> 
-  print(box_height = 2)
+  lr_plot_add_boxplot(c(quartile_1, sex)) |> 
+  plot()
 ```
 
 <img src="man/figures/README-lr-plot-3.png" width="100%" />
@@ -138,16 +137,16 @@ sim
 #> # A tibble: 30,000 × 5
 #>    response_1 exposure_1 sex    row_id sim_id
 #>         <dbl>      <dbl> <fct>   <int>  <int>
-#>  1      0.893      148.  Male        1      1
-#>  2      0.808       79.7 Male        2      1
-#>  3      0.941      212.  Male        3      1
-#>  4      0.913      236.  Female      4      1
-#>  5      0.653        0   Male        5      1
-#>  6      0.665       71.0 Female      6      1
-#>  7      0.916      173.  Male        7      1
+#>  1      0.889      148.  Male        1      1
+#>  2      0.801       79.7 Male        2      1
+#>  3      0.938      212.  Male        3      1
+#>  4      0.912      236.  Female      4      1
+#>  5      0.645        0   Male        5      1
+#>  6      0.666       71.0 Female      6      1
+#>  7      0.912      173.  Male        7      1
 #>  8      0.771      123.  Female      8      1
-#>  9      0.653        0   Male        9      1
-#> 10      0.837      165.  Female     10      1
+#>  9      0.645        0   Male        9      1
+#> 10      0.836      165.  Female     10      1
 #> # ℹ 29,990 more rows
 
 lr_vpc_plot(mod, sim, group_by = exposure_1)

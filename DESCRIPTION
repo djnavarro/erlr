@@ -1,6 +1,6 @@
 Package: erlr
 Title: Exposure-Response Tools for Logistic Regression Models
-Version: 0.0.8.9000
+Version: 0.0.9.9000
 Authors@R: 
     person("Danielle", "Navarro", , "djnavarro@protonmail.com", role = c("aut", "cre", "cph"), comment = c(ORCID = "0000-0001-7648-6578"))
 Description:
@@ -19,7 +19,8 @@ Imports:
     rlang,
     scales,
     stats,
-    tibble
+    tibble,
+    tidyselect
 Suggests: 
     knitr,
     rmarkdown,

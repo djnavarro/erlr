@@ -15,6 +15,7 @@ utils::globalVariables(c(
   "y",
   "x",
   "lbl",
+  "lvl",
   "exposure_1",
   "tl_dist",
   "tr_dist",
