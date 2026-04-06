@@ -77,11 +77,11 @@ lr_data |>
   plot()  
 
 lr_data |> 
-  lr_plot(exposure_1, response_1) |> 
-  lr_plot_show_model() |> 
+  lr_plot(exposure_1, response_1, color_by = sex) |> 
+  lr_plot_show_model(use_color = FALSE) |> 
   lr_plot_show_quantiles(bins = 3) |> 
-  lr_plot_show_datastrip(sex) |> 
-  lr_plot_show_groups(c(quartile_1, sex)) |> 
+  lr_plot_show_datastrip() |> 
+  lr_plot_show_groups(group_by = c(quartile_1, dose), use_color = FALSE) |> 
   plot()
 
 }

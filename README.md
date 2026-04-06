@@ -69,8 +69,8 @@ mod
 lr_data |> 
   lr_plot(exposure_1, response_1) |> 
   lr_plot_show_model() |> 
-  lr_plot_show_quantiles(bins = 4) |> 
-  lr_plot_show_groups(quartile_1) |> 
+  lr_plot_show_quantiles() |> 
+  lr_plot_show_groups(dose) |> 
   plot()
 ```
 
@@ -79,28 +79,15 @@ lr_data |>
 ``` r
 
 lr_data |> 
-  lr_plot(exposure_1, response_1) |> 
-  lr_plot_show_model() |> 
-  lr_plot_show_quantiles(bins = 4) |> 
-  lr_plot_show_datastrip(sex) |> 
-  lr_plot_show_groups(quartile_1) |> 
-  plot()  
+   lr_plot(exposure_1, response_1, color_by = sex) |> 
+   lr_plot_show_model(use_color = FALSE) |> 
+   lr_plot_show_quantiles(bins = 3) |> 
+   lr_plot_show_datastrip() |> 
+   lr_plot_show_groups(group_by = c(quartile_1, dose), use_color = FALSE) |> 
+   plot()
 ```
 
 <img src="man/figures/README-lr-plot-2.png" width="100%" />
-
-``` r
-
-lr_data |> 
-  lr_plot(exposure_1, response_1, sex) |> 
-  lr_plot_show_model() |> 
-  lr_plot_show_quantiles(bins = 4) |> 
-  lr_plot_show_datastrip() |> 
-  lr_plot_show_groups(c(quartile_1, dose)) |> 
-  plot()
-```
-
-<img src="man/figures/README-lr-plot-3.png" width="100%" />
 
 ## Stepwise covariate modelling
 
