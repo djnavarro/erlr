@@ -137,8 +137,9 @@ lr_plot_show_model <- function(object, keep_strata = NULL, conf_level = 0.95) {
     data = object$data
   )
 
-  # p-value is different depending on stratification: currently only supported when no strata
-  if (object$part$model$stratify == TRUE) {
+  if (is.null(object$strata$name) || object$part$model$stratify == FALSE) {
+    # without strata, report a single p-value, for the slope 
+    # TODO: replace this with the anova
     object$part$model$p_value <- summary(object$part$model$glm)$coefficients[2, "Pr(>|z|)"]
   }
   object$part$model$conf_level <- conf_level
