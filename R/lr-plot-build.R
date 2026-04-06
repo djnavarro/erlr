@@ -437,7 +437,7 @@
 
 .polish_legends <- function(object, composition) {
   if (is.null(object$strata$name)) return(composition)
-  has_strata <- purrr::map_lgl(object$part, \(x) x$stratify)
+  has_strata <- purrr::map_lgl(object$part, \(x) x$stratify %||% FALSE)
   if (!any(has_strata)) return(composition)
   stratified_parts <- names(has_strata[has_strata])
   stratified_plots <- dplyr::case_when(

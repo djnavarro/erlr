@@ -12,11 +12,11 @@
 #'
 #' @name lr_scm
 #' @examples
-#' mod0 <- lr_model(response_1 ~ exposure_1, lr_data)
+#' mod0 <- lr_model(ae1 ~ aucss, lr_data)
 #' mod1 <- lr_scm_forward(mod0, candidates = c("sex", "dose"))
 #' lr_scm_history(mod1)
 #' 
-#' mod2 <- lr_model(response_1 ~ exposure_1 + sex + dose, lr_data)
+#' mod2 <- lr_model(ae1 ~ aucss + sex + dose, lr_data)
 #' mod3 <- lr_scm_backward(mod2, candidates = c("sex", "dose"))
 #' lr_scm_history(mod3)
 NULL

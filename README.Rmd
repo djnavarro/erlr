@@ -41,7 +41,7 @@ library(tibble)
 
 lr_data
 
-mod <- lr_model(response_1 ~ exposure_1, lr_data)
+mod <- lr_model(ae1 ~ aucss, lr_data)
 mod
 ```
 
@@ -52,18 +52,18 @@ mod
 #| label: lr-plot
 
 lr_data |> 
-  lr_plot(exposure_1, response_1) |> 
+  lr_plot(aucss, ae1) |> 
   lr_plot_show_model() |> 
   lr_plot_show_quantiles() |> 
   lr_plot_show_groups(dose) |> 
   plot()
 
 plt <- lr_data |> 
-   lr_plot(exposure_1, response_1, stratify_by = sex) |> 
+   lr_plot(aucss, ae2, stratify_by = sex) |> 
    lr_plot_show_model(keep_strata = FALSE) |> 
    lr_plot_show_quantiles(bins = 3) |> 
    lr_plot_show_datastrip() |> 
-   lr_plot_show_groups(group_by = c(quartile_1, dose), keep_strata = FALSE)
+   lr_plot_show_groups(group_by = c(treatment, dose), keep_strata = FALSE)
 
 print(plt)
 plot(plt)
@@ -72,7 +72,7 @@ plot(plt)
 ## Stepwise covariate modelling
 
 ```{r}
-mod1 <- lr_model(response_1 ~ exposure_1 + sex + dose, lr_data)
+mod1 <- lr_model(ae1 ~ aucss + sex + dose, lr_data)
 mod2 <- lr_scm_backward(mod1, candidates = c("sex", "dose"))
 lr_scm_history(mod2)
 ```
@@ -81,11 +81,11 @@ lr_scm_history(mod2)
 
 ```{r}
 #| label: lr-vpc
-mod <- lr_model(response_1 ~ exposure_1 + sex, lr_data)
+mod <- lr_model(ae1 ~ aucss + sex, lr_data)
 sim <- lr_vpc_sim(mod, seed = 1234)
 sim
 
-lr_vpc_plot(mod, sim, group_by = exposure_1)
+lr_vpc_plot(mod, sim, group_by = aucss)
 lr_vpc_plot(mod, sim, group_by = sex)
 ```
 

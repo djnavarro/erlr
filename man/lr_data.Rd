@@ -8,12 +8,15 @@
 A data frame with columns:
 \describe{
 \item{id}{Identifier}
-\item{dose}{Nominal dose, units not specified}
-\item{exposure_1}{Exposure 1 value, units and metric not specified}
-\item{quartile_1}{Exposure 1 quartile, with placebo group separate}
-\item{response_1}{Binary response 1 value}
-\item{response_2}{Binary response 2 value}
 \item{sex}{Sex}
+\item{age}{Age}
+\item{weight}{Weight}
+\item{dose}{Nominal dose, units not specified}
+\item{treatment}{Treatment}
+\item{aucss}{AUCss}
+\item{cmaxss}{Cmax,ss}
+\item{ae1}{Binary response 1 value}
+\item{ae2}{Binary response 2 value}
 }
 }
 \usage{

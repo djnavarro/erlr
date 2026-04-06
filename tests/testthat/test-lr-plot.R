@@ -1,62 +1,62 @@
 
 test_that("lr_plot creates an erlr_plot (minimal)", {
-  expect_no_error(lr_plot(lr_data, exposure_1, response_1))
-  plt <- lr_plot(lr_data, exposure_1, response_1)
+  expect_no_error(lr_plot(lr_data, aucss, ae1))
+  plt <- lr_plot(lr_data, aucss, ae1)
   expect_s3_class(plt, "erlr_plot")
 })
 
 test_that("lr_plot creates an erlr_plot (all parts)", {
   expect_no_error(
     lr_data |> 
-      lr_plot(exposure_1, response_1) |> 
+      lr_plot(aucss, ae1) |> 
       lr_plot_show_model() |> 
       lr_plot_show_quantiles()  |> 
       lr_plot_show_datastrip()  |> 
-      lr_plot_show_groups(c(quartile_1, dose))
+      lr_plot_show_groups(c(treatment, dose))
   )
   plt <- lr_data |> 
-    lr_plot(exposure_1, response_1) |> 
+    lr_plot(aucss, ae1) |> 
     lr_plot_show_model() |> 
     lr_plot_show_quantiles()  |> 
     lr_plot_show_datastrip()  |> 
-    lr_plot_show_groups(c(quartile_1, dose))
+    lr_plot_show_groups(c(treatment, dose))
   expect_s3_class(plt, "erlr_plot")
 })
 
 test_that("lr_plot creates an erlr_plot (all parts, all strata)", {
   expect_no_error(
     lr_data |> 
-      lr_plot(exposure_1, response_1, sex) |> 
+      lr_plot(aucss, ae1, sex) |> 
       lr_plot_show_model() |> 
       lr_plot_show_quantiles()  |> 
       lr_plot_show_datastrip()  |> 
-      lr_plot_show_groups(c(quartile_1, dose))
+      lr_plot_show_groups(c(treatment, dose))
   )
   plt <- lr_data |> 
-    lr_plot(exposure_1, response_1, sex) |> 
+    lr_plot(aucss, ae1, sex) |> 
     lr_plot_show_model() |> 
     lr_plot_show_quantiles()  |> 
     lr_plot_show_datastrip()  |> 
-    lr_plot_show_groups(c(quartile_1, dose))
+    lr_plot_show_groups(c(treatment, dose))
   expect_s3_class(plt, "erlr_plot")
 })
 
 plt1 <- lr_data |>
-  lr_plot(exposure_1, response_1) |> 
+  lr_plot(aucss, ae1) |> 
   lr_plot_show_model() 
 
 plt2 <- lr_data |> 
-  lr_plot(exposure_1, response_1) |> 
+  lr_plot(aucss, ae1) |> 
   lr_plot_show_model() |> 
   lr_plot_show_quantiles()  |> 
   lr_plot_show_datastrip()
 
 plt3 <- lr_data |> 
-  lr_plot(exposure_1, response_1) |> 
+  lr_plot(aucss, ae1) |> 
   lr_plot_show_model() |> 
   lr_plot_show_quantiles()  |> 
   lr_plot_show_datastrip()  |> 
-  lr_plot_show_groups(c(quartile_1, dose))
+  lr_plot_show_groups(c(treatment, dose))
 
 test_that("lr_plot_build does not error", {
   expect_no_error(lr_plot_build(plt1))
@@ -83,7 +83,7 @@ test_that("lr_plot_build constructs ggplot2 objects", {
   )
   expect_equal(
     plt3_built_gg, 
-    c(base = TRUE, strip_upper = TRUE, strip_lower = TRUE, group_quartile_1 = TRUE, group_dose = TRUE)
+    c(base = TRUE, strip_upper = TRUE, strip_lower = TRUE, group_treatment = TRUE, group_dose = TRUE)
   )
 })
 

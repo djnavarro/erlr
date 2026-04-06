@@ -30,5 +30,8 @@ utils::globalVariables(c(
   "iteration",
   "model_updated",
   ":=",
-  "id"
+  "id",
+  "aucss",
+  "sex",
+  "weight"
 ))

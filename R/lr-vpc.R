@@ -11,7 +11,7 @@
 #'
 #' @export
 #' @examples
-#' mod <- lr_model(response_1 ~ exposure_1 + sex, lr_data)
+#' mod <- lr_model(ae2 ~ aucss + sex, lr_data)
 #' sim <- lr_vpc_sim(mod)
 #' sim
 #' 
@@ -65,9 +65,9 @@ lr_vpc_sim <- function(object, nsim = 100, seed = NULL) {
 #' @returns A ggplot2 object
 #'
 #' @examples
-#' mod <- lr_model(response_1 ~ exposure_1 + sex, lr_data)
+#' mod <- lr_model(ae2 ~ aucss + sex, lr_data)
 #' sim <- lr_vpc_sim(mod)
-#' lr_vpc_plot(mod, sim, group_by = exposure_1)
+#' lr_vpc_plot(mod, sim, group_by = aucss)
 #' lr_vpc_plot(mod, sim, group_by = sex)
 #' 
 #' @export
@@ -96,7 +96,7 @@ lr_vpc_plot <- function(object, sim, group_by, conf_level = 0.95) {
     if (grp_var != exp_var) dat[[".is_placebo"]] <- rep(FALSE, nrow(dat))
     dat <- dat |> dplyr::mutate(
       .quantile = cut_exposure_quantile(
-        exposure = .data[[grp_var]], n = 4, 
+        x = .data[[grp_var]], n = 4, 
         is_placebo = .data[[".is_placebo"]]
       ),
       .by = "Source"

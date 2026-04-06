@@ -25,3 +25,5 @@ reference:
 - contents:
   - lr_data
   - logit
+  - clopper_pearson
+  - cut_quantile

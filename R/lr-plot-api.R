@@ -18,18 +18,18 @@
 #'
 #' @examples
 #' lr_data |> 
-#'   lr_plot(exposure_1, response_1) |> 
+#'   lr_plot(aucss, ae1) |> 
 #'   lr_plot_show_model() |> 
 #'   lr_plot_show_quantiles() |> 
-#'   lr_plot_show_groups(quartile_1) |> 
+#'   lr_plot_show_groups(dose) |> 
 #'   plot()
 #'  
 #' plt <- lr_data |> 
-#'   lr_plot(exposure_1, response_1, stratify_by = sex) |> 
+#'   lr_plot(aucss, ae2, stratify_by = sex) |> 
 #'   lr_plot_show_model(keep_strata = FALSE) |> 
 #'   lr_plot_show_quantiles(bins = 3) |> 
 #'   lr_plot_show_datastrip() |> 
-#'   lr_plot_show_groups(group_by = c(quartile_1, dose), keep_strata = FALSE)
+#'   lr_plot_show_groups(group_by = c(treatment, dose), keep_strata = FALSE)
 #' 
 #' print(plt)
 #' plot(plt)
@@ -170,7 +170,7 @@ lr_plot_show_quantiles <- function(object, keep_strata = NULL, bins = 4, conf_le
     dplyr::mutate(
       response = .data[[object$response$name]],
       exposure_bins = cut_exposure_quantile(
-        exposure = .data[[object$exposure$name]], 
+        x = .data[[object$exposure$name]], 
         n = object$part$quantile$n_quantiles
       ),
       strata = .get_strata_values(.data, object$strata$name)   

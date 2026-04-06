@@ -22,9 +22,9 @@ A ggplot2 object
 Plot VPC simulations for logistic regression models
 }
 \examples{
-mod <- lr_model(response_1 ~ exposure_1 + sex, lr_data)
+mod <- lr_model(ae2 ~ aucss + sex, lr_data)
 sim <- lr_vpc_sim(mod)
-lr_vpc_plot(mod, sim, group_by = exposure_1)
+lr_vpc_plot(mod, sim, group_by = aucss)
 lr_vpc_plot(mod, sim, group_by = sex)
 
 }

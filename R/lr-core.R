@@ -8,7 +8,7 @@
 #' @returns A glm object
 #' @export
 #' @examples
-#' mod <- lr_model(response_1 ~ exposure_1, lr_data)
+#' mod <- lr_model(ae1 ~ aucss, lr_data)
 #' mod
 #' 
 lr_model <- function(formula, data, ...) {
@@ -29,7 +29,7 @@ lr_model <- function(formula, data, ...) {
 #'
 #' @export
 #' @examples
-#' mod <- lr_model(response_1 ~ exposure_1, lr_data)
+#' mod <- lr_model(ae1 ~ aucss, lr_data)
 #' prd <- lr_predict(mod, lr_data)
 #' prd
 #' 
@@ -71,7 +71,7 @@ lr_predict <- function(object, newdata = NULL, conf_level = .95) {
 #' logistic regression models
 #'  
 #' @examples
-#' mod1 <- lr_model(response_1 ~ exposure_1 + sex, lr_data)
+#' mod1 <- lr_model(ae2 ~ aucss + sex, lr_data)
 #' par1 <- coef(mod1)
 #' mod1_sim <- lr_simulator(mod1)
 #' 

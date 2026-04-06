@@ -2,6 +2,9 @@
 
 S3method(base::print,erlr_plot)
 S3method(graphics::plot,erlr_plot)
+export(clopper_pearson)
+export(cut_exposure_quantile)
+export(cut_quantile)
 export(invlogit)
 export(logit)
 export(lr_model)

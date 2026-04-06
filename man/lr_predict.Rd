@@ -20,7 +20,7 @@ A tibble
 Predictions and confidence intervals for logistic regression
 }
 \examples{
-mod <- lr_model(response_1 ~ exposure_1, lr_data)
+mod <- lr_model(ae1 ~ aucss, lr_data)
 prd <- lr_predict(mod, lr_data)
 prd
 

@@ -20,7 +20,7 @@ A data frame or tibble
 VPC simulations for logistic regression models
 }
 \examples{
-mod <- lr_model(response_1 ~ exposure_1 + sex, lr_data)
+mod <- lr_model(ae2 ~ aucss + sex, lr_data)
 sim <- lr_vpc_sim(mod)
 sim
 

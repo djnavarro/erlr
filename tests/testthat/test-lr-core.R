@@ -1,11 +1,11 @@
 test_that("lr_model works", {
-  expect_no_error(lr_model(response_1 ~ exposure_1 + sex, lr_data))
-  mod1 <- lr_model(response_1 ~ exposure_1 + sex, lr_data)
+  expect_no_error(lr_model(ae1 ~ aucss + sex, lr_data))
+  mod1 <- lr_model(ae1 ~ aucss + sex, lr_data)
   expect_s3_class(mod1, "glm")
 })
 
 test_that("lr_simulator returns a function", {
-  mod1 <- lr_model(response_1 ~ exposure_1 + sex, lr_data)
+  mod1 <- lr_model(ae1 ~ aucss + sex, lr_data)
   expect_no_error(lr_simulator(mod1))
   mod1_sim <- lr_simulator(mod1)
   expect_type(mod1_sim, "closure")
@@ -14,7 +14,7 @@ test_that("lr_simulator returns a function", {
 test_that("lr_simulator works", {
 
   # simulator setup
-  mod1 <- lr_model(response_1 ~ exposure_1 + sex, lr_data)
+  mod1 <- lr_model(ae1 ~ aucss + sex, lr_data)
   par1 <- coef(mod1)
   mod1_sim <- lr_simulator(mod1)
 
@@ -39,7 +39,7 @@ test_that("lr_simulator works", {
 })
 
 test_that("lr_predict works with default data", {
-  mod <- lr_model(response_1 ~ exposure_1 + sex, lr_data)
+  mod <- lr_model(ae1 ~ aucss + sex, lr_data)
   expect_no_error(lr_predict(mod))
   prd <- lr_predict(mod)
   pr_resp <- predict(mod, type = "response", se.fit = TRUE)
@@ -50,7 +50,7 @@ test_that("lr_predict works with default data", {
 })
 
 test_that("lr_predict works with modified data", {
-  mod <- lr_model(response_1 ~ exposure_1 + sex, lr_data)
+  mod <- lr_model(ae1 ~ aucss + sex, lr_data)
   dat_1 <- lr_data[1:20,]
   expect_no_error(lr_predict(mod, newdata = dat_1))
   prd <- lr_predict(mod, newdata = dat_1)
@@ -62,7 +62,7 @@ test_that("lr_predict works with modified data", {
 })
 
 test_that("lr_predict can adjust confidence level", {
-  mod <- lr_model(response_1 ~ exposure_1 + sex, lr_data)
+  mod <- lr_model(ae1 ~ aucss + sex, lr_data)
   expect_no_error(lr_predict(mod, conf_level = 0))
   prd0 <- lr_predict(mod, conf_level = 0)
   expect_equal(prd0$ci_lower, prd0$fit_resp)
