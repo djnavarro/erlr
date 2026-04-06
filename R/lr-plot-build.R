@@ -3,6 +3,7 @@
 
 build_base_plot <- function(object) {
   base <- ggplot2::ggplot() +
+    object$style$theme_base() +
     ggplot2::scale_y_continuous(
       oob = scales::oob_keep, 
       expand = ggplot2::expansion(mult = .01, add = 0)
@@ -32,7 +33,6 @@ build_strip_plot <- function(object) {
   return(strip)
 }
 
-
 build_group_plot <- function(object) {
   strata <- object$strata
   group <- list()
@@ -59,6 +59,7 @@ build_group_plot <- function(object) {
     }
 
     group[[g]] <- group[[g]] +
+      object$style$theme_base() +
       ggplot2::geom_boxplot(
         alpha = .5,
         key_glyph = ggplot2::draw_key_rect
@@ -306,6 +307,7 @@ build_strip_jitter <- function(object, panel) {
 
   dd |> 
     ggplot2::ggplot() +
+    object$style$theme_base() +
     ggplot2::geom_jitter(
       mapping = plt_mapping,
       width = 0,
@@ -488,3 +490,10 @@ polish_legends <- function(object, composition) {
   return(composition)
 }
 
+polish_theme <- function(object, composition) {
+  theme_fn <- object$style$theme_args
+  for (ind in seq_along(composition$plots)) {
+    composition$plots[[ind]] <- composition$plots[[ind]] + theme_fn()
+  }
+  return(composition)
+}

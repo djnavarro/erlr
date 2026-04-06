@@ -94,10 +94,17 @@ lr_plot <- function(data, exposure, response, stratify_by = NULL) {
   object$style$format_p <- scales::label_pvalue(accuracy = .001, add_p = TRUE)
   object$style$format_percent <- scales::label_percent(accuracy = 1)
   object$style$height <- list(base = 6, strip = 2, group = 3) 
-  object$style$theme <- function(object) {
-    ggplot2::theme_bw() +
+  object$style$theme_base <- function() {
+    ggplot2::theme_bw()
+  }
+  object$style$theme_args <- function() {
     ggplot2::theme(
-      panel.border = ggplot2::element_rect(fill = NA, color = "grey80", linewidth = .5),
+      panel.border = ggplot2::element_rect(
+        fill = NA, 
+        color = "grey80", 
+        linewidth = .5
+      ),
+      legend.position = "bottom"
     ) 
   }
  
@@ -296,6 +303,7 @@ lr_plot_build <- function(object) {
   object$plot <- polish_labels(object)
   composition <- polish_arrangement(object)
   composition <- polish_legends(object, composition)
+  composition <- polish_theme(object, composition)
 
   # output
   if (length(composition$heights) == 1) {
@@ -307,6 +315,8 @@ lr_plot_build <- function(object) {
       heights = composition$info$size,
       guides = "collect",
       axes = "collect"
+    ) + patchwork::plot_annotation(
+      theme = object$style$theme_args()
     )
   }
 
