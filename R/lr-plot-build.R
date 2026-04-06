@@ -363,27 +363,30 @@ polish_labels <- function(object) {
 
   p$base <- p$base + ggplot2::labs(
     x = object$exposure$label,
-    y = object$response$label,
-    color = object$strata$label,
-    fill = object$strata$label
+    y = object$response$label
   )
+  ll <- names(ggplot2::get_labs(p$base))
+  if ("fill" %in% ll) p$base <- p$base + ggplot2::labs(fill = object$strata$label)
+  if ("colour" %in% ll) p$base <- p$base + ggplot2::labs(color = object$strata$label)
 
   if (!is.null(p$strip)) {
     if (!is.null(p$strip$upper)) {
       p$strip$upper <- p$strip$upper + ggplot2::labs(
         x = object$exposure$label,
-        y = NULL,
-        color = object$strata$label,
-        fill = object$strata$label
+        y = NULL
       )
+      ll <- names(ggplot2::get_labs(p$strip$upper))
+      if ("fill" %in% ll) p$strip$upper <- p$strip$upper + ggplot2::labs(fill = object$strata$label)
+      if ("colour" %in% ll) p$strip$upper <- p$strip$upper + ggplot2::labs(color = object$strata$label)
     }
     if (!is.null(p$strip$lower)) {
       p$strip$lower <- p$strip$lower + ggplot2::labs(
         x = object$exposure$label,
-        y = NULL,
-        color = object$strata$label,
-        fill = object$strata$label
+        y = NULL
       )
+      ll <- names(ggplot2::get_labs(p$strip$lower))
+      if ("fill" %in% ll) p$strip$lower <- p$strip$lower + ggplot2::labs(fill = object$strata$label)
+      if ("colour" %in% ll) p$strip$lower <- p$strip$lower + ggplot2::labs(color = object$strata$label)
     }
   }
 
@@ -391,10 +394,11 @@ polish_labels <- function(object) {
     for(g in names(p$group)) {
       p$group[[g]] <- p$group[[g]] + ggplot2::labs(
         x = object$exposure$label,
-        y = object$part$group$var[[g]]$y$label,
-        color = object$strata$label,
-        fill = object$strata$label
+        y = object$part$group$var[[g]]$y$label
       )
+      ll <- names(ggplot2::get_labs(p$group[[g]]))
+      if ("fill" %in% ll) p$group[[g]] <- p$group[[g]] + ggplot2::labs(fill = object$strata$label)
+      if ("colour" %in% ll) p$group[[g]] <- p$group[[g]] + ggplot2::labs(color = object$strata$label)
     }
   }
 

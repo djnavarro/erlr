@@ -282,7 +282,7 @@ print.erlr_plot <- function(x, ...) {
 #' @exportS3Method graphics::plot
 plot.erlr_plot <- function(x, y = NULL, ...) {
   object <- lr_plot_build(x)
-  suppressWarnings(plot(object$output))
+  plot(object$output)
 }
 
 # top level build function ----------------------------------------------------
