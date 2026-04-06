@@ -112,17 +112,5 @@ print(plt)
 #>     $strip:     jitter both
 #>     $group:     quartile_1, dose
 plot(plt)
-#> Ignoring unknown labels:
-#> • fill : "Sex"
-#> Ignoring unknown labels:
-#> • fill : "Sex"
-#> Ignoring unknown labels:
-#> • fill : "Sex"
-#> Ignoring unknown labels:
-#> • colour : "Sex"
-#> • fill : "Sex"
-#> Ignoring unknown labels:
-#> • colour : "Sex"
-#> • fill : "Sex"
 
 ```
