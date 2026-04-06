@@ -12,11 +12,12 @@
   a logistic regression function
 - [`lr_plot()`](https://erlr.djnavarro.net/reference/lr_plot.md)
   [`lr_plot_style()`](https://erlr.djnavarro.net/reference/lr_plot.md)
-  [`lr_plot_add_model()`](https://erlr.djnavarro.net/reference/lr_plot.md)
-  [`lr_plot_add_quantiles()`](https://erlr.djnavarro.net/reference/lr_plot.md)
-  [`lr_plot_add_strips()`](https://erlr.djnavarro.net/reference/lr_plot.md)
-  [`lr_plot_add_boxplot()`](https://erlr.djnavarro.net/reference/lr_plot.md)
-  : Builds an exposure-response plot for a logistic regression model
+  [`lr_plot_show_model()`](https://erlr.djnavarro.net/reference/lr_plot.md)
+  [`lr_plot_show_quantiles()`](https://erlr.djnavarro.net/reference/lr_plot.md)
+  [`lr_plot_show_datastrip()`](https://erlr.djnavarro.net/reference/lr_plot.md)
+  [`lr_plot_show_groups()`](https://erlr.djnavarro.net/reference/lr_plot.md)
+  [`lr_plot_build()`](https://erlr.djnavarro.net/reference/lr_plot.md) :
+  Builds an exposure-response plot for a logistic regression model
 - [`lr_predict()`](https://erlr.djnavarro.net/reference/lr_predict.md) :
   Predictions and confidence intervals for logistic regression
 - [`lr_scm_forward()`](https://erlr.djnavarro.net/reference/lr_scm.md)
