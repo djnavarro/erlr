@@ -66,12 +66,12 @@ lr_data |>
   lr_plot_show_groups(quartile_1) |> 
   plot()  
 
-lr_data[1:70,] |> 
-  lr_plot(exposure_1, response_1) |> 
+lr_data |> 
+  lr_plot(exposure_1, response_1, sex) |> 
   lr_plot_show_model() |> 
   lr_plot_show_quantiles(bins = 4) |> 
-  lr_plot_show_datastrip(sex, style = "dotplot") |> 
-  lr_plot_show_groups(c(quartile_1, sex)) |> 
+  lr_plot_show_datastrip() |> 
+  lr_plot_show_groups(c(quartile_1, dose)) |> 
   plot()
 ```
 
@@ -88,7 +88,7 @@ lr_scm_history(mod2)
 ```{r}
 #| label: lr-vpc
 mod <- lr_model(response_1 ~ exposure_1 + sex, lr_data)
-sim <- lr_vpc_sim(mod)
+sim <- lr_vpc_sim(mod, seed = 1234)
 sim
 
 lr_vpc_plot(mod, sim, group_by = exposure_1)

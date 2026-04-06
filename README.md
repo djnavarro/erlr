@@ -91,12 +91,12 @@ lr_data |>
 
 ``` r
 
-lr_data[1:70,] |> 
-  lr_plot(exposure_1, response_1) |> 
+lr_data |> 
+  lr_plot(exposure_1, response_1, sex) |> 
   lr_plot_show_model() |> 
   lr_plot_show_quantiles(bins = 4) |> 
-  lr_plot_show_datastrip(sex, style = "dotplot") |> 
-  lr_plot_show_groups(c(quartile_1, sex)) |> 
+  lr_plot_show_datastrip() |> 
+  lr_plot_show_groups(c(quartile_1, dose)) |> 
   plot()
 ```
 
@@ -112,8 +112,8 @@ lr_scm_history(mod2)
 #>   iteration attempt step       action term_tested model_tested   model_converged
 #>       <int>   <int> <chr>      <chr>  <chr>       <chr>          <lgl>          
 #> 1         0       0 base model <NA>   <NA>        response_1 ~ … TRUE           
-#> 2         1       1 backward   remove ~sex        response_1 ~ … TRUE           
-#> 3         1       2 backward   remove ~dose       response_1 ~ … TRUE           
+#> 2         1       1 backward   remove ~dose       response_1 ~ … TRUE           
+#> 3         1       2 backward   remove ~sex        response_1 ~ … TRUE           
 #> 4         2       3 backward   remove ~sex        response_1 ~ … TRUE           
 #> # ℹ 4 more variables: term_p_value <dbl>, model_aic <dbl>, model_bic <dbl>,
 #> #   model_updated <int>
@@ -123,21 +123,21 @@ lr_scm_history(mod2)
 
 ``` r
 mod <- lr_model(response_1 ~ exposure_1 + sex, lr_data)
-sim <- lr_vpc_sim(mod)
+sim <- lr_vpc_sim(mod, seed = 1234)
 sim
 #> # A tibble: 30,000 × 5
 #>    response_1 exposure_1 sex    row_id sim_id
 #>         <dbl>      <dbl> <fct>   <int>  <int>
-#>  1      0.833      148.  Male        1      1
-#>  2      0.759       79.7 Male        2      1
-#>  3      0.885      212.  Male        3      1
-#>  4      0.860      236.  Female      4      1
-#>  5      0.647        0   Male        5      1
-#>  6      0.668       71.0 Female      6      1
-#>  7      0.855      173.  Male        7      1
-#>  8      0.742      123.  Female      8      1
-#>  9      0.647        0   Male        9      1
-#> 10      0.792      165.  Female     10      1
+#>  1      0.918      148.  Male        1      1
+#>  2      0.823       79.7 Male        2      1
+#>  3      0.962      212.  Male        3      1
+#>  4      0.929      236.  Female      4      1
+#>  5      0.625        0   Male        5      1
+#>  6      0.611       71.0 Female      6      1
+#>  7      0.940      173.  Male        7      1
+#>  8      0.755      123.  Female      8      1
+#>  9      0.625        0   Male        9      1
+#> 10      0.841      165.  Female     10      1
 #> # ℹ 29,990 more rows
 
 lr_vpc_plot(mod, sim, group_by = exposure_1)

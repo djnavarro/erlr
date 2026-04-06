@@ -5,12 +5,12 @@
 #' @param exposure Exposure variable (one variable, unquoted)
 #' @param response Response variable (one variable, unquoted)
 #' @param color_by Stratification variable used for color and fill (one variable, unquoted)
-#' @param boxes_by Stratification variables to define groups for boxplots (a tidyselection of variables)
+#' @param group_by Stratification variables to define groups for boxplots (a tidyselection of variables)
 #' @param labels Named list of labels
 #' @param bins Number of exposure bins (not counting placebo)
 #' @param style Character string: "jitter" (the default) or "dotplot"
 #' @param panel Character string: "upper", "lower", or "both" (the default)
-#' @param conf_level Confidence level for Clopper-Pearson intervals
+#' @param conf_level Confidence level
 #' @param object Partially constructed plot (has S3 class `erlr_plot`)
 #'
 #' @returns Plot object of class `erlr_plot`
@@ -21,7 +21,7 @@
 #'   lr_plot_show_model() |> 
 #'   lr_plot_show_quantiles() |> 
 #'   lr_plot_show_groups(quartile_1) |> 
-#'   print()
+#'   plot()
 #' 
 #' lr_data |> 
 #'   lr_plot(exposure_1, response_1, sex) |> 
@@ -29,40 +29,20 @@
 #'   lr_plot_show_quantiles() |> 
 #'   lr_plot_show_datastrip() |> 
 #'   lr_plot_show_groups(quartile_1) |> 
-#'   print()  
+#'   plot()  
 #' 
-#' lr_data[1:70,] |> 
+#' lr_data |> 
 #'   lr_plot(exposure_1, response_1) |> 
 #'   lr_plot_show_model() |> 
-#'   lr_plot_show_quantiles(bins = 6) |> 
-#'   lr_plot_show_datastrip(sex, style = "dotplot") |> 
-#'   lr_plot_show_groups(quartile_1) |> 
-#'   lr_plot_show_groups(sex) |> 
-#'   print(box_height = 2)
+#'   lr_plot_show_quantiles(bins = 3) |> 
+#'   lr_plot_show_datastrip(sex) |> 
+#'   lr_plot_show_groups(c(quartile_1, sex)) |> 
+#'   plot()
 #' 
 #' @name lr_plot
 NULL
 
 # setup -----------------------------------------------------------------------
-
-erlr_variable <- function(name = NULL, label = NULL, limits = NULL, role = NULL) {
-  structure(
-    list(
-      name = name, 
-      label = label, 
-      limits = limits,
-      role = role
-    ),
-    class = "erlr_plot_variable"
-  )
-}
-
-#' @exportS3Method base::print
-print.erlr_plot_variable <- function(x, ...) {
-  if (is.null(x$name)) { cat("<", x$role, "> NULL\n", sep = "")
-  } else {cat("<", x$role, "> ", x$name, "\n", sep = "")}
-  return(invisible(x))
-}
 
 #' @rdname lr_plot
 #' @export
@@ -72,25 +52,25 @@ lr_plot <- function(data, exposure, response, color_by = NULL) {
   object <- structure(
     list(
       data  = NULL,
-      exposure = erlr_variable(role = "exposure"),
-      response = erlr_variable(role = "response"),
+      exposure = define_plot_variable(role = "exposure"),
+      response = define_plot_variable(role = "response"),
       strata = list(
-        default  = erlr_variable(role = "default_strata"),
-        model    = erlr_variable(role = "model_strata"),
-        quantile = erlr_variable(role = "quantile_strata"),
-        strip    = erlr_variable(role = "strip_strata"),
-        box      = erlr_variable(role = "box_strata")
+        default  = define_plot_variable(role = "default_strata"),
+        model    = define_plot_variable(role = "model_strata"),
+        quantile = define_plot_variable(role = "quantile_strata"),
+        strip    = define_plot_variable(role = "strip_strata"),
+        group    = define_plot_variable(role = "group_strata")
       ), 
       part = list(
         model    = NULL, 
         quantile = NULL, 
         strip    = NULL,
-        box      = NULL
+        group    = NULL
       ),
       plot = list(
         base = NULL, 
         strip = NULL, 
-        box = NULL
+        group = NULL
       ),
       style = list(),
       output = NULL 
@@ -125,7 +105,7 @@ lr_plot <- function(data, exposure, response, color_by = NULL) {
   # stylistic information
   object$style$format_p <- scales::label_pvalue(accuracy = .001, add_p = TRUE)
   object$style$format_percent <- scales::label_percent(accuracy = 1)
-  object$style$height <- list(base = 6, strip = 2, box = 3) 
+  object$style$height <- list(base = 6, strip = 2, group = 3) 
   object$style$theme <- function(object) {
     ggplot2::theme_bw() +
     ggplot2::theme(
@@ -142,35 +122,6 @@ lr_plot_style <- function(object, labels) {
   return(object)
 }
 
-# construct a stratum variable within the local context
-contextual_strata <- function(object, strata, context) {
-  strata_quo <- rlang::enquo(strata)
-  strata_val <- rlang::eval_tidy(
-    rlang::quo_set_env(
-      quo = strata_quo, 
-      env = rlang::as_environment(object$data)
-    )
-  )
-  if (rlang::quo_is_null(strata_quo)) { # if strata is NULL
-    strata_name   <- NULL
-    strata_label  <- NULL
-    strata_limits <- NULL
-  } else if (rlang::quo_is_symbol(strata_quo)) { # if strata is a variable name
-    strata_name   <- rlang::as_name(strata_quo)
-    strata_label  <- get_label(object$data[[strata_name]]) %||% strata_name
-    strata_limits <- unique(strata_val)
-  } else if (strata_val == "inherit") { # use cached value
-    strata_name   <- object$strata$default$name
-    strata_label  <- object$strata$default$label
-    strata_limits <- object$strata$default$limits
-  } 
-  return(erlr_variable(
-    name = strata_name, 
-    label = strata_label, 
-    limits = strata_limits,
-    role = context
-  ))
-}
 
 
 # model -----------------------------------------------------------------------
@@ -181,7 +132,7 @@ lr_plot_show_model <- function(object, color_by = "inherit", conf_level = 0.95) 
 
   if (!inherits(object, "erlr_plot")) rlang::abort("`object` must be an erlr plot object")
   object$part$model <- list()
-  object$strata$model <- contextual_strata(object, {{color_by}}, "model_strata")
+  object$strata$model <- define_part_strata(object, {{color_by}}, "model_strata")
 
   # model formula
   fml <- paste(object$response$name, object$exposure$name, sep = " ~ ")
@@ -201,36 +152,10 @@ lr_plot_show_model <- function(object, color_by = "inherit", conf_level = 0.95) 
     object$part$model$p_value <- summary(object$part$model$glm)$coefficients[2, "Pr(>|z|)"]
   }
   object$part$model$conf_level <- conf_level
-  object$part$model$predictions <- model_predictions(object)
+  object$part$model$predictions <- get_model_predictions(object)
   
   return(object)
 }
-
-model_predictions <- function(object) {
-
-  pred_dat <- seq(
-    from = object$exposure$limits[1], 
-    to = object$exposure$limits[2], 
-    length.out = 300L
-  ) |> 
-    data.frame() |> 
-    set_names(object$exposure$name)
-  
-  if (!is.null(object$strata$model$name)) {
-    pred_dat <- pred_dat |> 
-      dplyr::cross_join(
-        data.frame(object$strata$model$limits) |> 
-        set_names(object$strata$model$name)
-      )
-  }
-
-  lr_predict(
-    object = object$part$model$glm,
-    newdata = pred_dat, 
-    conf_level = object$part$model$conf_level
-  )
-}
-
 
 # quantiles -------------------------------------------------------------------
 
@@ -239,7 +164,7 @@ model_predictions <- function(object) {
 lr_plot_show_quantiles <- function(object, color_by = "inherit", bins = 4, conf_level = 0.95) {
 
   if (!inherits(object, "erlr_plot")) rlang::abort("`object` must be an erlr plot object")
-  object$strata$quantile <- contextual_strata(object, {{color_by}}, "quantile_strata")
+  object$strata$quantile <- define_part_strata(object, {{color_by}}, "quantile_strata")
 
   object$part$quantile <- list()
   object$part$quantile$n_quantiles <- bins
@@ -250,7 +175,7 @@ lr_plot_show_quantiles <- function(object, color_by = "inherit", bins = 4, conf_
         exposure = .data[[object$exposure$name]], 
         n = object$part$quantile$n_quantiles
       ),
-      strata = strata_values(.data, object$strata$quantile$name)   
+      strata = get_strata_values(.data, object$strata$quantile$name)   
     ) |> 
     dplyr::summarise(
       n1 = sum(.data[[object$response$name]] == 1, na.rm = TRUE),
@@ -269,11 +194,6 @@ lr_plot_show_quantiles <- function(object, color_by = "inherit", bins = 4, conf_
   return(object)
 }
 
-strata_values <- function(data, name) {
-  if (is.null(name)) return(NA)
-  data[[name]]
-}
-
 # strips ----------------------------------------------------------------------
 
 #' @rdname lr_plot
@@ -281,14 +201,14 @@ strata_values <- function(data, name) {
 lr_plot_show_datastrip <- function(object, color_by = "inherit", style = "jitter", panel = "both") {
 
   if (!inherits(object, "erlr_plot")) rlang::abort("`object` must be an erlr plot object")
-  object$strata$strip <- contextual_strata(object, {{color_by}}, "strip_strata")
+  object$strata$strip <- define_part_strata(object, {{color_by}}, "strip_strata")
 
   object$part$strip <- list()
   object$part$strip$style <- style
   object$part$strip$panel <- panel
   
   if (style == "jitter")  object$part$strip$builder <- build_strip_jitter
-  if (style == "dotplot") object$part$strip$builder <- build_strip_dot
+  #if (style == "dotplot") object$part$strip$builder <- build_strip_dot
 
   if (panel %in% c("lower", "both")) object$part$strip$lower <- TRUE
   if (panel %in% c("upper", "both")) object$part$strip$upper <- TRUE
@@ -297,41 +217,38 @@ lr_plot_show_datastrip <- function(object, color_by = "inherit", style = "jitter
 }
 
 
-
-# boxplot ---------------------------------------------------------------------
+# groups plot -----------------------------------------------------------------
 
 #' @rdname lr_plot
 #' @export
-lr_plot_show_groups <- function(object, boxes_by, color_by = "inherit") {
+lr_plot_show_groups <- function(object, group_by, color_by = "inherit") {
 
   if (!inherits(object, "erlr_plot")) rlang::abort("`object` must be an erlr plot object")
-  object$strata$box <- contextual_strata(object, {{color_by}}, "box_strata")
-  box_cols <- tidyselect::eval_select(rlang::enquo(boxes_by), object$data) 
+  object$strata$group <- define_part_strata(object, {{color_by}}, "group_strata")
+  group_cols <- tidyselect::eval_select(rlang::enquo(group_by), object$data) 
 
-  object$part$box <- list()
-  for(b in names(box_cols)) {
-    object$part$box[[b]] <- list()
-    object$part$box[[b]]$y <- erlr_variable(
-      name = b,
-      label = get_label(object$data[[b]]) %||% b,
-      role = paste("box", b, sep = "_")
+  object$part$group <- list()
+  for(g in names(group_cols)) {
+    object$part$group[[g]] <- list()
+    object$part$group[[g]]$y <- define_plot_variable(
+      name = g,
+      label = get_label(object$data[[g]]) %||% g,
+      role = paste("group", g, sep = "_")
     )
-    object$part$box[[b]]$counts <- object$data |> 
+    object$part$group[[g]]$counts <- object$data |> 
       dplyr::summarise(
         n   = sum(!is.na(.data[[object$exposure$name]])),
         lbl = paste0("N=", n),
-        .by = dplyr::all_of(c(b, object$strata$box$name))
+        .by = dplyr::all_of(c(g, object$strata$group$name))
       ) |> 
-      dplyr::mutate(
-        lvl = paste0(.data[[b]], " (", lbl, ")")
-      ) |> 
-      dplyr::arrange(.data[[b]])
-    object$part$box[[b]]$n_boxes <- nrow(object$part$box[[b]]$counts)
-    object$part$box[[b]]$data <- object$data |> 
-      dplyr::select(dplyr::all_of(c(b, object$strata$box$name, object$exposure$name))) |> 
+      dplyr::mutate(lvl = paste0(.data[[g]], " (", lbl, ")")) |> 
+      dplyr::arrange(.data[[g]])
+    object$part$group[[g]]$n_groups <- nrow(object$part$group[[g]]$counts)
+    object$part$group[[g]]$data <- object$data |> 
+      dplyr::select(dplyr::all_of(c(g, object$strata$group$name, object$exposure$name))) |> 
       dplyr::left_join(
-        object$part$box[[b]]$counts,
-        by = c(b, object$strata$box$name)
+        object$part$group[[g]]$counts,
+        by = c(g, object$strata$group$name)
       )
   }
 
@@ -352,14 +269,14 @@ print.erlr_plot <- function(x, ...) {
     if (part_set["model"])    cat("    $model:     ", x$strata$model$name %||% "<none>", "\n", sep = "")
     if (part_set["quantile"]) cat("    $quantile:  ", x$strata$quantile$name %||% "<none>", "\n", sep = "")
     if (part_set["strip"])    cat("    $strip:     ", x$strata$strip$name %||% "<none>", "\n", sep = "")
-    if (part_set["box"])      cat("    $box:       ", x$strata$box$name %||% "<none>", "\n", sep = "")
+    if (part_set["group"])    cat("    $group:     ", x$strata$group$name %||% "<none>", "\n", sep = "")
   }
   if (any(part_set)) {
     cat("  $part:\n")
     if (part_set["model"])    cat("    $model:     ", deparse(x$part$model$formula), "\n", sep = "")
     if (part_set["quantile"]) cat("    $quantile:  ", x$part$quantile$n_quantiles, " bins\n", sep = "")
     if (part_set["strip"])    cat("    $strip:     ", x$part$strip$style, " ", x$part$strip$panel, "\n", sep = "")
-    if (part_set["box"])      cat("    $box:       ", paste(names(x$part$box), collapse = ", "), "\n", sep = "")
+    if (part_set["group"])    cat("    $group:     ", paste(names(x$part$group), collapse = ", "), "\n", sep = "")
   }
   
   return(invisible(x))
@@ -371,18 +288,24 @@ plot.erlr_plot <- function(x, y = NULL, ...) {
   suppressWarnings(plot(object$output))
 }
 
+# top level build function ----------------------------------------------------
 
+#' @rdname lr_plot
+#' @export
 lr_plot_build <- function(object) {
   if (!inherits(object, "erlr_plot")) rlang::abort("`object` must be an erlr plot object")
   
-  if (!is.null(object$part$model) | !is.null(object$part$quantile)) object$plot$base <- build_plot_base(object)
-  if (!is.null(object$part$strip)) object$plot$strip <- build_plot_strip(object)
-  if (!is.null(object$part$box)) object$plot$box <- build_plot_box(object)
+  # build
+  if (!is.null(object$part$model) | !is.null(object$part$quantile)) object$plot$base <- build_base_plot(object)
+  if (!is.null(object$part$strip)) object$plot$strip <- build_strip_plot(object)
+  if (!is.null(object$part$group)) object$plot$group <- build_group_plot(object)
 
-  object$plot <- adjust_margins(object)
-  object$plot <- apply_labels(object)
-  composition <- compose_plots(object)
+  # polish
+  object$plot <- polish_margins(object)
+  object$plot <- polish_labels(object)
+  composition <- polish_arrangement(object)
 
+  # output
   if (length(composition$heights) == 1) {
     object$output <- object$plot$base
   } else {
@@ -397,106 +320,3 @@ lr_plot_build <- function(object) {
 
   return(object)
 }
-
-adjust_margins <- function(object) {
-
-  p <- object$plot
-
-  margins <- ggplot2::margin(t = 5.5, r = 5.5, b = 5.5, l = 5.5, unit = "pt")
-  zero_pt <- ggplot2::unit(0, "pt")
-
-  base_mar <- margins
-  uppr_mar <- margins
-  lowr_mar <- margins
-
-  if (!is.null(p$strip$upper)) {
-    base_mar[1] <- zero_pt
-    uppr_mar[3] <- zero_pt
-  }
-  if (!is.null(p$strip$lower)) {
-    base_mar[3] <- zero_pt
-    lowr_mar[1] <- zero_pt
-  }
-
-  p$base <- p$base + ggplot2::theme(margins = base_mar)
-  if (!is.null(p$strip$upper)) p$strip$upper <- p$strip$upper + ggplot2::theme(margins = uppr_mar)
-  if (!is.null(p$strip$lower)) p$strip$lower <- p$strip$lower + ggplot2::theme(margins = lowr_mar)
-  if (!is.null(p$box)) {
-    for(b in seq_along(p$box)) {
-      p$box[[b]] + ggplot2::theme(margins = margins)
-    }
-  }
-
-  return(p)
-}
-
-apply_labels <- function(object) {
-  p <- object$plot
-
-  p$base <- p$base + ggplot2::labs(
-    x = object$exposure$label,
-    y = object$response$label
-  )
-
-  if (!is.null(p$strip)) {
-    if (!is.null(p$strip$upper)) {
-      p$strip$upper <- p$strip$upper + ggplot2::labs(
-        x = object$exposure$label,
-        y = NULL
-      )
-    }
-    if (!is.null(p$strip$lower)) {
-      p$strip$lower <- p$strip$lower + ggplot2::labs(
-        x = object$exposure$label,
-        y = NULL
-      )
-    }
-  }
-
-  if (!is.null(p$box)) {
-    for(bb in names(p$box)) {
-      p$box[[bb]] <- p$box[[bb]] + ggplot2::labs(
-        x = object$exposure$label,
-        y = object$part$box[[bb]]$y$label
-      )
-    }
-  }
-
-  return(p)
-}
-
-compose_plots <- function(object) {
-  
-  plot_list <- list()
-  plot_size <- numeric()
-  ind <- 0L
-
-  if (!is.null(object$plot$strip$upper)) {
-    ind <- ind + 1L
-    plot_list[[ind]] <- object$plot$strip$upper
-    plot_size[ind] <- object$style$height$strip / 2
-  }
-
-  ind <- ind + 1L
-  plot_list[[ind]] <- object$plot$base
-  plot_size[ind] <- object$style$height$base
-
-  if (!is.null(object$plot$strip$lower)) {
-    ind <- ind + 1L
-    plot_list[[ind]] <- object$plot$strip$lower
-    plot_size[ind] <- object$style$height$strip / 2
-  }
-  
-  if (!is.null(object$plot$box)) {
-    box_n <- purrr::map_dbl(object$part$box, \(bb) bb$n_boxes)
-    box_prop <- box_n / sum(box_n)
-    for(b in seq_along(object$plot$box)) {
-      ind <- ind + 1L
-      plot_list[[ind]] <- object$plot$box[[b]]
-      plot_size[ind] <- object$style$height$box * box_prop[b]
-    }
-  }
-
-  return(list(plots = plot_list, heights = plot_size))
-}
-

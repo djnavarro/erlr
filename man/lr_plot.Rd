@@ -7,6 +7,7 @@
 \alias{lr_plot_show_quantiles}
 \alias{lr_plot_show_datastrip}
 \alias{lr_plot_show_groups}
+\alias{lr_plot_build}
 \title{Builds an exposure-response plot for a logistic regression model}
 \usage{
 lr_plot(data, exposure, response, color_by = NULL)
@@ -29,7 +30,9 @@ lr_plot_show_datastrip(
   panel = "both"
 )
 
-lr_plot_show_groups(object, boxes_by, color_by = "inherit")
+lr_plot_show_groups(object, group_by, color_by = "inherit")
+
+lr_plot_build(object)
 }
 \arguments{
 \item{data}{Observed data}
@@ -44,7 +47,7 @@ lr_plot_show_groups(object, boxes_by, color_by = "inherit")
 
 \item{labels}{Named list of labels}
 
-\item{conf_level}{Confidence level for Clopper-Pearson intervals}
+\item{conf_level}{Confidence level}
 
 \item{bins}{Number of exposure bins (not counting placebo)}
 
@@ -52,7 +55,7 @@ lr_plot_show_groups(object, boxes_by, color_by = "inherit")
 
 \item{panel}{Character string: "upper", "lower", or "both" (the default)}
 
-\item{boxes_by}{Stratification variables to define groups for boxplots (a tidyselection of variables)}
+\item{group_by}{Stratification variables to define groups for boxplots (a tidyselection of variables)}
 }
 \value{
 Plot object of class \code{erlr_plot}
@@ -66,7 +69,7 @@ lr_data |>
   lr_plot_show_model() |> 
   lr_plot_show_quantiles() |> 
   lr_plot_show_groups(quartile_1) |> 
-  print()
+  plot()
 
 lr_data |> 
   lr_plot(exposure_1, response_1, sex) |> 
@@ -74,15 +77,14 @@ lr_data |>
   lr_plot_show_quantiles() |> 
   lr_plot_show_datastrip() |> 
   lr_plot_show_groups(quartile_1) |> 
-  print()  
+  plot()  
 
-lr_data[1:70,] |> 
+lr_data |> 
   lr_plot(exposure_1, response_1) |> 
   lr_plot_show_model() |> 
-  lr_plot_show_quantiles(bins = 6) |> 
-  lr_plot_show_datastrip(sex, style = "dotplot") |> 
-  lr_plot_show_groups(quartile_1) |> 
-  lr_plot_show_groups(sex) |> 
-  print(box_height = 2)
+  lr_plot_show_quantiles(bins = 3) |> 
+  lr_plot_show_datastrip(sex) |> 
+  lr_plot_show_groups(c(quartile_1, sex)) |> 
+  plot()
 
 }

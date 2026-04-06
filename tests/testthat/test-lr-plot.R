@@ -75,15 +75,15 @@ test_that("lr_plot_build constructs ggplot2 objects", {
 
   expect_equal(
     plt1_built_gg, 
-    c(base = TRUE, strip = FALSE, box = FALSE)
+    c(base = TRUE, strip = FALSE, group = FALSE)
   )
   expect_equal(
     plt2_built_gg, 
-    c(base = TRUE, strip_upper = TRUE, strip_lower = TRUE, box = FALSE)
+    c(base = TRUE, strip_upper = TRUE, strip_lower = TRUE, group = FALSE)
   )
   expect_equal(
     plt3_built_gg, 
-    c(base = TRUE, strip_upper = TRUE, strip_lower = TRUE, box_quartile_1 = TRUE, box_dose = TRUE)
+    c(base = TRUE, strip_upper = TRUE, strip_lower = TRUE, group_quartile_1 = TRUE, group_dose = TRUE)
   )
 })
 

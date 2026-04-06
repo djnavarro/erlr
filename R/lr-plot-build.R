@@ -1,7 +1,7 @@
 
-# build base ------------------------------------------------------------------
+# builders for the three plot types -------------------------------------------
 
-build_plot_base <- function(object) {
+build_base_plot <- function(object) {
   base <- ggplot2::ggplot() +
     ggplot2::scale_y_continuous(
       oob = scales::oob_keep, 
@@ -24,7 +24,53 @@ build_plot_base <- function(object) {
   return(base)
 }
 
-# build model -----------------------------------------------------------------
+build_strip_plot <- function(object) {
+  builder <- object$part$strip$builder
+  strip <- list()
+  if (object$part$strip$upper) strip$upper <- builder(object, "upper")
+  if (object$part$strip$lower) strip$lower <- builder(object, "lower")
+  return(strip)
+}
+
+
+build_group_plot <- function(object) {
+  strata <- object$strata$group
+  group <- list()
+
+  for(g in names(object$part$group)) {
+
+    if (is.null(strata$name)) {
+      group[[g]] <- ggplot2::ggplot(
+        data = object$part$group[[g]]$data,
+        mapping = ggplot2::aes(
+          x = .data[[object$exposure$name]],
+          y = lvl
+        )
+      )
+    } else {
+      group[[g]] <- ggplot2::ggplot(
+        data = object$part$group[[g]]$data,
+        mapping = ggplot2::aes(
+          x = .data[[object$exposure$name]],
+          y = lvl,
+          fill = .data[[strata$name]]
+        )
+      )
+    }
+
+    group[[g]] <- group[[g]] +
+      ggplot2::geom_boxplot(alpha = .5) +
+      ggplot2::coord_cartesian(
+        xlim = object$exposure$limits, 
+        clip = "off"
+      ) 
+  }
+  
+  return(group)  
+}
+
+
+# specific buildiers: base plot model -----------------------------------------
 
 build_model_ribbon <- function(object) {
   strata <- object$strata$model
@@ -165,7 +211,7 @@ build_model_p <- function(object) {
   }   
 }
 
-# build quantiles -------------------------------------------------------------
+# specific buildiers: base plot quantile --------------------------------------
 
 build_quantiles <- function(object) {
   strata <- object$strata$quantile
@@ -226,46 +272,7 @@ build_quantiles <- function(object) {
   )
 }
 
-# build strip -----------------------------------------------------------------
-
-build_plot_strip <- function(object) {
-  builder <- object$part$strip$builder
-  strip <- list()
-  if (object$part$strip$upper) strip$upper <- builder(object, "upper")
-  if (object$part$strip$lower) strip$lower <- builder(object, "lower")
-  return(strip)
-}
-
-build_strip_dot <- function(object, panel) {
-  strata <- object$strata$strip
-  is_upr <- panel == "upper"
-  if (is_upr)  dd <- object$data |> dplyr::filter(.data[[object$response$name]] == 1)
-  if (!is_upr) dd <- object$data |> dplyr::filter(.data[[object$response$name]] == 0)
-  
-  if (!is.null(strata$name)) {
-    set_label(dd[[strata$name]], strata$label)
-    plt_mapping <- ggplot2::aes(x = .data[[object$exposure$name]], fill = .data[[strata$name]])
-  } else {
-    plt_mapping <- ggplot2::aes(x = .data[[object$exposure$name]])
-  }
-  
-  nbin <- 100
-  dd |> 
-    ggplot2::ggplot() +
-    ggplot2::geom_dotplot(
-      mapping = plt_mapping,
-      binwidth = (object$exposure$limit[2] - object$exposure$limit[1]) / nbin,
-      dotsize = 1,
-      method = "histodot",
-      stackgroups = TRUE,
-      stackdir = "centerwhole"
-    ) +
-    ggplot2::coord_cartesian(
-      xlim = object$exposure$limits, 
-      clip = "off"
-    ) + 
-    ggplot2::scale_y_continuous(breaks = NULL, minor_breaks = NULL)
-}
+# specific buildiers: strip plot ----------------------------------------------
 
 build_strip_jitter <- function(object, panel) {
   strata <- object$strata$strip
@@ -297,41 +304,108 @@ build_strip_jitter <- function(object, panel) {
   
 }
 
-# build box -------------------------------------------------------------------
+# composition/polishing steps -------------------------------------------------
 
-build_plot_box <- function(object) {
-  strata <- object$strata$box
-  box <- list()
+polish_margins <- function(object) {
 
-  for(bb in names(object$part$box)) {
+  p <- object$plot
 
-    if (is.null(strata$name)) {
-      box[[bb]] <- ggplot2::ggplot(
-        data = object$part$box[[bb]]$data,
-        mapping = ggplot2::aes(
-          x = .data[[object$exposure$name]],
-          y = lvl
-        )
-      )
-    } else {
-      box[[bb]] <- ggplot2::ggplot(
-        data = object$part$box[[bb]]$data,
-        mapping = ggplot2::aes(
-          x = .data[[object$exposure$name]],
-          y = lvl,
-          fill = .data[[strata$name]]
-        )
+  margins <- ggplot2::margin(t = 5.5, r = 5.5, b = 5.5, l = 5.5, unit = "pt")
+  zero_pt <- ggplot2::unit(0, "pt")
+
+  base_mar <- margins
+  uppr_mar <- margins
+  lowr_mar <- margins
+
+  if (!is.null(p$strip$upper)) {
+    base_mar[1] <- zero_pt
+    uppr_mar[3] <- zero_pt
+  }
+  if (!is.null(p$strip$lower)) {
+    base_mar[3] <- zero_pt
+    lowr_mar[1] <- zero_pt
+  }
+
+  p$base <- p$base + ggplot2::theme(margins = base_mar)
+  if (!is.null(p$strip$upper)) p$strip$upper <- p$strip$upper + ggplot2::theme(margins = uppr_mar)
+  if (!is.null(p$strip$lower)) p$strip$lower <- p$strip$lower + ggplot2::theme(margins = lowr_mar)
+  if (!is.null(p$group)) {
+    for(g in seq_along(p$group)) {
+      p$group[[g]] + ggplot2::theme(margins = margins)
+    }
+  }
+
+  return(p)
+}
+
+polish_labels <- function(object) {
+  p <- object$plot
+
+  p$base <- p$base + ggplot2::labs(
+    x = object$exposure$label,
+    y = object$response$label
+  )
+
+  if (!is.null(p$strip)) {
+    if (!is.null(p$strip$upper)) {
+      p$strip$upper <- p$strip$upper + ggplot2::labs(
+        x = object$exposure$label,
+        y = NULL
       )
     }
+    if (!is.null(p$strip$lower)) {
+      p$strip$lower <- p$strip$lower + ggplot2::labs(
+        x = object$exposure$label,
+        y = NULL
+      )
+    }
+  }
 
-    box[[bb]] <- box[[bb]] +
-      ggplot2::geom_boxplot(alpha = .5) +
-      ggplot2::coord_cartesian(
-        xlim = object$exposure$limits, 
-        clip = "off"
-      ) 
+  if (!is.null(p$group)) {
+    for(g in names(p$group)) {
+      p$group[[g]] <- p$group[[g]] + ggplot2::labs(
+        x = object$exposure$label,
+        y = object$part$group[[g]]$y$label
+      )
+    }
+  }
+
+  return(p)
+}
+
+polish_arrangement <- function(object) {
+  
+  plot_list <- list()
+  plot_size <- numeric()
+  ind <- 0L
+
+  if (!is.null(object$plot$strip$upper)) {
+    ind <- ind + 1L
+    plot_list[[ind]] <- object$plot$strip$upper
+    plot_size[ind] <- object$style$height$strip / 2
+  }
+
+  ind <- ind + 1L
+  plot_list[[ind]] <- object$plot$base
+  plot_size[ind] <- object$style$height$base
+
+  if (!is.null(object$plot$strip$lower)) {
+    ind <- ind + 1L
+    plot_list[[ind]] <- object$plot$strip$lower
+    plot_size[ind] <- object$style$height$strip / 2
   }
   
-  return(box)  
+  if (!is.null(object$plot$group)) {
+    group_n <- purrr::map_dbl(object$part$group, \(bb) bb$n_groups)
+    group_prop <- group_n / sum(group_n)
+    for(g in seq_along(object$plot$group)) {
+      ind <- ind + 1L
+      plot_list[[ind]] <- object$plot$group[[g]]
+      plot_size[ind] <- object$style$height$group * group_prop[g]
+    }
+  }
+
+  return(list(plots = plot_list, heights = plot_size))
 }
+
 
