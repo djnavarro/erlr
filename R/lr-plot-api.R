@@ -4,9 +4,9 @@
 #' @param data Observed data
 #' @param exposure Exposure variable (one variable, unquoted)
 #' @param response Response variable (one variable, unquoted)
-#' @param color_by Stratification variable used for color and fill (one variable, unquoted)
-#' @param group_by Stratification variables to define groups for boxplots (a tidyselection of variables)
-#' @param use_color Logical, indicating whether this component should keep the color stratification
+#' @param stratify_by Stratification variable used for color and fill (one variable, unquoted)
+#' @param group_by Grouping variables to define groups for distribution plots (a tidyselection of variables)
+#' @param keep_strata Logical, indicating whether this component should keep the color stratification
 #' @param labels Named list of labels
 #' @param bins Number of exposure bins (not counting placebo)
 #' @param style Character string: "jitter" (the default) or "dotplot"
@@ -23,22 +23,16 @@
 #'   lr_plot_show_quantiles() |> 
 #'   lr_plot_show_groups(quartile_1) |> 
 #'   plot()
-#' 
-#' lr_data |> 
-#'   lr_plot(exposure_1, response_1, sex) |> 
-#'   lr_plot_show_model() |> 
-#'   lr_plot_show_quantiles() |> 
-#'   lr_plot_show_datastrip() |> 
-#'   lr_plot_show_groups(quartile_1) |> 
-#'   plot()  
-#' 
-#' lr_data |> 
-#'   lr_plot(exposure_1, response_1, color_by = sex) |> 
-#'   lr_plot_show_model(use_color = FALSE) |> 
+#'  
+#' plt <- lr_data |> 
+#'   lr_plot(exposure_1, response_1, stratify_by = sex) |> 
+#'   lr_plot_show_model(keep_strata = FALSE) |> 
 #'   lr_plot_show_quantiles(bins = 3) |> 
 #'   lr_plot_show_datastrip() |> 
-#'   lr_plot_show_groups(group_by = c(quartile_1, dose), use_color = FALSE) |> 
-#'   plot()
+#'   lr_plot_show_groups(group_by = c(quartile_1, dose), keep_strata = FALSE)
+#' 
+#' print(plt)
+#' plot(plt)
 #' 
 #' @name lr_plot
 NULL
@@ -47,7 +41,7 @@ NULL
 
 #' @rdname lr_plot
 #' @export
-lr_plot <- function(data, exposure, response, color_by = NULL) {
+lr_plot <- function(data, exposure, response, stratify_by = NULL) {
 
   # empty plot object
   object <- structure(
@@ -79,7 +73,7 @@ lr_plot <- function(data, exposure, response, color_by = NULL) {
   # store variable names
   object$exposure$name <- rlang::as_name(rlang::enquo(exposure))
   object$response$name <- rlang::as_name(rlang::enquo(response)) 
-  strata_name <- rlang::enquo(color_by)
+  strata_name <- rlang::enquo(stratify_by)
   if (!rlang::quo_is_null(strata_name)) object$strata$name <- rlang::as_name(strata_name)
   
   # store (default) variable labels
@@ -122,13 +116,13 @@ lr_plot_style <- function(object, labels) {
 
 #' @rdname lr_plot
 #' @export
-lr_plot_show_model <- function(object, use_color = NULL, conf_level = 0.95) {
+lr_plot_show_model <- function(object, keep_strata = NULL, conf_level = 0.95) {
 
   if (!inherits(object, "erlr_plot")) rlang::abort("`object` must be an erlr plot object")
-  if (is.null(use_color)) use_color <- !is.null(object$strata$name)
+  if (is.null(keep_strata)) keep_strata <- !is.null(object$strata$name)
   
   object$part$model <- list()
-  object$part$model$stratify <- use_color
+  object$part$model$stratify <- keep_strata
 
   # model formula
   fml <- paste(object$response$name, object$exposure$name, sep = " ~ ")
@@ -157,13 +151,13 @@ lr_plot_show_model <- function(object, use_color = NULL, conf_level = 0.95) {
 
 #' @rdname lr_plot
 #' @export
-lr_plot_show_quantiles <- function(object, use_color = NULL, bins = 4, conf_level = 0.95) {
+lr_plot_show_quantiles <- function(object, keep_strata = NULL, bins = 4, conf_level = 0.95) {
 
   if (!inherits(object, "erlr_plot")) rlang::abort("`object` must be an erlr plot object")
-  if (is.null(use_color)) use_color <- !is.null(object$strata$name)
+  if (is.null(keep_strata)) keep_strata <- !is.null(object$strata$name)
 
   object$part$quantile <- list()
-  object$part$quantile$stratify <- use_color
+  object$part$quantile$stratify <- keep_strata
   object$part$quantile$n_quantiles <- bins
   object$part$quantile$summary <- object$data |>
     dplyr::mutate(
@@ -195,13 +189,13 @@ lr_plot_show_quantiles <- function(object, use_color = NULL, bins = 4, conf_leve
 
 #' @rdname lr_plot
 #' @export
-lr_plot_show_datastrip <- function(object, use_color = NULL, style = "jitter", panel = "both") {
+lr_plot_show_datastrip <- function(object, keep_strata = NULL, style = "jitter", panel = "both") {
 
   if (!inherits(object, "erlr_plot")) rlang::abort("`object` must be an erlr plot object")
-  if (is.null(use_color)) use_color <- !is.null(object$strata$name)
+  if (is.null(keep_strata)) keep_strata <- !is.null(object$strata$name)
 
   object$part$strip <- list()
-  object$part$strip$stratify <- use_color
+  object$part$strip$stratify <- keep_strata
   object$part$strip$style <- style
   object$part$strip$panel <- panel
   
@@ -219,18 +213,18 @@ lr_plot_show_datastrip <- function(object, use_color = NULL, style = "jitter", p
 
 #' @rdname lr_plot
 #' @export
-lr_plot_show_groups <- function(object, group_by, use_color = NULL) {
+lr_plot_show_groups <- function(object, group_by, keep_strata = NULL) {
 
   if (!inherits(object, "erlr_plot")) rlang::abort("`object` must be an erlr plot object")
-  if (is.null(use_color)) use_color <- !is.null(object$strata$name)
+  if (is.null(keep_strata)) keep_strata <- !is.null(object$strata$name)
   group_cols <- tidyselect::eval_select(rlang::enquo(group_by), object$data) 
 
   object$part$group <- list()
-  object$part$group$stratify <- use_color
+  object$part$group$stratify <- keep_strata
   object$part$group$var <- list()
   for(g in names(group_cols)) {
-    if (use_color)  groupings <- c(g, object$strata$name)
-    if (!use_color) groupings <- g
+    if (keep_strata)  groupings <- c(g, object$strata$name)
+    if (!keep_strata) groupings <- g
     object$part$group$var[[g]] <- list()
     object$part$group$var[[g]]$y <- define_plot_variable(
       name = g,
