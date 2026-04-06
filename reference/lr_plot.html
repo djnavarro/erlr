@@ -44,22 +44,22 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">lr_plot</span><span class="op">(</span><span class="va">data</span>, <span class="va">exposure</span>, <span class="va">response</span>, color_by <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">lr_plot</span><span class="op">(</span><span class="va">data</span>, <span class="va">exposure</span>, <span class="va">response</span>, stratify_by <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">lr_plot_style</span><span class="op">(</span><span class="va">object</span>, <span class="va">labels</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">lr_plot_show_model</span><span class="op">(</span><span class="va">object</span>, use_color <span class="op">=</span> <span class="cn">NULL</span>, conf_level <span class="op">=</span> <span class="fl">0.95</span><span class="op">)</span></span>
+<span><span class="fu">lr_plot_show_model</span><span class="op">(</span><span class="va">object</span>, keep_strata <span class="op">=</span> <span class="cn">NULL</span>, conf_level <span class="op">=</span> <span class="fl">0.95</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">lr_plot_show_quantiles</span><span class="op">(</span><span class="va">object</span>, use_color <span class="op">=</span> <span class="cn">NULL</span>, bins <span class="op">=</span> <span class="fl">4</span>, conf_level <span class="op">=</span> <span class="fl">0.95</span><span class="op">)</span></span>
+<span><span class="fu">lr_plot_show_quantiles</span><span class="op">(</span><span class="va">object</span>, keep_strata <span class="op">=</span> <span class="cn">NULL</span>, bins <span class="op">=</span> <span class="fl">4</span>, conf_level <span class="op">=</span> <span class="fl">0.95</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">lr_plot_show_datastrip</span><span class="op">(</span></span>
 <span>  <span class="va">object</span>,</span>
-<span>  use_color <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  keep_strata <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  style <span class="op">=</span> <span class="st">"jitter"</span>,</span>
 <span>  panel <span class="op">=</span> <span class="st">"both"</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">lr_plot_show_groups</span><span class="op">(</span><span class="va">object</span>, <span class="va">group_by</span>, use_color <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
+<span><span class="fu">lr_plot_show_groups</span><span class="op">(</span><span class="va">object</span>, <span class="va">group_by</span>, keep_strata <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">lr_plot_build</span><span class="op">(</span><span class="va">object</span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -80,7 +80,7 @@
 <dd><p>Response variable (one variable, unquoted)</p></dd>
 
 
-<dt id="arg-color-by">color_by<a class="anchor" aria-label="anchor" href="#arg-color-by"></a></dt>
+<dt id="arg-stratify-by">stratify_by<a class="anchor" aria-label="anchor" href="#arg-stratify-by"></a></dt>
 <dd><p>Stratification variable used for color and fill (one variable, unquoted)</p></dd>
 
 
@@ -92,7 +92,7 @@
 <dd><p>Named list of labels</p></dd>
 
 
-<dt id="arg-use-color">use_color<a class="anchor" aria-label="anchor" href="#arg-use-color"></a></dt>
+<dt id="arg-keep-strata">keep_strata<a class="anchor" aria-label="anchor" href="#arg-keep-strata"></a></dt>
 <dd><p>Logical, indicating whether this component should keep the color stratification</p></dd>
 
 
@@ -113,7 +113,7 @@
 
 
 <dt id="arg-group-by">group_by<a class="anchor" aria-label="anchor" href="#arg-group-by"></a></dt>
-<dd><p>Stratification variables to define groups for boxplots (a tidyselection of variables)</p></dd>
+<dd><p>Grouping variables to define groups for distribution plots (a tidyselection of variables)</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -130,29 +130,26 @@
 <span class="r-in"><span>  <span class="fu">lr_plot_show_groups</span><span class="op">(</span><span class="va">quartile_1</span><span class="op">)</span> <span class="op">|&gt;</span> </span></span>
 <span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="lr_plot-1.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">lr_data</span> <span class="op">|&gt;</span> </span></span>
-<span class="r-in"><span>  <span class="fu">lr_plot</span><span class="op">(</span><span class="va">exposure_1</span>, <span class="va">response_1</span>, <span class="va">sex</span><span class="op">)</span> <span class="op">|&gt;</span> </span></span>
-<span class="r-in"><span>  <span class="fu">lr_plot_show_model</span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> </span></span>
-<span class="r-in"><span>  <span class="fu">lr_plot_show_quantiles</span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> </span></span>
-<span class="r-in"><span>  <span class="fu">lr_plot_show_datastrip</span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> </span></span>
-<span class="r-in"><span>  <span class="fu">lr_plot_show_groups</span><span class="op">(</span><span class="va">quartile_1</span><span class="op">)</span> <span class="op">|&gt;</span> </span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="op">)</span>  </span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Ignoring unknown labels:</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> <span style="color: #00BB00;">fill</span> : <span style="color: #0000BB;">"Sex"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Ignoring unknown labels:</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> <span style="color: #00BB00;">fill</span> : <span style="color: #0000BB;">"Sex"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Ignoring unknown labels:</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> <span style="color: #00BB00;">colour</span> : <span style="color: #0000BB;">"Sex"</span></span>
-<span class="r-plt img"><img src="lr_plot-2.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">lr_data</span> <span class="op">|&gt;</span> </span></span>
-<span class="r-in"><span>  <span class="fu">lr_plot</span><span class="op">(</span><span class="va">exposure_1</span>, <span class="va">response_1</span>, color_by <span class="op">=</span> <span class="va">sex</span><span class="op">)</span> <span class="op">|&gt;</span> </span></span>
-<span class="r-in"><span>  <span class="fu">lr_plot_show_model</span><span class="op">(</span>use_color <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="op">|&gt;</span> </span></span>
+<span class="r-in"><span> </span></span>
+<span class="r-in"><span><span class="va">plt</span> <span class="op">&lt;-</span> <span class="va">lr_data</span> <span class="op">|&gt;</span> </span></span>
+<span class="r-in"><span>  <span class="fu">lr_plot</span><span class="op">(</span><span class="va">exposure_1</span>, <span class="va">response_1</span>, stratify_by <span class="op">=</span> <span class="va">sex</span><span class="op">)</span> <span class="op">|&gt;</span> </span></span>
+<span class="r-in"><span>  <span class="fu">lr_plot_show_model</span><span class="op">(</span>keep_strata <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="op">|&gt;</span> </span></span>
 <span class="r-in"><span>  <span class="fu">lr_plot_show_quantiles</span><span class="op">(</span>bins <span class="op">=</span> <span class="fl">3</span><span class="op">)</span> <span class="op">|&gt;</span> </span></span>
 <span class="r-in"><span>  <span class="fu">lr_plot_show_datastrip</span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> </span></span>
-<span class="r-in"><span>  <span class="fu">lr_plot_show_groups</span><span class="op">(</span>group_by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">quartile_1</span>, <span class="va">dose</span><span class="op">)</span>, use_color <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="op">|&gt;</span> </span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu">lr_plot_show_groups</span><span class="op">(</span>group_by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">quartile_1</span>, <span class="va">dose</span><span class="op">)</span>, keep_strata <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">plt</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;erlr_plot&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   $data:      300 rows, 7 cols</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   $exposure:  exposure_1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   $response:  response_1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   $strata:    sex</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   $part:</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     $model:     response_1 ~ exposure_1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     $quantile:  3 bins</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     $strip:     jitter both</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     $group:     quartile_1, dose</span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">plt</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Ignoring unknown labels:</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> <span style="color: #00BB00;">fill</span> : <span style="color: #0000BB;">"Sex"</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Ignoring unknown labels:</span>
@@ -165,7 +162,7 @@
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Ignoring unknown labels:</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> <span style="color: #00BB00;">colour</span> : <span style="color: #0000BB;">"Sex"</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> <span style="color: #00BB00;">fill</span> : <span style="color: #0000BB;">"Sex"</span></span>
-<span class="r-plt img"><img src="lr_plot-3.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="lr_plot-2.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

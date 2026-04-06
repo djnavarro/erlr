@@ -67,13 +67,25 @@ lr_data |>
 
 ``` r
 
-lr_data |> 
-   lr_plot(exposure_1, response_1, color_by = sex) |> 
-   lr_plot_show_model(use_color = FALSE) |> 
+plt <- lr_data |> 
+   lr_plot(exposure_1, response_1, stratify_by = sex) |> 
+   lr_plot_show_model(keep_strata = FALSE) |> 
    lr_plot_show_quantiles(bins = 3) |> 
    lr_plot_show_datastrip() |> 
-   lr_plot_show_groups(group_by = c(quartile_1, dose), use_color = FALSE) |> 
-   plot()
+   lr_plot_show_groups(group_by = c(quartile_1, dose), keep_strata = FALSE)
+
+print(plt)
+#> <erlr_plot>
+#>   $data:      300 rows, 7 cols
+#>   $exposure:  exposure_1
+#>   $response:  response_1
+#>   $strata:    sex
+#>   $part:
+#>     $model:     response_1 ~ exposure_1
+#>     $quantile:  3 bins
+#>     $strip:     jitter both
+#>     $group:     quartile_1, dose
+plot(plt)
 ```
 
 ![](reference/figures/README-lr-plot-2.png)

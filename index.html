@@ -117,13 +117,25 @@
 <p><img src="reference/figures/README-lr-plot-1.png" width="100%"></p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
-<span><span class="va">lr_data</span> <span class="op">|&gt;</span> </span>
-<span>   <span class="fu"><a href="reference/lr_plot.html">lr_plot</a></span><span class="op">(</span><span class="va">exposure_1</span>, <span class="va">response_1</span>, color_by <span class="op">=</span> <span class="va">sex</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
-<span>   <span class="fu"><a href="reference/lr_plot.html">lr_plot_show_model</a></span><span class="op">(</span>use_color <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span><span class="va">plt</span> <span class="op">&lt;-</span> <span class="va">lr_data</span> <span class="op">|&gt;</span> </span>
+<span>   <span class="fu"><a href="reference/lr_plot.html">lr_plot</a></span><span class="op">(</span><span class="va">exposure_1</span>, <span class="va">response_1</span>, stratify_by <span class="op">=</span> <span class="va">sex</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>   <span class="fu"><a href="reference/lr_plot.html">lr_plot_show_model</a></span><span class="op">(</span>keep_strata <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>   <span class="fu"><a href="reference/lr_plot.html">lr_plot_show_quantiles</a></span><span class="op">(</span>bins <span class="op">=</span> <span class="fl">3</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>   <span class="fu"><a href="reference/lr_plot.html">lr_plot_show_datastrip</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
-<span>   <span class="fu"><a href="reference/lr_plot.html">lr_plot_show_groups</a></span><span class="op">(</span>group_by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">quartile_1</span>, <span class="va">dose</span><span class="op">)</span>, use_color <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
-<span>   <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<span>   <span class="fu"><a href="reference/lr_plot.html">lr_plot_show_groups</a></span><span class="op">(</span>group_by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">quartile_1</span>, <span class="va">dose</span><span class="op">)</span>, keep_strata <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">plt</span><span class="op">)</span></span>
+<span><span class="co">#&gt; &lt;erlr_plot&gt;</span></span>
+<span><span class="co">#&gt;   $data:      300 rows, 7 cols</span></span>
+<span><span class="co">#&gt;   $exposure:  exposure_1</span></span>
+<span><span class="co">#&gt;   $response:  response_1</span></span>
+<span><span class="co">#&gt;   $strata:    sex</span></span>
+<span><span class="co">#&gt;   $part:</span></span>
+<span><span class="co">#&gt;     $model:     response_1 ~ exposure_1</span></span>
+<span><span class="co">#&gt;     $quantile:  3 bins</span></span>
+<span><span class="co">#&gt;     $strip:     jitter both</span></span>
+<span><span class="co">#&gt;     $group:     quartile_1, dose</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">plt</span><span class="op">)</span></span></code></pre></div>
 <p><img src="reference/figures/README-lr-plot-2.png" width="100%"></p>
 </div>
 <div class="section level2">

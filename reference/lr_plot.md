@@ -5,22 +5,22 @@ Builds an exposure-response plot for a logistic regression model
 ## Usage
 
 ``` r
-lr_plot(data, exposure, response, color_by = NULL)
+lr_plot(data, exposure, response, stratify_by = NULL)
 
 lr_plot_style(object, labels)
 
-lr_plot_show_model(object, use_color = NULL, conf_level = 0.95)
+lr_plot_show_model(object, keep_strata = NULL, conf_level = 0.95)
 
-lr_plot_show_quantiles(object, use_color = NULL, bins = 4, conf_level = 0.95)
+lr_plot_show_quantiles(object, keep_strata = NULL, bins = 4, conf_level = 0.95)
 
 lr_plot_show_datastrip(
   object,
-  use_color = NULL,
+  keep_strata = NULL,
   style = "jitter",
   panel = "both"
 )
 
-lr_plot_show_groups(object, group_by, use_color = NULL)
+lr_plot_show_groups(object, group_by, keep_strata = NULL)
 
 lr_plot_build(object)
 ```
@@ -39,7 +39,7 @@ lr_plot_build(object)
 
   Response variable (one variable, unquoted)
 
-- color_by:
+- stratify_by:
 
   Stratification variable used for color and fill (one variable,
   unquoted)
@@ -52,7 +52,7 @@ lr_plot_build(object)
 
   Named list of labels
 
-- use_color:
+- keep_strata:
 
   Logical, indicating whether this component should keep the color
   stratification
@@ -75,7 +75,7 @@ lr_plot_build(object)
 
 - group_by:
 
-  Stratification variables to define groups for boxplots (a
+  Grouping variables to define groups for distribution plots (a
   tidyselection of variables)
 
 ## Value
@@ -92,29 +92,26 @@ lr_data |>
   lr_plot_show_groups(quartile_1) |> 
   plot()
 
-
-lr_data |> 
-  lr_plot(exposure_1, response_1, sex) |> 
-  lr_plot_show_model() |> 
-  lr_plot_show_quantiles() |> 
-  lr_plot_show_datastrip() |> 
-  lr_plot_show_groups(quartile_1) |> 
-  plot()  
-#> Ignoring unknown labels:
-#> • fill : "Sex"
-#> Ignoring unknown labels:
-#> • fill : "Sex"
-#> Ignoring unknown labels:
-#> • colour : "Sex"
-
-
-lr_data |> 
-  lr_plot(exposure_1, response_1, color_by = sex) |> 
-  lr_plot_show_model(use_color = FALSE) |> 
+ 
+plt <- lr_data |> 
+  lr_plot(exposure_1, response_1, stratify_by = sex) |> 
+  lr_plot_show_model(keep_strata = FALSE) |> 
   lr_plot_show_quantiles(bins = 3) |> 
   lr_plot_show_datastrip() |> 
-  lr_plot_show_groups(group_by = c(quartile_1, dose), use_color = FALSE) |> 
-  plot()
+  lr_plot_show_groups(group_by = c(quartile_1, dose), keep_strata = FALSE)
+
+print(plt)
+#> <erlr_plot>
+#>   $data:      300 rows, 7 cols
+#>   $exposure:  exposure_1
+#>   $response:  response_1
+#>   $strata:    sex
+#>   $part:
+#>     $model:     response_1 ~ exposure_1
+#>     $quantile:  3 bins
+#>     $strip:     jitter both
+#>     $group:     quartile_1, dose
+plot(plt)
 #> Ignoring unknown labels:
 #> • fill : "Sex"
 #> Ignoring unknown labels:
