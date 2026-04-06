@@ -20,7 +20,8 @@ Imports:
     scales,
     stats,
     tibble,
-    tidyselect
+    tidyselect,
+    withr
 Suggests: 
     knitr,
     rmarkdown,

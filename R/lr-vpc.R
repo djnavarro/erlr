@@ -16,15 +16,26 @@
 #' sim
 #' 
 lr_vpc_sim <- function(object, nsim = 100, seed = NULL) {
+  if (is.null(seed)) {
+    seed <- .pick_seed()
+    rlang::inform(paste("Using seed =", seed))
+  }
+  withr::with_seed(
+    seed = seed, 
+    code = {
+      sim <- .lr_vpc_sim(object = object, nsim = nsim)
+    }
+  )
+  return(sim)
+}
 
+.lr_vpc_sim <- function(object, nsim) {
   ff <- object$formula
   vv <- all.vars(ff)
   exp_var <- vv[2]
   rsp_var <- vv[1]
   fn <- lr_simulator(object)
   dd <- object$data[, vv]
-
-  if (!is.null(seed)) set.seed(seed)
   par <- mvtnorm::rmvnorm(
     n = nsim, 
     mean = stats::coef(object),
@@ -41,7 +52,6 @@ lr_vpc_sim <- function(object, nsim = 100, seed = NULL) {
     sim[[ii]] <- dd_sim
   }
   sim <- dplyr::bind_rows(sim)
-
   return(sim)
 }
 

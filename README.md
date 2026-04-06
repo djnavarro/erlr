@@ -106,6 +106,7 @@ plot(plt)
 ``` r
 mod1 <- lr_model(response_1 ~ exposure_1 + sex + dose, lr_data)
 mod2 <- lr_scm_backward(mod1, candidates = c("sex", "dose"))
+#> Using seed = 1068
 lr_scm_history(mod2)
 #> # A tibble: 4 × 11
 #>   iteration attempt step       action term_tested model_tested   model_converged

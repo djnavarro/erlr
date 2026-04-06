@@ -1,16 +1,20 @@
 
 
 make_lr_data <- function(seed) {
-  set.seed(seed)
   n <- 300L
-  lr_data <- tibble::tibble(
-    id = 1:n,
-    dose = sample(rep(c(0, 100, 200), c(n/3, n/3, n/3))),
-    exposure_1 = stats::qlnorm(p = stats::runif(n, .05, .95)) * dose,
-    quartile_1 = cut_exposure_quantile(exposure_1),
-    response_1 = as.numeric(logit(stats::runif(n)) < exposure_1/100 - 0.1),
-    response_2 = as.numeric(logit(stats::runif(n)) < exposure_1/500 - 2.0),
-    sex = factor(sample(rep(c("Male", "Female"), c(n/2, n/2))))
+  withr::with_seed(
+    seed = seed,
+    code = {
+      lr_data <- tibble::tibble(
+        id = 1:n,
+        dose = sample(rep(c(0, 100, 200), c(n/3, n/3, n/3))),
+        exposure_1 = stats::qlnorm(p = stats::runif(n, .05, .95)) * dose,
+        quartile_1 = cut_exposure_quantile(exposure_1),
+        response_1 = as.numeric(logit(stats::runif(n)) < exposure_1/100 - 0.1),
+        response_2 = as.numeric(logit(stats::runif(n)) < exposure_1/500 - 2.0),
+        sex = factor(sample(rep(c("Male", "Female"), c(n/2, n/2))))
+      )
+    }
   )
   attr(lr_data$id, "label") <- "Subject ID"
   attr(lr_data$dose, "label") <- "Dose"

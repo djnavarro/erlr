@@ -8,6 +8,8 @@ get_label <- function(x) attr(x, "label")
 set_label <- function(x, lbl) {attr(x, "label") <- lbl; x}
 set_names <- function(x, nm) {names(x) <- nm; x}
 
+.pick_seed <- function() {999 + sample.int(9000, size = 1L)}
+
 # simple helpers ----------------------------------------------------------
 
 #' Logit and inverse logit functions

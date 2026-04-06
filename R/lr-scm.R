@@ -24,7 +24,24 @@ NULL
 #' @rdname lr_scm
 #' @export
 lr_scm_forward <- function(mod, candidates, threshold = 0.01, seed = NULL) {
-  if (!is.null(seed)) set.seed(seed)
+  if (is.null(seed)) {
+    seed <- .pick_seed()
+    rlang::inform(paste("Using seed =", seed))
+  }
+  withr::with_seed(
+    seed = seed,
+    code = {
+      mod_out <- .lr_scm_forward(
+        mod = mod,
+        candidates = candidates,
+        threshold = threshold
+      )
+    }
+  )
+  return(mod_out)
+}
+
+.lr_scm_forward <- function(mod, candidates, threshold) {
   history <- lr_scm_history(mod)
   last_iter <- max(history$iteration)
   while (TRUE) {
@@ -45,7 +62,24 @@ lr_scm_forward <- function(mod, candidates, threshold = 0.01, seed = NULL) {
 #' @rdname lr_scm
 #' @export
 lr_scm_backward <- function(mod, candidates, threshold = 0.001, seed = NULL) {
-  if (!is.null(seed)) set.seed(seed)
+  if (is.null(seed)) {
+    seed <- .pick_seed()
+    rlang::inform(paste("Using seed =", seed))
+  }
+  withr::with_seed(
+    seed = seed,
+    code = {
+      mod_out <- .lr_scm_backward(
+        mod = mod,
+        candidates = candidates,
+        threshold = threshold
+      )
+    }
+  )
+  return(mod_out)
+}
+
+.lr_scm_backward <- function(mod, candidates, threshold) {
   history <- lr_scm_history(mod)
   last_iter <- max(history$iteration)
   while (TRUE) {

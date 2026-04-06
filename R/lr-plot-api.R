@@ -206,7 +206,7 @@ lr_plot_show_datastrip <- function(object, keep_strata = NULL, style = "jitter",
   object$part$strip$style <- style
   object$part$strip$panel <- panel
   
-  if (style == "jitter")  object$part$strip$builder <- build_strip_jitter
+  if (style == "jitter")  object$part$strip$builder <- datastrip_jitter
   #if (style == "dotplot") object$part$strip$builder <- build_strip_dot
 
   if (panel %in% c("lower", "both")) object$part$strip$lower <- TRUE
