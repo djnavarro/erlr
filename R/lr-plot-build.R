@@ -402,23 +402,46 @@ polish_labels <- function(object) {
 polish_arrangement <- function(object) {
   
   plot_list <- list()
-  plot_size <- numeric()
+  plot_info <- tibble::tibble(
+    id = integer(),
+    size = numeric(),
+    plot = character(),
+    name = character()
+  )
   ind <- 0L
 
   if (!is.null(object$plot$strip$upper)) {
     ind <- ind + 1L
     plot_list[[ind]] <- object$plot$strip$upper
-    plot_size[ind] <- object$style$height$strip / 2
+    plot_info <- plot_info |> 
+      tibble::add_row(
+        id = ind,
+        size = object$style$height$strip / 2,
+        plot = "strip",
+        name = "strip_upper"
+      )
   }
 
   ind <- ind + 1L
   plot_list[[ind]] <- object$plot$base
-  plot_size[ind] <- object$style$height$base
+  plot_info <- plot_info |> 
+    tibble::add_row(
+      id = ind,
+      size = object$style$height$base,
+      plot = "base",
+      name = "base"
+    )
 
   if (!is.null(object$plot$strip$lower)) {
     ind <- ind + 1L
     plot_list[[ind]] <- object$plot$strip$lower
-    plot_size[ind] <- object$style$height$strip / 2
+    plot_info <- plot_info |> 
+      tibble::add_row(
+        id = ind,
+        size = object$style$height$strip / 2,
+        plot = "strip",
+        name = "strip_lower"
+      )
   }
   
   if (!is.null(object$plot$group)) {
@@ -427,11 +450,41 @@ polish_arrangement <- function(object) {
     for(g in seq_along(object$plot$group)) {
       ind <- ind + 1L
       plot_list[[ind]] <- object$plot$group[[g]]
-      plot_size[ind] <- object$style$height$group * group_prop[g]
+      plot_info <- plot_info |> 
+        tibble::add_row(
+          id = ind,
+          size = object$style$height$group * group_prop[g],
+          plot = "group",
+          name = paste("group", g, sep = "_")
+        )
     }
   }
 
-  return(list(plots = plot_list, heights = plot_size))
+  return(list(plots = plot_list, info = plot_info))
 }
 
+polish_legends <- function(object, composition) {
+  if (is.null(object$strata$name)) return(composition)
+  has_strata <- purrr::map_lgl(object$part, \(x) x$stratify)
+  if (!any(has_strata)) return(composition)
+  stratified_parts <- names(has_strata[has_strata])
+  stratified_plots <- dplyr::case_when(
+    stratified_parts == "quantile" ~ "base",
+    stratified_parts == "model" ~ "base",
+    TRUE ~ stratified_parts
+  )
+  stratified_plots <- unique(stratified_plots)
+  has_legend <- composition$info |>
+    dplyr::filter(plot %in% stratified_plots) |> 
+    dplyr::pull(id)
+  if (length(has_legend) == 1L) return(composition)
+  for(ind in 2:length(has_legend)) {
+    composition$plots[[ind]] <- composition$plots[[ind]] + 
+      ggplot2::guides(
+        color = ggplot2::guide_none(),
+        fill = ggplot2::guide_none()
+      )
+  }
+  return(composition)
+}
 

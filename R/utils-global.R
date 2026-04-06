@@ -29,5 +29,6 @@ utils::globalVariables(c(
   "y_mid_lbl",
   "iteration",
   "model_updated",
-  ":="
+  ":=",
+  "id"
 ))

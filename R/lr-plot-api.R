@@ -294,6 +294,7 @@ lr_plot_build <- function(object) {
   object$plot <- polish_margins(object)
   object$plot <- polish_labels(object)
   composition <- polish_arrangement(object)
+  composition <- polish_legends(object, composition)
 
   # output
   if (length(composition$heights) == 1) {
@@ -302,7 +303,7 @@ lr_plot_build <- function(object) {
     object$output <- patchwork::wrap_plots(
       composition$plots, 
       ncol = 1, 
-      heights = composition$heights,
+      heights = composition$info$size,
       guides = "collect",
       axes = "collect"
     )
