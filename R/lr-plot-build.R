@@ -34,14 +34,14 @@ build_strip_plot <- function(object) {
 
 
 build_group_plot <- function(object) {
-  strata <- object$strata$group
+  strata <- object$strata
   group <- list()
 
-  for(g in names(object$part$group)) {
+  for(g in names(object$part$group$var)) {
 
-    if (is.null(strata$name)) {
+    if (object$part$group$stratify == FALSE) {
       group[[g]] <- ggplot2::ggplot(
-        data = object$part$group[[g]]$data,
+        data = object$part$group$var[[g]]$data,
         mapping = ggplot2::aes(
           x = .data[[object$exposure$name]],
           y = lvl
@@ -49,7 +49,7 @@ build_group_plot <- function(object) {
       )
     } else {
       group[[g]] <- ggplot2::ggplot(
-        data = object$part$group[[g]]$data,
+        data = object$part$group$var[[g]]$data,
         mapping = ggplot2::aes(
           x = .data[[object$exposure$name]],
           y = lvl,
@@ -61,7 +61,7 @@ build_group_plot <- function(object) {
     group[[g]] <- group[[g]] +
       ggplot2::geom_boxplot(
         alpha = .5,
-        key_glyph = draw_key_rect
+        key_glyph = ggplot2::draw_key_rect
       ) +
       ggplot2::coord_cartesian(
         xlim = object$exposure$limits, 
@@ -76,8 +76,8 @@ build_group_plot <- function(object) {
 # specific buildiers: base plot model -----------------------------------------
 
 build_model_ribbon <- function(object) {
-  strata <- object$strata$model
-  if (is.null(strata$name)) {
+  strata <- object$strata
+  if (object$part$model$stratify == FALSE) {
     return(
       ggplot2::geom_ribbon(
         data = object$part$model$predictions,
@@ -88,7 +88,7 @@ build_model_ribbon <- function(object) {
         ),
         fill = "grey40",
         alpha = .25,
-        key_glyph = draw_key_rect
+        key_glyph = ggplot2::draw_key_rect
       )
     )
   }
@@ -101,13 +101,13 @@ build_model_ribbon <- function(object) {
       ymax = ci_upper
     ),
     alpha = .25,
-    key_glyph = draw_key_rect
+    key_glyph = ggplot2::draw_key_rect
   )
 }
 
 build_model_line <- function(object) {
-  strata <- object$strata$model
-  if (is.null(strata$name)) {
+  strata <- object$strata
+  if (object$part$model$stratify == FALSE) {
     return(
       ggplot2::geom_path(
         data = object$part$model$predictions,
@@ -116,7 +116,7 @@ build_model_line <- function(object) {
           y = fit_resp
         ),
         linewidth = 1,
-        key_glyph = draw_key_rect
+        key_glyph = ggplot2::draw_key_rect
       )
     )
   }
@@ -128,12 +128,12 @@ build_model_line <- function(object) {
       color = .data[[strata$name]]
     ),
     linewidth = 1,
-    key_glyph = draw_key_rect
+    key_glyph = ggplot2::draw_key_rect
   )
 }
 
 build_model_p <- function(object) {
-  strata <- object$strata$model
+  strata <- object$strata
 
   distance_from_corners <- object$part$model$predictions |> 
     dplyr::select(dplyr::all_of(c(object$exposure$name, "fit_resp"))) |> 
@@ -225,10 +225,10 @@ build_model_p <- function(object) {
 # specific buildiers: base plot quantile --------------------------------------
 
 build_quantiles <- function(object) {
-  strata <- object$strata$quantile
+  strata <- object$strata
   quantile_summary <- object$part$quantile$summary
 
-  if (is.null(strata$name)) {
+  if (object$part$quantile$stratify == FALSE) {
     return(
       list(
         ggplot2::geom_point(
@@ -236,14 +236,14 @@ build_quantiles <- function(object) {
           mapping = ggplot2::aes(x = x_mid, y = y_mid),
           inherit.aes = FALSE,
           size = 2,
-          key_glyph = draw_key_rect
+          key_glyph = ggplot2::draw_key_rect
         ),
         ggplot2::geom_errorbar(
           data = quantile_summary,
           mapping = ggplot2::aes(x = x_mid, ymin = ci_lower, ymax = ci_upper),
           inherit.aes = FALSE,
           width = 0.025 * (object$exposure$limits[2] - object$exposure$limits[1]),
-          key_glyph = draw_key_rect
+          key_glyph = ggplot2::draw_key_rect
         ),
         ggplot2::geom_text(
           data = quantile_summary,
@@ -265,7 +265,7 @@ build_quantiles <- function(object) {
       ),
       inherit.aes = FALSE,
       size = 2,
-      key_glyph = draw_key_rect
+      key_glyph = ggplot2::draw_key_rect
     ),
     ggplot2::geom_errorbar(
       data = quantile_summary,
@@ -277,7 +277,7 @@ build_quantiles <- function(object) {
       ),
       inherit.aes = FALSE,
       width = 0.025 * (object$exposure$limits[2] - object$exposure$limits[1]),
-      key_glyph = draw_key_rect
+      key_glyph = ggplot2::draw_key_rect
     ),
     ggplot2::geom_text(
       data = quantile_summary,
@@ -292,12 +292,12 @@ build_quantiles <- function(object) {
 # specific buildiers: strip plot ----------------------------------------------
 
 build_strip_jitter <- function(object, panel) {
-  strata <- object$strata$strip
+  strata <- object$strata
   is_upr <- panel == "upper"
   if (is_upr)  dd <- object$data |> dplyr::filter(.data[[object$response$name]] == 1)
   if (!is_upr) dd <- object$data |> dplyr::filter(.data[[object$response$name]] == 0)
   
-  if (!is.null(strata$name)) {
+  if (object$part$strip$stratify == TRUE) {
     set_label(dd[[strata$name]], strata$label)
     plt_mapping <- ggplot2::aes(x = .data[[object$exposure$name]], y = 0, color = .data[[strata$name]])
   } else {
@@ -311,7 +311,7 @@ build_strip_jitter <- function(object, panel) {
       width = 0,
       height = 0.1,
       size = 1,
-      key_glyph = draw_key_rect
+      key_glyph = ggplot2::draw_key_rect
     ) +
     ggplot2::coord_cartesian(
       xlim = object$exposure$limits, 
@@ -362,8 +362,8 @@ polish_labels <- function(object) {
   p$base <- p$base + ggplot2::labs(
     x = object$exposure$label,
     y = object$response$label,
-    color = object$strata$quantile$label, # hack
-    fill = object$strata$model$label      # hack
+    color = object$strata$label,
+    fill = object$strata$label
   )
 
   if (!is.null(p$strip)) {
@@ -371,16 +371,16 @@ polish_labels <- function(object) {
       p$strip$upper <- p$strip$upper + ggplot2::labs(
         x = object$exposure$label,
         y = NULL,
-        color = object$strata$strip$label,
-        fill = object$strata$strip$label
+        color = object$strata$label,
+        fill = object$strata$label
       )
     }
     if (!is.null(p$strip$lower)) {
       p$strip$lower <- p$strip$lower + ggplot2::labs(
         x = object$exposure$label,
         y = NULL,
-        color = object$strata$strip$label,
-        fill = object$strata$strip$label
+        color = object$strata$label,
+        fill = object$strata$label
       )
     }
   }
@@ -390,8 +390,8 @@ polish_labels <- function(object) {
       p$group[[g]] <- p$group[[g]] + ggplot2::labs(
         x = object$exposure$label,
         y = object$part$group[[g]]$y$label,
-        color = object$strata$group$label,
-        fill = object$strata$group$label
+        color = object$strata$label,
+        fill = object$strata$label
       )
     }
   }
@@ -422,7 +422,7 @@ polish_arrangement <- function(object) {
   }
   
   if (!is.null(object$plot$group)) {
-    group_n <- purrr::map_dbl(object$part$group, \(bb) bb$n_groups)
+    group_n <- purrr::map_dbl(object$part$group$var, \(vv) vv$n_groups)
     group_prop <- group_n / sum(group_n)
     for(g in seq_along(object$plot$group)) {
       ind <- ind + 1L

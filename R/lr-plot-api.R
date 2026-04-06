@@ -6,6 +6,7 @@
 #' @param response Response variable (one variable, unquoted)
 #' @param color_by Stratification variable used for color and fill (one variable, unquoted)
 #' @param group_by Stratification variables to define groups for boxplots (a tidyselection of variables)
+#' @param use_color Logical, indicating whether this component should keep the color stratification
 #' @param labels Named list of labels
 #' @param bins Number of exposure bins (not counting placebo)
 #' @param style Character string: "jitter" (the default) or "dotplot"
@@ -32,11 +33,11 @@
 #'   plot()  
 #' 
 #' lr_data |> 
-#'   lr_plot(exposure_1, response_1) |> 
-#'   lr_plot_show_model() |> 
+#'   lr_plot(exposure_1, response_1, color_by = sex) |> 
+#'   lr_plot_show_model(use_color = FALSE) |> 
 #'   lr_plot_show_quantiles(bins = 3) |> 
-#'   lr_plot_show_datastrip(sex) |> 
-#'   lr_plot_show_groups(c(quartile_1, sex)) |> 
+#'   lr_plot_show_datastrip() |> 
+#'   lr_plot_show_groups(group_by = c(quartile_1, dose), use_color = FALSE) |> 
 #'   plot()
 #' 
 #' @name lr_plot
@@ -54,13 +55,7 @@ lr_plot <- function(data, exposure, response, color_by = NULL) {
       data  = NULL,
       exposure = define_plot_variable(role = "exposure"),
       response = define_plot_variable(role = "response"),
-      strata = list(
-        default  = define_plot_variable(role = "default_strata"),
-        model    = define_plot_variable(role = "model_strata"),
-        quantile = define_plot_variable(role = "quantile_strata"),
-        strip    = define_plot_variable(role = "strip_strata"),
-        group    = define_plot_variable(role = "group_strata")
-      ), 
+      strata = define_plot_variable(role = "strata"),
       part = list(
         model    = NULL, 
         quantile = NULL, 
@@ -85,21 +80,20 @@ lr_plot <- function(data, exposure, response, color_by = NULL) {
   object$exposure$name <- rlang::as_name(rlang::enquo(exposure))
   object$response$name <- rlang::as_name(rlang::enquo(response)) 
   strata_name <- rlang::enquo(color_by)
-  if (!rlang::quo_is_null(strata_name)) object$strata$default$name <- rlang::as_name(strata_name)
+  if (!rlang::quo_is_null(strata_name)) object$strata$name <- rlang::as_name(strata_name)
   
   # store (default) variable labels
   object$exposure$label <- get_label(object$data[[object$exposure$name]]) %||% object$exposure$name
   object$response$label <- get_label(object$data[[object$response$name]]) %||% object$response$name    
-  if (!is.null(object$strata$default$name)) {
-    object$strata$default$label <- get_label(object$data[[object$strata$default$name]]) %||% 
-      object$strata$default$name
+  if (!is.null(object$strata$name)) {
+    object$strata$label <- get_label(object$data[[object$strata$name]]) %||% object$strata$name
   }
 
   # store limits
   object$exposure$limits <- range(object$data[[object$exposure$name]])
   object$response$limits <- c(0, 1)
-  if (!is.null(object$strata$default$name)) {
-    object$strata$default$limits <- unique(object$data[[object$strata$default$name]])
+  if (!is.null(object$strata$name)) {
+    object$strata$limits <- unique(object$data[[object$strata$name]])
   }
 
   # stylistic information
@@ -128,16 +122,18 @@ lr_plot_style <- function(object, labels) {
 
 #' @rdname lr_plot
 #' @export
-lr_plot_show_model <- function(object, color_by = "inherit", conf_level = 0.95) {
+lr_plot_show_model <- function(object, use_color = NULL, conf_level = 0.95) {
 
   if (!inherits(object, "erlr_plot")) rlang::abort("`object` must be an erlr plot object")
+  if (is.null(use_color)) use_color <- !is.null(object$strata$name)
+  
   object$part$model <- list()
-  object$strata$model <- define_part_strata(object, {{color_by}}, "model_strata")
+  object$part$model$stratify <- use_color
 
   # model formula
   fml <- paste(object$response$name, object$exposure$name, sep = " ~ ")
-  if (!is.null(object$strata$model$name)) {
-    fml <- paste(fml, object$strata$model$name, sep = " + ")
+  if (object$part$model$stratify == TRUE) {
+    fml <- paste(fml, object$strata$name, sep = " + ")
   }
   object$part$model$formula <- stats::as.formula(fml)
 
@@ -148,7 +144,7 @@ lr_plot_show_model <- function(object, color_by = "inherit", conf_level = 0.95) 
   )
 
   # p-value is different depending on stratification: currently only supported when no strata
-  if (is.null(object$strata$model$name)) {
+  if (object$part$model$stratify == TRUE) {
     object$part$model$p_value <- summary(object$part$model$glm)$coefficients[2, "Pr(>|z|)"]
   }
   object$part$model$conf_level <- conf_level
@@ -161,12 +157,13 @@ lr_plot_show_model <- function(object, color_by = "inherit", conf_level = 0.95) 
 
 #' @rdname lr_plot
 #' @export
-lr_plot_show_quantiles <- function(object, color_by = "inherit", bins = 4, conf_level = 0.95) {
+lr_plot_show_quantiles <- function(object, use_color = NULL, bins = 4, conf_level = 0.95) {
 
   if (!inherits(object, "erlr_plot")) rlang::abort("`object` must be an erlr plot object")
-  object$strata$quantile <- define_part_strata(object, {{color_by}}, "quantile_strata")
+  if (is.null(use_color)) use_color <- !is.null(object$strata$name)
 
   object$part$quantile <- list()
+  object$part$quantile$stratify <- use_color
   object$part$quantile$n_quantiles <- bins
   object$part$quantile$summary <- object$data |>
     dplyr::mutate(
@@ -175,7 +172,7 @@ lr_plot_show_quantiles <- function(object, color_by = "inherit", bins = 4, conf_
         exposure = .data[[object$exposure$name]], 
         n = object$part$quantile$n_quantiles
       ),
-      strata = get_strata_values(.data, object$strata$quantile$name)   
+      strata = get_strata_values(.data, object$strata$name)   
     ) |> 
     dplyr::summarise(
       n1 = sum(.data[[object$response$name]] == 1, na.rm = TRUE),
@@ -198,12 +195,13 @@ lr_plot_show_quantiles <- function(object, color_by = "inherit", bins = 4, conf_
 
 #' @rdname lr_plot
 #' @export
-lr_plot_show_datastrip <- function(object, color_by = "inherit", style = "jitter", panel = "both") {
+lr_plot_show_datastrip <- function(object, use_color = NULL, style = "jitter", panel = "both") {
 
   if (!inherits(object, "erlr_plot")) rlang::abort("`object` must be an erlr plot object")
-  object$strata$strip <- define_part_strata(object, {{color_by}}, "strip_strata")
+  if (is.null(use_color)) use_color <- !is.null(object$strata$name)
 
   object$part$strip <- list()
+  object$part$strip$stratify <- use_color
   object$part$strip$style <- style
   object$part$strip$panel <- panel
   
@@ -221,34 +219,38 @@ lr_plot_show_datastrip <- function(object, color_by = "inherit", style = "jitter
 
 #' @rdname lr_plot
 #' @export
-lr_plot_show_groups <- function(object, group_by, color_by = "inherit") {
+lr_plot_show_groups <- function(object, group_by, use_color = NULL) {
 
   if (!inherits(object, "erlr_plot")) rlang::abort("`object` must be an erlr plot object")
-  object$strata$group <- define_part_strata(object, {{color_by}}, "group_strata")
+  if (is.null(use_color)) use_color <- !is.null(object$strata$name)
   group_cols <- tidyselect::eval_select(rlang::enquo(group_by), object$data) 
 
   object$part$group <- list()
+  object$part$group$stratify <- use_color
+  object$part$group$var <- list()
   for(g in names(group_cols)) {
-    object$part$group[[g]] <- list()
-    object$part$group[[g]]$y <- define_plot_variable(
+    if (use_color)  groupings <- c(g, object$strata$name)
+    if (!use_color) groupings <- g
+    object$part$group$var[[g]] <- list()
+    object$part$group$var[[g]]$y <- define_plot_variable(
       name = g,
       label = get_label(object$data[[g]]) %||% g,
       role = paste("group", g, sep = "_")
     )
-    object$part$group[[g]]$counts <- object$data |> 
+    object$part$group$var[[g]]$counts <- object$data |> 
       dplyr::summarise(
         n   = sum(!is.na(.data[[object$exposure$name]])),
         lbl = paste0("N=", n),
-        .by = dplyr::all_of(c(g, object$strata$group$name))
+        .by = groupings
       ) |> 
       dplyr::mutate(lvl = paste0(.data[[g]], " (", lbl, ")")) |> 
       dplyr::arrange(.data[[g]])
-    object$part$group[[g]]$n_groups <- nrow(object$part$group[[g]]$counts)
-    object$part$group[[g]]$data <- object$data |> 
-      dplyr::select(dplyr::all_of(c(g, object$strata$group$name, object$exposure$name))) |> 
+    object$part$group$var[[g]]$n_groups <- nrow(object$part$group$var[[g]]$counts)
+    object$part$group$var[[g]]$data <- object$data |> 
+      dplyr::select(dplyr::all_of(c(groupings, object$exposure$name))) |> 
       dplyr::left_join(
-        object$part$group[[g]]$counts,
-        by = c(g, object$strata$group$name)
+        object$part$group$var[[g]]$counts,
+        by = groupings
       )
   }
 
@@ -264,19 +266,13 @@ print.erlr_plot <- function(x, ...) {
   cat("  $data:      ", nrow(x$data), " rows, ", ncol(x$data), " cols\n", sep = "")
   cat("  $exposure:  ", x$exposure$name %||% "<none>", "\n", sep = "")
   cat("  $response:  ", x$response$name  %||% "<none>", "\n", sep = "")
-  if (any(part_set)) {
-    cat("  $strata:\n")
-    if (part_set["model"])    cat("    $model:     ", x$strata$model$name %||% "<none>", "\n", sep = "")
-    if (part_set["quantile"]) cat("    $quantile:  ", x$strata$quantile$name %||% "<none>", "\n", sep = "")
-    if (part_set["strip"])    cat("    $strip:     ", x$strata$strip$name %||% "<none>", "\n", sep = "")
-    if (part_set["group"])    cat("    $group:     ", x$strata$group$name %||% "<none>", "\n", sep = "")
-  }
+  cat("  $strata:    ", x$strata$name  %||% "<none>", "\n", sep = "")
   if (any(part_set)) {
     cat("  $part:\n")
     if (part_set["model"])    cat("    $model:     ", deparse(x$part$model$formula), "\n", sep = "")
     if (part_set["quantile"]) cat("    $quantile:  ", x$part$quantile$n_quantiles, " bins\n", sep = "")
     if (part_set["strip"])    cat("    $strip:     ", x$part$strip$style, " ", x$part$strip$panel, "\n", sep = "")
-    if (part_set["group"])    cat("    $group:     ", paste(names(x$part$group), collapse = ", "), "\n", sep = "")
+    if (part_set["group"])    cat("    $group:     ", paste(names(x$part$group$var), collapse = ", "), "\n", sep = "")
   }
   
   return(invisible(x))

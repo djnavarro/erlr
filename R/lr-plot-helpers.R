@@ -25,9 +25,9 @@ define_part_strata <- function(object, strata, context) {
     strata_label  <- get_label(object$data[[strata_name]]) %||% strata_name
     strata_limits <- unique(strata_val)
   } else if (strata_val == "inherit") { # use cached value
-    strata_name   <- object$strata$default$name
-    strata_label  <- object$strata$default$label
-    strata_limits <- object$strata$default$limits
+    strata_name   <- object$strata$name
+    strata_label  <- object$strata$label
+    strata_limits <- object$strata$limits
   } 
   return(define_plot_variable(
     name = strata_name, 
@@ -52,11 +52,11 @@ get_model_predictions <- function(object) {
     data.frame() |> 
     set_names(object$exposure$name)
   
-  if (!is.null(object$strata$model$name)) {
+  if (!is.null(object$strata$name)) {
     pred_dat <- pred_dat |> 
       dplyr::cross_join(
-        data.frame(object$strata$model$limits) |> 
-        set_names(object$strata$model$name)
+        data.frame(object$strata$limits) |> 
+        set_names(object$strata$name)
       )
   }
 

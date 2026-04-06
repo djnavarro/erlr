@@ -14,23 +14,18 @@ lr_plot(data, exposure, response, color_by = NULL)
 
 lr_plot_style(object, labels)
 
-lr_plot_show_model(object, color_by = "inherit", conf_level = 0.95)
+lr_plot_show_model(object, use_color = NULL, conf_level = 0.95)
 
-lr_plot_show_quantiles(
-  object,
-  color_by = "inherit",
-  bins = 4,
-  conf_level = 0.95
-)
+lr_plot_show_quantiles(object, use_color = NULL, bins = 4, conf_level = 0.95)
 
 lr_plot_show_datastrip(
   object,
-  color_by = "inherit",
+  use_color = NULL,
   style = "jitter",
   panel = "both"
 )
 
-lr_plot_show_groups(object, group_by, color_by = "inherit")
+lr_plot_show_groups(object, group_by, use_color = NULL)
 
 lr_plot_build(object)
 }
@@ -46,6 +41,8 @@ lr_plot_build(object)
 \item{object}{Partially constructed plot (has S3 class \code{erlr_plot})}
 
 \item{labels}{Named list of labels}
+
+\item{use_color}{Logical, indicating whether this component should keep the color stratification}
 
 \item{conf_level}{Confidence level}
 
