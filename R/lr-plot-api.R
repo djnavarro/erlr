@@ -94,9 +94,7 @@ lr_plot <- function(data, exposure, response, stratify_by = NULL) {
   object$style$format_p <- scales::label_pvalue(accuracy = .001, add_p = TRUE)
   object$style$format_percent <- scales::label_percent(accuracy = 1)
   object$style$height <- list(base = 6, strip = 2, group = 3) 
-  object$style$theme_base <- function() {
-    ggplot2::theme_bw()
-  }
+  object$style$theme_base <- function() ggplot2::theme_bw()
   object$style$theme_args <- function() {
     ggplot2::theme(
       panel.border = ggplot2::element_rect(
@@ -107,6 +105,7 @@ lr_plot <- function(data, exposure, response, stratify_by = NULL) {
       legend.position = "bottom"
     ) 
   }
+  object$style$draw_key <- ggplot2::draw_key_rect
  
   return(object)
 }

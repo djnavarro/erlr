@@ -62,7 +62,7 @@ build_group_plot <- function(object) {
       object$style$theme_base() +
       ggplot2::geom_boxplot(
         alpha = .5,
-        key_glyph = ggplot2::draw_key_rect
+        key_glyph = object$style$draw_key
       ) +
       ggplot2::coord_cartesian(
         xlim = object$exposure$limits, 
@@ -89,7 +89,7 @@ build_model_ribbon <- function(object) {
         ),
         fill = "grey40",
         alpha = .25,
-        key_glyph = ggplot2::draw_key_rect
+        key_glyph = object$style$draw_key
       )
     )
   }
@@ -102,7 +102,7 @@ build_model_ribbon <- function(object) {
       ymax = ci_upper
     ),
     alpha = .25,
-    key_glyph = ggplot2::draw_key_rect
+    key_glyph = object$style$draw_key
   )
 }
 
@@ -117,7 +117,7 @@ build_model_line <- function(object) {
           y = fit_resp
         ),
         linewidth = 1,
-        key_glyph = ggplot2::draw_key_rect
+        key_glyph = object$style$draw_key
       )
     )
   }
@@ -129,7 +129,7 @@ build_model_line <- function(object) {
       color = .data[[strata$name]]
     ),
     linewidth = 1,
-    key_glyph = ggplot2::draw_key_rect
+    key_glyph = object$style$draw_key
   )
 }
 
@@ -237,14 +237,14 @@ build_quantiles <- function(object) {
           mapping = ggplot2::aes(x = x_mid, y = y_mid),
           inherit.aes = FALSE,
           size = 2,
-          key_glyph = ggplot2::draw_key_rect
+          key_glyph = object$style$draw_key
         ),
         ggplot2::geom_errorbar(
           data = quantile_summary,
           mapping = ggplot2::aes(x = x_mid, ymin = ci_lower, ymax = ci_upper),
           inherit.aes = FALSE,
           width = 0.025 * (object$exposure$limits[2] - object$exposure$limits[1]),
-          key_glyph = ggplot2::draw_key_rect
+          key_glyph = object$style$draw_key
         ),
         ggplot2::geom_text(
           data = quantile_summary,
@@ -266,7 +266,7 @@ build_quantiles <- function(object) {
       ),
       inherit.aes = FALSE,
       size = 2,
-      key_glyph = ggplot2::draw_key_rect
+      key_glyph = object$style$draw_key
     ),
     ggplot2::geom_errorbar(
       data = quantile_summary,
@@ -278,7 +278,7 @@ build_quantiles <- function(object) {
       ),
       inherit.aes = FALSE,
       width = 0.025 * (object$exposure$limits[2] - object$exposure$limits[1]),
-      key_glyph = ggplot2::draw_key_rect
+      key_glyph = object$style$draw_key
     ),
     ggplot2::geom_text(
       data = quantile_summary,
@@ -313,7 +313,7 @@ build_strip_jitter <- function(object, panel) {
       width = 0,
       height = 0.1,
       size = 1,
-      key_glyph = ggplot2::draw_key_rect
+      key_glyph = object$style$draw_key
     ) +
     ggplot2::coord_cartesian(
       xlim = object$exposure$limits, 
