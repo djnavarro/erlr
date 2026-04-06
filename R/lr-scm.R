@@ -45,7 +45,7 @@ lr_scm_forward <- function(mod, candidates, threshold = 0.01, seed = NULL) {
   history <- lr_scm_history(mod)
   last_iter <- max(history$iteration)
   while (TRUE) {
-    mod_new <- lr_once_forward(mod, candidates, threshold)
+    mod_new <- .lr_once_forward(mod, candidates, threshold)
     history_new <- lr_scm_history(mod_new)
     this_iter <- max(history_new$iteration)
     if (this_iter == last_iter) return(mod)
@@ -83,7 +83,7 @@ lr_scm_backward <- function(mod, candidates, threshold = 0.001, seed = NULL) {
   history <- lr_scm_history(mod)
   last_iter <- max(history$iteration)
   while (TRUE) {
-    mod_new <- lr_once_backward(mod, candidates, threshold)
+    mod_new <- .lr_once_backward(mod, candidates, threshold)
     history_new <- lr_scm_history(mod_new)
     this_iter <- max(history_new$iteration)
     if (this_iter == last_iter) return(mod)
@@ -118,7 +118,7 @@ lr_scm_history <- function(mod) {
   return(history_row)
 }
 
-lr_once_forward <- function(mod, candidates, threshold) {
+.lr_once_forward <- function(mod, candidates, threshold) {
   candidates <- sample(candidates)
   history <- lr_scm_history(mod)
   iter <- max(history$iteration) + 1L
@@ -129,9 +129,9 @@ lr_once_forward <- function(mod, candidates, threshold) {
   for (cc in candidates) {    
     add <- stats::as.formula(paste("~", cc))
     attm <- attm + 1L
-    if (!term_in_model(mod, add)) {
-      mod_new <- lr_add_term(mod, add, quiet = TRUE)
-      p_val <- lr_anova_p(mod, mod_new)
+    if (!.term_in_model(mod, add)) {
+      mod_new <- .lr_add_term(mod, add, quiet = TRUE)
+      p_val <- .lr_anova_p(mod, mod_new)
       history_row <- tibble::tibble(
         iteration = iter,
         attempt = attm,
@@ -165,7 +165,7 @@ lr_once_forward <- function(mod, candidates, threshold) {
   return(best_mod)
 }
 
-lr_once_backward <- function(mod, candidates, threshold) {
+.lr_once_backward <- function(mod, candidates, threshold) {
   trm_mod <- stats::terms(mod)
   trm_lab <- attr(trm_mod, "term.labels")
   candidates <- intersect(trm_lab, candidates)
@@ -180,9 +180,9 @@ lr_once_backward <- function(mod, candidates, threshold) {
   for (cc in candidates) {    
     del <- stats::as.formula(paste("~", cc))
     attm <- attm + 1L
-    if (term_in_model(mod, del)) {
-      mod_new <- lr_remove_term(mod, del, quiet = TRUE)
-      p_val <- lr_anova_p(mod, mod_new)
+    if (.term_in_model(mod, del)) {
+      mod_new <- .lr_remove_term(mod, del, quiet = TRUE)
+      p_val <- .lr_anova_p(mod, mod_new)
       history_row <- tibble::tibble(
         iteration = iter,
         attempt = attm,
@@ -216,12 +216,12 @@ lr_once_backward <- function(mod, candidates, threshold) {
   return(best_mod)
 }
 
-lr_anova_p <- function(mod1, mod2) {
+.lr_anova_p <- function(mod1, mod2) {
   smm <- stats::anova(mod1, mod2) 
   return(smm$`Pr(>Chi)`[2])
 }
 
-term_in_model <- function(mod, term) {
+.term_in_model <- function(mod, term) {
   trm_mod <- stats::terms(mod)
   trm_tst <- stats::terms(term)
   trm_mod_lab <- attr(trm_mod, "term.labels")
@@ -230,7 +230,7 @@ term_in_model <- function(mod, term) {
   return(length(ind) != 0)
 }
 
-lr_add_term <- function(mod, add, quiet = FALSE) {
+.lr_add_term <- function(mod, add, quiet = FALSE) {
   trm_mod <- stats::terms(mod)
   trm_add <- stats::terms(add)
   trm_mod_lab <- attr(trm_mod, "term.labels")
@@ -253,7 +253,7 @@ lr_add_term <- function(mod, add, quiet = FALSE) {
   lr_model(formula = fml, data = dat)
 }
 
-lr_remove_term <- function(mod, remove, quiet = FALSE) {
+.lr_remove_term <- function(mod, remove, quiet = FALSE) {
   trm_mod <- stats::terms(mod)
   trm_del <- stats::terms(remove)
   trm_mod_lab <- attr(trm_mod, "term.labels")

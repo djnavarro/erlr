@@ -1,13 +1,13 @@
 
 
-datastrip_jitter <- function(object, panel, seed = 6433) {
+.datastrip_jitter <- function(object, panel, seed = 6433) {
   strata <- object$strata
   is_upr <- panel == "upper"
   if (is_upr)  dd <- object$data |> dplyr::filter(.data[[object$response$name]] == 1)
   if (!is_upr) dd <- object$data |> dplyr::filter(.data[[object$response$name]] == 0)
   
   if (object$part$strip$stratify == TRUE) {
-    set_label(dd[[strata$name]], strata$label)
+    .set_label(dd[[strata$name]], strata$label)
     plt_mapping <- ggplot2::aes(x = .data[[object$exposure$name]], y = 0, color = .data[[strata$name]])
   } else {
     plt_mapping <- ggplot2::aes(x = .data[[object$exposure$name]], y = 0)

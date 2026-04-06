@@ -1,11 +1,5 @@
 
 
-as_erlr <- function(mod) {
-  class(mod) <- c("erlr_glm", class(mod)) # append class in case new methods are required
-  mod$erlr <- list(type = "logistic") # internal "erlr" list to store erlr-specific info
-  mod
-}
-
 #' Fit a logistic regression function
 #'
 #' @param formula Model formula
@@ -19,7 +13,7 @@ as_erlr <- function(mod) {
 #' 
 lr_model <- function(formula, data, ...) {
   mod <- stats::glm(formula = formula, data = data, family = stats::binomial(link = "logit"), ...)
-  as_erlr(mod)
+  .as_erlr(mod)
 }
 
 # extract model predictions and confidence intervals for a new data set.

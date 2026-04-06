@@ -1,6 +1,6 @@
 
 
-make_lr_data <- function(seed) {
+.make_lr_data <- function(seed) {
   n <- 300L
   withr::with_seed(
     seed = seed,
@@ -26,7 +26,7 @@ make_lr_data <- function(seed) {
   return(lr_data)
 }
 
-#lr_data <- make_lr_data(seed = 2407L)
+#lr_data <- .make_lr_data(seed = 2407L)
 #usethis::use_data(lr_data, overwrite = TRUE)
 
 #' Sample simulated data for logistic regression exposure-response models with covariates

@@ -47,9 +47,9 @@ lr_plot <- function(data, exposure, response, stratify_by = NULL) {
   object <- structure(
     list(
       data  = NULL,
-      exposure = define_plot_variable(role = "exposure"),
-      response = define_plot_variable(role = "response"),
-      strata = define_plot_variable(role = "strata"),
+      exposure = .plot_variable(role = "exposure"),
+      response = .plot_variable(role = "response"),
+      strata = .plot_variable(role = "strata"),
       part = list(
         model    = NULL, 
         quantile = NULL, 
@@ -77,10 +77,10 @@ lr_plot <- function(data, exposure, response, stratify_by = NULL) {
   if (!rlang::quo_is_null(strata_name)) object$strata$name <- rlang::as_name(strata_name)
   
   # store (default) variable labels
-  object$exposure$label <- get_label(object$data[[object$exposure$name]]) %||% object$exposure$name
-  object$response$label <- get_label(object$data[[object$response$name]]) %||% object$response$name    
+  object$exposure$label <- .get_label(object$data[[object$exposure$name]]) %||% object$exposure$name
+  object$response$label <- .get_label(object$data[[object$response$name]]) %||% object$response$name    
   if (!is.null(object$strata$name)) {
-    object$strata$label <- get_label(object$data[[object$strata$name]]) %||% object$strata$name
+    object$strata$label <- .get_label(object$data[[object$strata$name]]) %||% object$strata$name
   }
 
   # store limits
@@ -149,7 +149,7 @@ lr_plot_show_model <- function(object, keep_strata = NULL, conf_level = 0.95) {
     object$part$model$p_value <- summary(object$part$model$glm)$coefficients[2, "Pr(>|z|)"]
   }
   object$part$model$conf_level <- conf_level
-  object$part$model$predictions <- get_model_predictions(object)
+  object$part$model$predictions <- .get_model_predictions(object)
   
   return(object)
 }
@@ -173,7 +173,7 @@ lr_plot_show_quantiles <- function(object, keep_strata = NULL, bins = 4, conf_le
         exposure = .data[[object$exposure$name]], 
         n = object$part$quantile$n_quantiles
       ),
-      strata = get_strata_values(.data, object$strata$name)   
+      strata = .get_strata_values(.data, object$strata$name)   
     ) |> 
     dplyr::summarise(
       n1 = sum(.data[[object$response$name]] == 1, na.rm = TRUE),
@@ -206,7 +206,7 @@ lr_plot_show_datastrip <- function(object, keep_strata = NULL, style = "jitter",
   object$part$strip$style <- style
   object$part$strip$panel <- panel
   
-  if (style == "jitter")  object$part$strip$builder <- datastrip_jitter
+  if (style == "jitter")  object$part$strip$builder <- .datastrip_jitter
   #if (style == "dotplot") object$part$strip$builder <- build_strip_dot
 
   if (panel %in% c("lower", "both")) object$part$strip$lower <- TRUE
@@ -233,9 +233,9 @@ lr_plot_show_groups <- function(object, group_by, keep_strata = NULL) {
     if (keep_strata)  groupings <- c(g, object$strata$name)
     if (!keep_strata) groupings <- g
     object$part$group$var[[g]] <- list()
-    object$part$group$var[[g]]$y <- define_plot_variable(
+    object$part$group$var[[g]]$y <- .plot_variable(
       name = g,
-      label = get_label(object$data[[g]]) %||% g,
+      label = .get_label(object$data[[g]]) %||% g,
       role = paste("group", g, sep = "_")
     )
     object$part$group$var[[g]]$counts <- object$data |> 
@@ -293,16 +293,16 @@ lr_plot_build <- function(object) {
   if (!inherits(object, "erlr_plot")) rlang::abort("`object` must be an erlr plot object")
   
   # build
-  if (!is.null(object$part$model) | !is.null(object$part$quantile)) object$plot$base <- build_base_plot(object)
-  if (!is.null(object$part$strip)) object$plot$strip <- build_strip_plot(object)
-  if (!is.null(object$part$group)) object$plot$group <- build_group_plot(object)
+  if (!is.null(object$part$model) | !is.null(object$part$quantile)) object$plot$base <- .build_base_plot(object)
+  if (!is.null(object$part$strip)) object$plot$strip <- .build_strip_plot(object)
+  if (!is.null(object$part$group)) object$plot$group <- .build_group_plot(object)
 
   # polish
-  object$plot <- polish_margins(object)
-  object$plot <- polish_labels(object)
-  composition <- polish_arrangement(object)
-  composition <- polish_legends(object, composition)
-  composition <- polish_theme(object, composition)
+  object$plot <- .polish_margins(object)
+  object$plot <- .polish_labels(object)
+  composition <- .polish_arrangement(object)
+  composition <- .polish_legends(object, composition)
+  composition <- .polish_theme(object, composition)
 
   # output
   if (length(composition$heights) == 1) {

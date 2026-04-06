@@ -1,7 +1,7 @@
 
 # builders for the three plot types -------------------------------------------
 
-build_base_plot <- function(object) {
+.build_base_plot <- function(object) {
   base <- ggplot2::ggplot() +
     object$style$theme_base() +
     ggplot2::scale_y_continuous(
@@ -15,17 +15,17 @@ build_base_plot <- function(object) {
     ) 
   if (!is.null(object$part$model)) {
     base <- base + 
-      build_model_ribbon(object) +
-      build_model_line(object) +
-      build_model_p(object)
+      .build_model_ribbon(object) +
+      .build_model_line(object) +
+      .build_model_summary(object)
   }
   if (!is.null(object$part$quantile)) {
-    base <- base + build_quantiles(object)
+    base <- base + .build_quantiles(object)
   }
   return(base)
 }
 
-build_strip_plot <- function(object) {
+.build_strip_plot <- function(object) {
   builder <- object$part$strip$builder
   strip <- list()
   if (object$part$strip$upper) strip$upper <- builder(object, "upper")
@@ -33,7 +33,7 @@ build_strip_plot <- function(object) {
   return(strip)
 }
 
-build_group_plot <- function(object) {
+.build_group_plot <- function(object) {
   strata <- object$strata
   group <- list()
 
@@ -76,7 +76,7 @@ build_group_plot <- function(object) {
 
 # specific buildiers: base plot model -----------------------------------------
 
-build_model_ribbon <- function(object) {
+.build_model_ribbon <- function(object) {
   strata <- object$strata
   if (object$part$model$stratify == FALSE) {
     return(
@@ -106,7 +106,7 @@ build_model_ribbon <- function(object) {
   )
 }
 
-build_model_line <- function(object) {
+.build_model_line <- function(object) {
   strata <- object$strata
   if (object$part$model$stratify == FALSE) {
     return(
@@ -133,7 +133,7 @@ build_model_line <- function(object) {
   )
 }
 
-build_model_p <- function(object) {
+.build_model_summary <- function(object) {
   strata <- object$strata
 
   distance_from_corners <- object$part$model$predictions |> 
@@ -225,7 +225,7 @@ build_model_p <- function(object) {
 
 # specific buildiers: base plot quantile --------------------------------------
 
-build_quantiles <- function(object) {
+.build_quantiles <- function(object) {
   strata <- object$strata
   quantile_summary <- object$part$quantile$summary
 
@@ -292,7 +292,7 @@ build_quantiles <- function(object) {
 
 # composition/polishing steps -------------------------------------------------
 
-polish_margins <- function(object) {
+.polish_margins <- function(object) {
 
   p <- object$plot
 
@@ -324,7 +324,7 @@ polish_margins <- function(object) {
   return(p)
 }
 
-polish_labels <- function(object) {
+.polish_labels <- function(object) {
   p <- object$plot
 
   p$base <- p$base + ggplot2::labs(
@@ -371,7 +371,7 @@ polish_labels <- function(object) {
   return(p)
 }
 
-polish_arrangement <- function(object) {
+.polish_arrangement <- function(object) {
   
   plot_list <- list()
   plot_info <- tibble::tibble(
@@ -435,7 +435,7 @@ polish_arrangement <- function(object) {
   return(list(plots = plot_list, info = plot_info))
 }
 
-polish_legends <- function(object, composition) {
+.polish_legends <- function(object, composition) {
   if (is.null(object$strata$name)) return(composition)
   has_strata <- purrr::map_lgl(object$part, \(x) x$stratify)
   if (!any(has_strata)) return(composition)
@@ -460,7 +460,7 @@ polish_legends <- function(object, composition) {
   return(composition)
 }
 
-polish_theme <- function(object, composition) {
+.polish_theme <- function(object, composition) {
   theme_fn <- object$style$theme_args
   for (ind in seq_along(composition$plots)) {
     composition$plots[[ind]] <- composition$plots[[ind]] + theme_fn()

@@ -4,11 +4,17 @@
   x
 }
 
-get_label <- function(x) attr(x, "label")
-set_label <- function(x, lbl) {attr(x, "label") <- lbl; x}
-set_names <- function(x, nm) {names(x) <- nm; x}
+.get_label <- function(x) attr(x, "label")
+.set_label <- function(x, lbl) {attr(x, "label") <- lbl; x}
+.set_names <- function(x, nm) {names(x) <- nm; x}
 
 .pick_seed <- function() {999 + sample.int(9000, size = 1L)}
+
+.as_erlr <- function(mod) {
+  class(mod) <- c("erlr_glm", class(mod)) # append class in case new methods are required
+  mod$erlr <- list(type = "logistic") # internal "erlr" list to store erlr-specific info
+  mod
+}
 
 # simple helpers ----------------------------------------------------------
 
