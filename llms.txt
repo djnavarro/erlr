@@ -100,8 +100,8 @@ lr_scm_history(mod2)
 #>   iteration attempt step       action term_tested model_tested   model_converged
 #>       <int>   <int> <chr>      <chr>  <chr>       <chr>          <lgl>          
 #> 1         0       0 base model <NA>   <NA>        response_1 ~ … TRUE           
-#> 2         1       1 backward   remove ~dose       response_1 ~ … TRUE           
-#> 3         1       2 backward   remove ~sex        response_1 ~ … TRUE           
+#> 2         1       1 backward   remove ~sex        response_1 ~ … TRUE           
+#> 3         1       2 backward   remove ~dose       response_1 ~ … TRUE           
 #> 4         2       3 backward   remove ~sex        response_1 ~ … TRUE           
 #> # ℹ 4 more variables: term_p_value <dbl>, model_aic <dbl>, model_bic <dbl>,
 #> #   model_updated <int>
