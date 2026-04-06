@@ -389,7 +389,7 @@ polish_labels <- function(object) {
     for(g in names(p$group)) {
       p$group[[g]] <- p$group[[g]] + ggplot2::labs(
         x = object$exposure$label,
-        y = object$part$group[[g]]$y$label,
+        y = object$part$group$var[[g]]$y$label,
         color = object$strata$label,
         fill = object$strata$label
       )
