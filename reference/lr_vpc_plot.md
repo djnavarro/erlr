@@ -35,6 +35,7 @@ A ggplot2 object
 ``` r
 mod <- lr_model(response_1 ~ exposure_1 + sex, lr_data)
 sim <- lr_vpc_sim(mod)
+#> Using seed = 3244
 lr_vpc_plot(mod, sim, group_by = exposure_1)
 
 lr_vpc_plot(mod, sim, group_by = sex)

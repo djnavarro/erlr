@@ -42,25 +42,27 @@ log
 ``` r
 mod0 <- lr_model(response_1 ~ exposure_1, lr_data)
 mod1 <- lr_scm_forward(mod0, candidates = c("sex", "dose"))
+#> Using seed = 2475
 lr_scm_history(mod1)
 #> # A tibble: 3 × 11
 #>   iteration attempt step       action term_tested model_tested   model_converged
 #>       <int>   <int> <chr>      <chr>  <chr>       <chr>          <lgl>          
 #> 1         0       0 base model NA     NA          response_1 ~ … TRUE           
-#> 2         1       1 forward    add    ~sex        response_1 ~ … TRUE           
-#> 3         1       2 forward    add    ~dose       response_1 ~ … TRUE           
+#> 2         1       1 forward    add    ~dose       response_1 ~ … TRUE           
+#> 3         1       2 forward    add    ~sex        response_1 ~ … TRUE           
 #> # ℹ 4 more variables: term_p_value <dbl>, model_aic <dbl>, model_bic <dbl>,
 #> #   model_updated <int>
 
 mod2 <- lr_model(response_1 ~ exposure_1 + sex + dose, lr_data)
 mod3 <- lr_scm_backward(mod2, candidates = c("sex", "dose"))
+#> Using seed = 9165
 lr_scm_history(mod3)
 #> # A tibble: 4 × 11
 #>   iteration attempt step       action term_tested model_tested   model_converged
 #>       <int>   <int> <chr>      <chr>  <chr>       <chr>          <lgl>          
 #> 1         0       0 base model NA     NA          response_1 ~ … TRUE           
-#> 2         1       1 backward   remove ~dose       response_1 ~ … TRUE           
-#> 3         1       2 backward   remove ~sex        response_1 ~ … TRUE           
+#> 2         1       1 backward   remove ~sex        response_1 ~ … TRUE           
+#> 3         1       2 backward   remove ~dose       response_1 ~ … TRUE           
 #> 4         2       3 backward   remove ~sex        response_1 ~ … TRUE           
 #> # ℹ 4 more variables: term_p_value <dbl>, model_aic <dbl>, model_bic <dbl>,
 #> #   model_updated <int>
