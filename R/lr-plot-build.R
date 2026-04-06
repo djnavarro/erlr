@@ -59,7 +59,10 @@ build_group_plot <- function(object) {
     }
 
     group[[g]] <- group[[g]] +
-      ggplot2::geom_boxplot(alpha = .5) +
+      ggplot2::geom_boxplot(
+        alpha = .5,
+        key_glyph = draw_key_rect
+      ) +
       ggplot2::coord_cartesian(
         xlim = object$exposure$limits, 
         clip = "off"
@@ -84,7 +87,8 @@ build_model_ribbon <- function(object) {
           ymax = ci_upper
         ),
         fill = "grey40",
-        alpha = .25
+        alpha = .25,
+        key_glyph = draw_key_rect
       )
     )
   }
@@ -96,7 +100,8 @@ build_model_ribbon <- function(object) {
       ymin = ci_lower,
       ymax = ci_upper
     ),
-    alpha = .25
+    alpha = .25,
+    key_glyph = draw_key_rect
   )
 }
 
@@ -110,7 +115,8 @@ build_model_line <- function(object) {
           x = .data[[object$exposure$name]], 
           y = fit_resp
         ),
-        linewidth = 1
+        linewidth = 1,
+        key_glyph = draw_key_rect
       )
     )
   }
@@ -121,7 +127,8 @@ build_model_line <- function(object) {
       y = fit_resp,
       color = .data[[strata$name]]
     ),
-    linewidth = 1
+    linewidth = 1,
+    key_glyph = draw_key_rect
   )
 }
 
@@ -162,7 +169,8 @@ build_model_p <- function(object) {
           label = lbl
         ),
         hjust = 0, 
-        vjust = 1
+        vjust = 1,
+        show.legend = FALSE
       )
     )
   }
@@ -177,7 +185,8 @@ build_model_p <- function(object) {
           label = lbl
         ),
         hjust = 1, 
-        vjust = 1
+        vjust = 1,
+        show.legend = FALSE
       )
     )
   }
@@ -191,7 +200,8 @@ build_model_p <- function(object) {
         label = lbl
       ),
       hjust = 0, 
-      vjust = 0
+      vjust = 0,
+      show.legend = FALSE
     ))
   }
 
@@ -205,7 +215,8 @@ build_model_p <- function(object) {
           label = lbl
         ),
         hjust = 1, 
-        vjust = 0
+        vjust = 0,
+        show.legend = FALSE
       )
     )
   }   
@@ -224,19 +235,22 @@ build_quantiles <- function(object) {
           data = quantile_summary,
           mapping = ggplot2::aes(x = x_mid, y = y_mid),
           inherit.aes = FALSE,
-          size = 2
+          size = 2,
+          key_glyph = draw_key_rect
         ),
         ggplot2::geom_errorbar(
           data = quantile_summary,
           mapping = ggplot2::aes(x = x_mid, ymin = ci_lower, ymax = ci_upper),
           inherit.aes = FALSE,
-          width = 0.025 * (object$exposure$limits[2] - object$exposure$limits[1])
+          width = 0.025 * (object$exposure$limits[2] - object$exposure$limits[1]),
+          key_glyph = draw_key_rect
         ),
         ggplot2::geom_text(
           data = quantile_summary,
           mapping = ggplot2::aes(x = x_mid, y = y_lbl, label = y_mid_lbl),
           inherit.aes = FALSE,
-          size = 3
+          size = 3,
+          show.legend = FALSE
         )
       )
     )
@@ -250,7 +264,8 @@ build_quantiles <- function(object) {
         color = .data[["strata"]]
       ),
       inherit.aes = FALSE,
-      size = 2
+      size = 2,
+      key_glyph = draw_key_rect
     ),
     ggplot2::geom_errorbar(
       data = quantile_summary,
@@ -261,13 +276,15 @@ build_quantiles <- function(object) {
         color = .data[["strata"]]  
       ),
       inherit.aes = FALSE,
-      width = 0.025 * (object$exposure$limits[2] - object$exposure$limits[1])
+      width = 0.025 * (object$exposure$limits[2] - object$exposure$limits[1]),
+      key_glyph = draw_key_rect
     ),
     ggplot2::geom_text(
       data = quantile_summary,
       mapping = ggplot2::aes(x = x_mid, y = y_lbl, label = y_mid_lbl),
       inherit.aes = FALSE,
-      size = 3
+      size = 3,
+      show.legend = FALSE
     ) 
   )
 }
@@ -293,7 +310,8 @@ build_strip_jitter <- function(object, panel) {
       mapping = plt_mapping,
       width = 0,
       height = 0.1,
-      size = 1
+      size = 1,
+      key_glyph = draw_key_rect
     ) +
     ggplot2::coord_cartesian(
       xlim = object$exposure$limits, 
@@ -343,20 +361,26 @@ polish_labels <- function(object) {
 
   p$base <- p$base + ggplot2::labs(
     x = object$exposure$label,
-    y = object$response$label
+    y = object$response$label,
+    color = object$strata$quantile$label, # hack
+    fill = object$strata$model$label      # hack
   )
 
   if (!is.null(p$strip)) {
     if (!is.null(p$strip$upper)) {
       p$strip$upper <- p$strip$upper + ggplot2::labs(
         x = object$exposure$label,
-        y = NULL
+        y = NULL,
+        color = object$strata$strip$label,
+        fill = object$strata$strip$label
       )
     }
     if (!is.null(p$strip$lower)) {
       p$strip$lower <- p$strip$lower + ggplot2::labs(
         x = object$exposure$label,
-        y = NULL
+        y = NULL,
+        color = object$strata$strip$label,
+        fill = object$strata$strip$label
       )
     }
   }
@@ -365,7 +389,9 @@ polish_labels <- function(object) {
     for(g in names(p$group)) {
       p$group[[g]] <- p$group[[g]] + ggplot2::labs(
         x = object$exposure$label,
-        y = object$part$group[[g]]$y$label
+        y = object$part$group[[g]]$y$label,
+        color = object$strata$group$label,
+        fill = object$strata$group$label
       )
     }
   }
