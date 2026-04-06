@@ -86,31 +86,31 @@ Plot object of class `erlr_plot`
 
 ``` r
 lr_data |> 
-  lr_plot(exposure_1, response_1) |> 
+  lr_plot(aucss, ae1) |> 
   lr_plot_show_model() |> 
   lr_plot_show_quantiles() |> 
-  lr_plot_show_groups(quartile_1) |> 
+  lr_plot_show_groups(dose) |> 
   plot()
 
  
 plt <- lr_data |> 
-  lr_plot(exposure_1, response_1, stratify_by = sex) |> 
+  lr_plot(aucss, ae2, stratify_by = sex) |> 
   lr_plot_show_model(keep_strata = FALSE) |> 
   lr_plot_show_quantiles(bins = 3) |> 
   lr_plot_show_datastrip() |> 
-  lr_plot_show_groups(group_by = c(quartile_1, dose), keep_strata = FALSE)
+  lr_plot_show_groups(group_by = c(treatment, dose), keep_strata = FALSE)
 
 print(plt)
 #> <erlr_plot>
-#>   $data:      300 rows, 7 cols
-#>   $exposure:  exposure_1
-#>   $response:  response_1
+#>   $data:      300 rows, 10 cols
+#>   $exposure:  aucss
+#>   $response:  ae2
 #>   $strata:    sex
 #>   $part:
-#>     $model:     response_1 ~ exposure_1
+#>     $model:     ae2 ~ aucss
 #>     $quantile:  3 bins
 #>     $strip:     jitter both
-#>     $group:     quartile_1, dose
+#>     $group:     treatment, dose
 plot(plt)
 
 ```

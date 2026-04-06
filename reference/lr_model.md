@@ -29,17 +29,17 @@ A glm object
 ## Examples
 
 ``` r
-mod <- lr_model(response_1 ~ exposure_1, lr_data)
+mod <- lr_model(ae1 ~ aucss, lr_data)
 mod
 #> 
 #> Call:  stats::glm(formula = formula, family = stats::binomial(link = "logit"), 
 #>     data = data)
 #> 
 #> Coefficients:
-#> (Intercept)   exposure_1  
-#>     0.15078      0.01112  
+#> (Intercept)        aucss  
+#>   -1.791383     0.005497  
 #> 
 #> Degrees of Freedom: 299 Total (i.e. Null);  298 Residual
-#> Null Deviance:       341.7 
-#> Residual Deviance: 283.9     AIC: 287.9
+#> Null Deviance:       402.1 
+#> Residual Deviance: 193.4     AIC: 197.4
 ```

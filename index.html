@@ -75,41 +75,41 @@
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tibble.tidyverse.org/" class="external-link">tibble</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">lr_data</span></span>
-<span><span class="co">#&gt; # A tibble: 300 × 7</span></span>
-<span><span class="co">#&gt;       id  dose exposure_1 quartile_1 response_1 response_2 sex   </span></span>
-<span><span class="co">#&gt;    &lt;int&gt; &lt;dbl&gt;      &lt;dbl&gt; &lt;fct&gt;           &lt;dbl&gt;      &lt;dbl&gt; &lt;fct&gt; </span></span>
-<span><span class="co">#&gt;  1     1   100      148.  Q3                  1          1 Male  </span></span>
-<span><span class="co">#&gt;  2     2   100       79.7 Q1                  1          0 Male  </span></span>
-<span><span class="co">#&gt;  3     3   200      212.  Q3                  1          0 Male  </span></span>
-<span><span class="co">#&gt;  4     4   200      236.  Q3                  0          0 Female</span></span>
-<span><span class="co">#&gt;  5     5     0        0   Placebo             1          0 Male  </span></span>
-<span><span class="co">#&gt;  6     6   200       71.0 Q1                  1          0 Female</span></span>
-<span><span class="co">#&gt;  7     7   100      173.  Q3                  1          0 Male  </span></span>
-<span><span class="co">#&gt;  8     8   100      123.  Q2                  0          0 Female</span></span>
-<span><span class="co">#&gt;  9     9     0        0   Placebo             0          0 Male  </span></span>
-<span><span class="co">#&gt; 10    10   200      165.  Q3                  1          0 Female</span></span>
+<span><span class="co">#&gt; # A tibble: 300 × 10</span></span>
+<span><span class="co">#&gt;       id sex      age weight  dose treatment aucss cmaxss   ae1   ae2</span></span>
+<span><span class="co">#&gt;    &lt;int&gt; &lt;fct&gt;  &lt;int&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;fct&gt;     &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;</span></span>
+<span><span class="co">#&gt;  1     1 Male      35     79   200 Drug       673.   97.3     0     1</span></span>
+<span><span class="co">#&gt;  2     2 Female    22     58   200 Drug      2806.  301.      1     1</span></span>
+<span><span class="co">#&gt;  3     3 Female    28     58     0 Placebo      0     0       0     0</span></span>
+<span><span class="co">#&gt;  4     4 Female    18     57   100 Drug      1169.  198.      1     1</span></span>
+<span><span class="co">#&gt;  5     5 Male      28     77   100 Drug       377.   51.4     0     0</span></span>
+<span><span class="co">#&gt;  6     6 Female    19     76   200 Drug       327.   25.4     1     0</span></span>
+<span><span class="co">#&gt;  7     7 Male      30     70     0 Placebo      0     0       0     0</span></span>
+<span><span class="co">#&gt;  8     8 Female    34     60   100 Drug      1208.  133.      1     1</span></span>
+<span><span class="co">#&gt;  9     9 Male      21     89     0 Placebo      0     0       0     0</span></span>
+<span><span class="co">#&gt; 10    10 Female    34     56   200 Drug       254.   31.0     0     0</span></span>
 <span><span class="co">#&gt; # ℹ 290 more rows</span></span>
 <span></span>
-<span><span class="va">mod</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/lr_model.html">lr_model</a></span><span class="op">(</span><span class="va">response_1</span> <span class="op">~</span> <span class="va">exposure_1</span>, <span class="va">lr_data</span><span class="op">)</span></span>
+<span><span class="va">mod</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/lr_model.html">lr_model</a></span><span class="op">(</span><span class="va">ae1</span> <span class="op">~</span> <span class="va">aucss</span>, <span class="va">lr_data</span><span class="op">)</span></span>
 <span><span class="va">mod</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Call:  stats::glm(formula = formula, family = stats::binomial(link = "logit"), </span></span>
 <span><span class="co">#&gt;     data = data)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Coefficients:</span></span>
-<span><span class="co">#&gt; (Intercept)   exposure_1  </span></span>
-<span><span class="co">#&gt;     0.15078      0.01112  </span></span>
+<span><span class="co">#&gt; (Intercept)        aucss  </span></span>
+<span><span class="co">#&gt;   -1.791383     0.005497  </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Degrees of Freedom: 299 Total (i.e. Null);  298 Residual</span></span>
-<span><span class="co">#&gt; Null Deviance:       341.7 </span></span>
-<span><span class="co">#&gt; Residual Deviance: 283.9     AIC: 287.9</span></span></code></pre></div>
+<span><span class="co">#&gt; Null Deviance:       402.1 </span></span>
+<span><span class="co">#&gt; Residual Deviance: 193.4     AIC: 197.4</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="plots">Plots<a class="anchor" aria-label="anchor" href="#plots"></a>
 </h2>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">lr_data</span> <span class="op">|&gt;</span> </span>
-<span>  <span class="fu"><a href="reference/lr_plot.html">lr_plot</a></span><span class="op">(</span><span class="va">exposure_1</span>, <span class="va">response_1</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="reference/lr_plot.html">lr_plot</a></span><span class="op">(</span><span class="va">aucss</span>, <span class="va">ae1</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="reference/lr_plot.html">lr_plot_show_model</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="reference/lr_plot.html">lr_plot_show_quantiles</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="reference/lr_plot.html">lr_plot_show_groups</a></span><span class="op">(</span><span class="va">dose</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
@@ -118,23 +118,23 @@
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="va">plt</span> <span class="op">&lt;-</span> <span class="va">lr_data</span> <span class="op">|&gt;</span> </span>
-<span>   <span class="fu"><a href="reference/lr_plot.html">lr_plot</a></span><span class="op">(</span><span class="va">exposure_1</span>, <span class="va">response_1</span>, stratify_by <span class="op">=</span> <span class="va">sex</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>   <span class="fu"><a href="reference/lr_plot.html">lr_plot</a></span><span class="op">(</span><span class="va">aucss</span>, <span class="va">ae2</span>, stratify_by <span class="op">=</span> <span class="va">sex</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>   <span class="fu"><a href="reference/lr_plot.html">lr_plot_show_model</a></span><span class="op">(</span>keep_strata <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>   <span class="fu"><a href="reference/lr_plot.html">lr_plot_show_quantiles</a></span><span class="op">(</span>bins <span class="op">=</span> <span class="fl">3</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>   <span class="fu"><a href="reference/lr_plot.html">lr_plot_show_datastrip</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
-<span>   <span class="fu"><a href="reference/lr_plot.html">lr_plot_show_groups</a></span><span class="op">(</span>group_by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">quartile_1</span>, <span class="va">dose</span><span class="op">)</span>, keep_strata <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span>   <span class="fu"><a href="reference/lr_plot.html">lr_plot_show_groups</a></span><span class="op">(</span>group_by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">treatment</span>, <span class="va">dose</span><span class="op">)</span>, keep_strata <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">plt</span><span class="op">)</span></span>
 <span><span class="co">#&gt; &lt;erlr_plot&gt;</span></span>
-<span><span class="co">#&gt;   $data:      300 rows, 7 cols</span></span>
-<span><span class="co">#&gt;   $exposure:  exposure_1</span></span>
-<span><span class="co">#&gt;   $response:  response_1</span></span>
+<span><span class="co">#&gt;   $data:      300 rows, 10 cols</span></span>
+<span><span class="co">#&gt;   $exposure:  aucss</span></span>
+<span><span class="co">#&gt;   $response:  ae2</span></span>
 <span><span class="co">#&gt;   $strata:    sex</span></span>
 <span><span class="co">#&gt;   $part:</span></span>
-<span><span class="co">#&gt;     $model:     response_1 ~ exposure_1</span></span>
+<span><span class="co">#&gt;     $model:     ae2 ~ aucss</span></span>
 <span><span class="co">#&gt;     $quantile:  3 bins</span></span>
 <span><span class="co">#&gt;     $strip:     jitter both</span></span>
-<span><span class="co">#&gt;     $group:     quartile_1, dose</span></span>
+<span><span class="co">#&gt;     $group:     treatment, dose</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">plt</span><span class="op">)</span></span></code></pre></div>
 <p><img src="reference/figures/README-lr-plot-2.png" width="100%"></p>
 </div>
@@ -142,17 +142,17 @@
 <h2 id="stepwise-covariate-modelling">Stepwise covariate modelling<a class="anchor" aria-label="anchor" href="#stepwise-covariate-modelling"></a>
 </h2>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">mod1</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/lr_model.html">lr_model</a></span><span class="op">(</span><span class="va">response_1</span> <span class="op">~</span> <span class="va">exposure_1</span> <span class="op">+</span> <span class="va">sex</span> <span class="op">+</span> <span class="va">dose</span>, <span class="va">lr_data</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">mod1</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/lr_model.html">lr_model</a></span><span class="op">(</span><span class="va">ae1</span> <span class="op">~</span> <span class="va">aucss</span> <span class="op">+</span> <span class="va">sex</span> <span class="op">+</span> <span class="va">dose</span>, <span class="va">lr_data</span><span class="op">)</span></span>
 <span><span class="va">mod2</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/lr_scm.html">lr_scm_backward</a></span><span class="op">(</span><span class="va">mod1</span>, candidates <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"sex"</span>, <span class="st">"dose"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Using seed = 1068</span></span>
+<span><span class="co">#&gt; Using seed = 7645</span></span>
 <span><span class="fu"><a href="reference/lr_scm.html">lr_scm_history</a></span><span class="op">(</span><span class="va">mod2</span><span class="op">)</span></span>
 <span><span class="co">#&gt; # A tibble: 4 × 11</span></span>
 <span><span class="co">#&gt;   iteration attempt step       action term_tested model_tested   model_converged</span></span>
 <span><span class="co">#&gt;       &lt;int&gt;   &lt;int&gt; &lt;chr&gt;      &lt;chr&gt;  &lt;chr&gt;       &lt;chr&gt;          &lt;lgl&gt;          </span></span>
-<span><span class="co">#&gt; 1         0       0 base model &lt;NA&gt;   &lt;NA&gt;        response_1 ~ … TRUE           </span></span>
-<span><span class="co">#&gt; 2         1       1 backward   remove ~sex        response_1 ~ … TRUE           </span></span>
-<span><span class="co">#&gt; 3         1       2 backward   remove ~dose       response_1 ~ … TRUE           </span></span>
-<span><span class="co">#&gt; 4         2       3 backward   remove ~sex        response_1 ~ … TRUE           </span></span>
+<span><span class="co">#&gt; 1         0       0 base model &lt;NA&gt;   &lt;NA&gt;        ae1 ~ aucss +… TRUE           </span></span>
+<span><span class="co">#&gt; 2         1       1 backward   remove ~sex        ae1 ~ aucss +… TRUE           </span></span>
+<span><span class="co">#&gt; 3         1       2 backward   remove ~dose       ae1 ~ aucss +… TRUE           </span></span>
+<span><span class="co">#&gt; 4         2       3 backward   remove ~sex        ae1 ~ aucss    TRUE           </span></span>
 <span><span class="co">#&gt; # ℹ 4 more variables: term_p_value &lt;dbl&gt;, model_aic &lt;dbl&gt;, model_bic &lt;dbl&gt;,</span></span>
 <span><span class="co">#&gt; #   model_updated &lt;int&gt;</span></span></code></pre></div>
 </div>
@@ -160,25 +160,25 @@
 <h2 id="vpcsimulation">VPC/Simulation<a class="anchor" aria-label="anchor" href="#vpcsimulation"></a>
 </h2>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">mod</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/lr_model.html">lr_model</a></span><span class="op">(</span><span class="va">response_1</span> <span class="op">~</span> <span class="va">exposure_1</span> <span class="op">+</span> <span class="va">sex</span>, <span class="va">lr_data</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">mod</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/lr_model.html">lr_model</a></span><span class="op">(</span><span class="va">ae1</span> <span class="op">~</span> <span class="va">aucss</span> <span class="op">+</span> <span class="va">sex</span>, <span class="va">lr_data</span><span class="op">)</span></span>
 <span><span class="va">sim</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/lr_vpc_sim.html">lr_vpc_sim</a></span><span class="op">(</span><span class="va">mod</span>, seed <span class="op">=</span> <span class="fl">1234</span><span class="op">)</span></span>
 <span><span class="va">sim</span></span>
 <span><span class="co">#&gt; # A tibble: 30,000 × 5</span></span>
-<span><span class="co">#&gt;    response_1 exposure_1 sex    row_id sim_id</span></span>
-<span><span class="co">#&gt;         &lt;dbl&gt;      &lt;dbl&gt; &lt;fct&gt;   &lt;int&gt;  &lt;int&gt;</span></span>
-<span><span class="co">#&gt;  1      0.918      148.  Male        1      1</span></span>
-<span><span class="co">#&gt;  2      0.823       79.7 Male        2      1</span></span>
-<span><span class="co">#&gt;  3      0.962      212.  Male        3      1</span></span>
-<span><span class="co">#&gt;  4      0.929      236.  Female      4      1</span></span>
-<span><span class="co">#&gt;  5      0.625        0   Male        5      1</span></span>
-<span><span class="co">#&gt;  6      0.611       71.0 Female      6      1</span></span>
-<span><span class="co">#&gt;  7      0.940      173.  Male        7      1</span></span>
-<span><span class="co">#&gt;  8      0.755      123.  Female      8      1</span></span>
-<span><span class="co">#&gt;  9      0.625        0   Male        9      1</span></span>
-<span><span class="co">#&gt; 10      0.841      165.  Female     10      1</span></span>
+<span><span class="co">#&gt;      ae1 aucss sex    row_id sim_id</span></span>
+<span><span class="co">#&gt;    &lt;dbl&gt; &lt;dbl&gt; &lt;fct&gt;   &lt;int&gt;  &lt;int&gt;</span></span>
+<span><span class="co">#&gt;  1 0.894  673. Male        1      1</span></span>
+<span><span class="co">#&gt;  2 1.00  2806. Female      2      1</span></span>
+<span><span class="co">#&gt;  3 0.110    0  Female      3      1</span></span>
+<span><span class="co">#&gt;  4 0.993 1169. Female      4      1</span></span>
+<span><span class="co">#&gt;  5 0.588  377. Male        5      1</span></span>
+<span><span class="co">#&gt;  6 0.468  327. Female      6      1</span></span>
+<span><span class="co">#&gt;  7 0.129    0  Male        7      1</span></span>
+<span><span class="co">#&gt;  8 0.994 1208. Female      8      1</span></span>
+<span><span class="co">#&gt;  9 0.129    0  Male        9      1</span></span>
+<span><span class="co">#&gt; 10 0.362  254. Female     10      1</span></span>
 <span><span class="co">#&gt; # ℹ 29,990 more rows</span></span>
 <span></span>
-<span><span class="fu"><a href="reference/lr_vpc_plot.html">lr_vpc_plot</a></span><span class="op">(</span><span class="va">mod</span>, <span class="va">sim</span>, group_by <span class="op">=</span> <span class="va">exposure_1</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="reference/lr_vpc_plot.html">lr_vpc_plot</a></span><span class="op">(</span><span class="va">mod</span>, <span class="va">sim</span>, group_by <span class="op">=</span> <span class="va">aucss</span><span class="op">)</span></span></code></pre></div>
 <p><img src="reference/figures/README-lr-vpc-1.png" width="100%"></p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/lr_vpc_plot.html">lr_vpc_plot</a></span><span class="op">(</span><span class="va">mod</span>, <span class="va">sim</span>, group_by <span class="op">=</span> <span class="va">sex</span><span class="op">)</span></span></code></pre></div>

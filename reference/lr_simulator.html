@@ -72,7 +72,7 @@ logistic regression models</p>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">mod1</span> <span class="op">&lt;-</span> <span class="fu"><a href="lr_model.html">lr_model</a></span><span class="op">(</span><span class="va">response_1</span> <span class="op">~</span> <span class="va">exposure_1</span> <span class="op">+</span> <span class="va">sex</span>, <span class="va">lr_data</span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">mod1</span> <span class="op">&lt;-</span> <span class="fu"><a href="lr_model.html">lr_model</a></span><span class="op">(</span><span class="va">ae2</span> <span class="op">~</span> <span class="va">aucss</span> <span class="op">+</span> <span class="va">sex</span>, <span class="va">lr_data</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">par1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/coef.html" class="external-link">coef</a></span><span class="op">(</span><span class="va">mod1</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">mod1_sim</span> <span class="op">&lt;-</span> <span class="fu">lr_simulator</span><span class="op">(</span><span class="va">mod1</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>

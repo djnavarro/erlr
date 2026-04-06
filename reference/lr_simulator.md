@@ -35,7 +35,7 @@ regression models
 ## Examples
 
 ``` r
-mod1 <- lr_model(response_1 ~ exposure_1 + sex, lr_data)
+mod1 <- lr_model(ae2 ~ aucss + sex, lr_data)
 par1 <- coef(mod1)
 mod1_sim <- lr_simulator(mod1)
 

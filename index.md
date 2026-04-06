@@ -22,41 +22,41 @@ library(erlr)
 library(tibble)
 
 lr_data
-#> # A tibble: 300 × 7
-#>       id  dose exposure_1 quartile_1 response_1 response_2 sex   
-#>    <int> <dbl>      <dbl> <fct>           <dbl>      <dbl> <fct> 
-#>  1     1   100      148.  Q3                  1          1 Male  
-#>  2     2   100       79.7 Q1                  1          0 Male  
-#>  3     3   200      212.  Q3                  1          0 Male  
-#>  4     4   200      236.  Q3                  0          0 Female
-#>  5     5     0        0   Placebo             1          0 Male  
-#>  6     6   200       71.0 Q1                  1          0 Female
-#>  7     7   100      173.  Q3                  1          0 Male  
-#>  8     8   100      123.  Q2                  0          0 Female
-#>  9     9     0        0   Placebo             0          0 Male  
-#> 10    10   200      165.  Q3                  1          0 Female
+#> # A tibble: 300 × 10
+#>       id sex      age weight  dose treatment aucss cmaxss   ae1   ae2
+#>    <int> <fct>  <int>  <dbl> <dbl> <fct>     <dbl>  <dbl> <dbl> <dbl>
+#>  1     1 Male      35     79   200 Drug       673.   97.3     0     1
+#>  2     2 Female    22     58   200 Drug      2806.  301.      1     1
+#>  3     3 Female    28     58     0 Placebo      0     0       0     0
+#>  4     4 Female    18     57   100 Drug      1169.  198.      1     1
+#>  5     5 Male      28     77   100 Drug       377.   51.4     0     0
+#>  6     6 Female    19     76   200 Drug       327.   25.4     1     0
+#>  7     7 Male      30     70     0 Placebo      0     0       0     0
+#>  8     8 Female    34     60   100 Drug      1208.  133.      1     1
+#>  9     9 Male      21     89     0 Placebo      0     0       0     0
+#> 10    10 Female    34     56   200 Drug       254.   31.0     0     0
 #> # ℹ 290 more rows
 
-mod <- lr_model(response_1 ~ exposure_1, lr_data)
+mod <- lr_model(ae1 ~ aucss, lr_data)
 mod
 #> 
 #> Call:  stats::glm(formula = formula, family = stats::binomial(link = "logit"), 
 #>     data = data)
 #> 
 #> Coefficients:
-#> (Intercept)   exposure_1  
-#>     0.15078      0.01112  
+#> (Intercept)        aucss  
+#>   -1.791383     0.005497  
 #> 
 #> Degrees of Freedom: 299 Total (i.e. Null);  298 Residual
-#> Null Deviance:       341.7 
-#> Residual Deviance: 283.9     AIC: 287.9
+#> Null Deviance:       402.1 
+#> Residual Deviance: 193.4     AIC: 197.4
 ```
 
 ## Plots
 
 ``` r
 lr_data |> 
-  lr_plot(exposure_1, response_1) |> 
+  lr_plot(aucss, ae1) |> 
   lr_plot_show_model() |> 
   lr_plot_show_quantiles() |> 
   lr_plot_show_groups(dose) |> 
@@ -68,23 +68,23 @@ lr_data |>
 ``` r
 
 plt <- lr_data |> 
-   lr_plot(exposure_1, response_1, stratify_by = sex) |> 
+   lr_plot(aucss, ae2, stratify_by = sex) |> 
    lr_plot_show_model(keep_strata = FALSE) |> 
    lr_plot_show_quantiles(bins = 3) |> 
    lr_plot_show_datastrip() |> 
-   lr_plot_show_groups(group_by = c(quartile_1, dose), keep_strata = FALSE)
+   lr_plot_show_groups(group_by = c(treatment, dose), keep_strata = FALSE)
 
 print(plt)
 #> <erlr_plot>
-#>   $data:      300 rows, 7 cols
-#>   $exposure:  exposure_1
-#>   $response:  response_1
+#>   $data:      300 rows, 10 cols
+#>   $exposure:  aucss
+#>   $response:  ae2
 #>   $strata:    sex
 #>   $part:
-#>     $model:     response_1 ~ exposure_1
+#>     $model:     ae2 ~ aucss
 #>     $quantile:  3 bins
 #>     $strip:     jitter both
-#>     $group:     quartile_1, dose
+#>     $group:     treatment, dose
 plot(plt)
 ```
 
@@ -93,17 +93,17 @@ plot(plt)
 ## Stepwise covariate modelling
 
 ``` r
-mod1 <- lr_model(response_1 ~ exposure_1 + sex + dose, lr_data)
+mod1 <- lr_model(ae1 ~ aucss + sex + dose, lr_data)
 mod2 <- lr_scm_backward(mod1, candidates = c("sex", "dose"))
-#> Using seed = 1068
+#> Using seed = 7645
 lr_scm_history(mod2)
 #> # A tibble: 4 × 11
 #>   iteration attempt step       action term_tested model_tested   model_converged
 #>       <int>   <int> <chr>      <chr>  <chr>       <chr>          <lgl>          
-#> 1         0       0 base model <NA>   <NA>        response_1 ~ … TRUE           
-#> 2         1       1 backward   remove ~sex        response_1 ~ … TRUE           
-#> 3         1       2 backward   remove ~dose       response_1 ~ … TRUE           
-#> 4         2       3 backward   remove ~sex        response_1 ~ … TRUE           
+#> 1         0       0 base model <NA>   <NA>        ae1 ~ aucss +… TRUE           
+#> 2         1       1 backward   remove ~sex        ae1 ~ aucss +… TRUE           
+#> 3         1       2 backward   remove ~dose       ae1 ~ aucss +… TRUE           
+#> 4         2       3 backward   remove ~sex        ae1 ~ aucss    TRUE           
 #> # ℹ 4 more variables: term_p_value <dbl>, model_aic <dbl>, model_bic <dbl>,
 #> #   model_updated <int>
 ```
@@ -111,25 +111,25 @@ lr_scm_history(mod2)
 ## VPC/Simulation
 
 ``` r
-mod <- lr_model(response_1 ~ exposure_1 + sex, lr_data)
+mod <- lr_model(ae1 ~ aucss + sex, lr_data)
 sim <- lr_vpc_sim(mod, seed = 1234)
 sim
 #> # A tibble: 30,000 × 5
-#>    response_1 exposure_1 sex    row_id sim_id
-#>         <dbl>      <dbl> <fct>   <int>  <int>
-#>  1      0.918      148.  Male        1      1
-#>  2      0.823       79.7 Male        2      1
-#>  3      0.962      212.  Male        3      1
-#>  4      0.929      236.  Female      4      1
-#>  5      0.625        0   Male        5      1
-#>  6      0.611       71.0 Female      6      1
-#>  7      0.940      173.  Male        7      1
-#>  8      0.755      123.  Female      8      1
-#>  9      0.625        0   Male        9      1
-#> 10      0.841      165.  Female     10      1
+#>      ae1 aucss sex    row_id sim_id
+#>    <dbl> <dbl> <fct>   <int>  <int>
+#>  1 0.894  673. Male        1      1
+#>  2 1.00  2806. Female      2      1
+#>  3 0.110    0  Female      3      1
+#>  4 0.993 1169. Female      4      1
+#>  5 0.588  377. Male        5      1
+#>  6 0.468  327. Female      6      1
+#>  7 0.129    0  Male        7      1
+#>  8 0.994 1208. Female      8      1
+#>  9 0.129    0  Male        9      1
+#> 10 0.362  254. Female     10      1
 #> # ℹ 29,990 more rows
 
-lr_vpc_plot(mod, sim, group_by = exposure_1)
+lr_vpc_plot(mod, sim, group_by = aucss)
 ```
 
 ![](reference/figures/README-lr-vpc-1.png)

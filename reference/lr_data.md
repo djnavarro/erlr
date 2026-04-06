@@ -17,29 +17,41 @@ A data frame with columns:
 
   Identifier
 
+- sex:
+
+  Sex
+
+- age:
+
+  Age
+
+- weight:
+
+  Weight
+
 - dose:
 
   Nominal dose, units not specified
 
-- exposure_1:
+- treatment:
 
-  Exposure 1 value, units and metric not specified
+  Treatment
 
-- quartile_1:
+- aucss:
 
-  Exposure 1 quartile, with placebo group separate
+  AUCss
 
-- response_1:
+- cmaxss:
+
+  Cmax,ss
+
+- ae1:
 
   Binary response 1 value
 
-- response_2:
+- ae2:
 
   Binary response 2 value
-
-- sex:
-
-  Sex
 
 ## Details
 
@@ -50,18 +62,18 @@ generating code in the package source code
 
 ``` r
 lr_data
-#> # A tibble: 300 × 7
-#>       id  dose exposure_1 quartile_1 response_1 response_2 sex   
-#>    <int> <dbl>      <dbl> <fct>           <dbl>      <dbl> <fct> 
-#>  1     1   100      148.  Q3                  1          1 Male  
-#>  2     2   100       79.7 Q1                  1          0 Male  
-#>  3     3   200      212.  Q3                  1          0 Male  
-#>  4     4   200      236.  Q3                  0          0 Female
-#>  5     5     0        0   Placebo             1          0 Male  
-#>  6     6   200       71.0 Q1                  1          0 Female
-#>  7     7   100      173.  Q3                  1          0 Male  
-#>  8     8   100      123.  Q2                  0          0 Female
-#>  9     9     0        0   Placebo             0          0 Male  
-#> 10    10   200      165.  Q3                  1          0 Female
+#> # A tibble: 300 × 10
+#>       id sex      age weight  dose treatment aucss cmaxss   ae1   ae2
+#>    <int> <fct>  <int>  <dbl> <dbl> <fct>     <dbl>  <dbl> <dbl> <dbl>
+#>  1     1 Male      35     79   200 Drug       673.   97.3     0     1
+#>  2     2 Female    22     58   200 Drug      2806.  301.      1     1
+#>  3     3 Female    28     58     0 Placebo      0     0       0     0
+#>  4     4 Female    18     57   100 Drug      1169.  198.      1     1
+#>  5     5 Male      28     77   100 Drug       377.   51.4     0     0
+#>  6     6 Female    19     76   200 Drug       327.   25.4     1     0
+#>  7     7 Male      30     70     0 Placebo      0     0       0     0
+#>  8     8 Female    34     60   100 Drug      1208.  133.      1     1
+#>  9     9 Male      21     89     0 Placebo      0     0       0     0
+#> 10    10 Female    34     56   200 Drug       254.   31.0     0     0
 #> # ℹ 290 more rows
 ```
