@@ -169,11 +169,12 @@ Exposure-response plots for logistic regression models
   [`lr_plot_show_groups()`](https://erlr.djnavarro.net/reference/lr_plot.md)
   [`lr_plot_build()`](https://erlr.djnavarro.net/reference/lr_plot.md) :
   Builds an exposure-response plot for a logistic regression model
-- [`build_datastrip_jitter()`](https://erlr.djnavarro.net/reference/lr_partial.md)
+- [`build_quantile_errorbar()`](https://erlr.djnavarro.net/reference/lr_partial.md)
+  [`build_datastrip_jitter()`](https://erlr.djnavarro.net/reference/lr_partial.md)
   [`build_group_boxplot()`](https://erlr.djnavarro.net/reference/lr_partial.md)
+  [`build_group_violin()`](https://erlr.djnavarro.net/reference/lr_partial.md)
   [`build_model_ribbonline()`](https://erlr.djnavarro.net/reference/lr_partial.md)
   [`build_summary_pvalue()`](https://erlr.djnavarro.net/reference/lr_partial.md)
-  [`build_quantile_errorbar()`](https://erlr.djnavarro.net/reference/lr_partial.md)
   : Partial builders for logistic regression plots
 
 ## Simulate

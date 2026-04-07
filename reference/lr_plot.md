@@ -20,7 +20,7 @@ lr_plot_show_datastrip(
   panel = "both"
 )
 
-lr_plot_show_groups(object, group_by, keep_strata = NULL)
+lr_plot_show_groups(object, group_by, style = "boxplot", keep_strata = NULL)
 
 lr_plot_build(object)
 ```
@@ -67,7 +67,8 @@ lr_plot_build(object)
 
 - style:
 
-  Character string: "jitter" (the default) or "dotplot"
+  Character string used to specify the partial builder for this
+  component
 
 - panel:
 
