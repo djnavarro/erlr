@@ -40,15 +40,19 @@
 
   if (config$upper) {
     config$panel <- "upper"
-    strip_plots$upper <- config$builder(
-      data, config, stratify, exposure, response, strata, style
-    )
+    strip_plots$upper <- ggplot2::ggplot() +
+      style$theme_base() +
+      config$builder(
+        data, config, stratify, exposure, response, strata, style
+      )
   }
   if (config$lower) {
     config$panel <- "lower"
-    strip_plots$lower <- config$builder(
-      data, config, stratify, exposure, response, strata, style
-    )
+    strip_plots$lower <- ggplot2::ggplot() +
+      style$theme_base() +
+      config$builder(
+        data, config, stratify, exposure, response, strata, style
+      )
   }
 
   return(strip_plots)
@@ -66,9 +70,11 @@
 
   group_plots <- list()
   for(g in names(config)) {
-    group_plots[[g]] <- config[[g]]$builder(
-      data, config[[g]], stratify, exposure, response, strata, style
-    )
+    group_plots[[g]] <- ggplot2::ggplot() + 
+      style$theme_base() +
+      config[[g]]$builder(
+        data, config[[g]], stratify, exposure, response, strata, style
+      )
   }
   
   return(group_plots)  

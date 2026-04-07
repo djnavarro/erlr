@@ -59,8 +59,32 @@ build_quantile_errorbar(
 \item{style}{Style components}
 }
 \value{
-A ggplot2 object, a geom, or a list of geoms
+A geom, or a list of geoms. More precisely, a list of
+objects that can be added to a ggplot2 plot. The expectation is
+that these objects will be added to a partially-constructed plot
+which, at a minimum, already has the base theme applied. For
+"model", "summary", and "quantile", the pieces will be added to
+a plot that already has a coord that sets the axis limits. For
+the "datastrip" and "group" plots, the plot object does not yet
+have a coord. The expectation, however, is that the builder will
+supply an x-axis limit that is consistent with the base plot. That
+is, since all component plots use the exposure variable for the
+x-axis, they should use the values stored in \code{exposure$limits} tp
+set the x-axis limits.
 }
 \description{
 Partial builders for logistic regression plots
+}
+\details{
+Things we can have partials for:
+\itemize{
+\item model
+\item summary
+\item quantile
+\item datastrip
+\item group
+}
+
+Arguments are standardised to allow users to write their own
+as needed
 }
