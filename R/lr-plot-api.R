@@ -113,6 +113,9 @@ lr_plot <- function(data, exposure, response, stratify_by = NULL) {
 #' @rdname lr_plot
 #' @export
 lr_plot_style <- function(object, labels) {
+
+  # TODO: flesh this out so that users can modify style, labels, etc
+
   return(object)
 }
 
@@ -140,9 +143,13 @@ lr_plot_show_model <- function(object, keep_strata = NULL, style = "ribbonline",
   config$glm <- lr_model(formula = config$formula, data = object$data)
 
   # model summary
+  # TODO: should this be moved to the builder function? It's quite specific.
+  # also needs to be extended to work when a stratification variable is present
   if (is.null(object$strata$name) || stratify == FALSE) {
     config$p_value <- summary(config$glm)$coefficients[2, "Pr(>|z|)"]
   }
+
+  # confidence level
   config$conf_level <- conf_level
 
   # model predictions
@@ -278,6 +285,15 @@ lr_plot_show_groups <- function(object, group_by, style = "boxplot", keep_strata
     if (style == "boxplot") config$builder <- build_group_boxplot
     if (style == "violin")  config$builder <- build_group_violin
 
+    # data 
+    dat <- object$data
+
+    # TODO: add code to handle continuous grouping variables
+    # with a special case for when it's the exposure variable.
+    # modify "dat" so that it contains a new discretised variable
+    # and modify "g" to refer to this new variable (cannot reuse
+    # the same name in case the original is used for something)
+
     # store the variable names used for grouping
     if (keep_strata)  config$groupings <- c(g, object$strata$name)
     if (!keep_strata) config$groupings <- g
@@ -285,12 +301,12 @@ lr_plot_show_groups <- function(object, group_by, style = "boxplot", keep_strata
     # store information about the y-axis variable
     config$y <- .plot_variable(
       name = g,
-      label = .get_label(object$data[[g]]) %||% g,
+      label = .get_label(dat[[g]]) %||% g,
       role = paste("group", g, sep = "_")
     )
 
     # store sample size information (for merge into plot labels)
-    config$counts <- object$data |> 
+    config$counts <- dat |> 
       dplyr::summarise(
         n   = sum(!is.na(.data[[object$exposure$name]])),
         lbl = paste0("N=", n),
@@ -303,7 +319,7 @@ lr_plot_show_groups <- function(object, group_by, style = "boxplot", keep_strata
     config$n_groups <- nrow(config$counts)
 
     # store a modified data set to use for plotting
-    config$data <- object$data |> 
+    config$data <- dat |> 
       dplyr::select(dplyr::all_of(c(config$groupings, object$exposure$name))) |> 
       dplyr::left_join(config$counts, by = config$groupings)
     
