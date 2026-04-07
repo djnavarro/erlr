@@ -1,4 +1,41 @@
-test_that(".part_group discretises continuous grouping variables", {
+test_that(".part_model constructs the correct data structure", {
+  plt1 <- lr_data |> lr_plot(aucss, ae1)
+  plt2 <- lr_data |> lr_plot(aucss, ae1, sex)
+
+  expect_no_error(plt1 |> lr_plot_show_model())
+  expect_no_error(plt2 |> lr_plot_show_model())
+
+  plt1 <- plt1 |> lr_plot_show_model()
+  plt2 <- plt2 |> lr_plot_show_model()
+  
+  expect_type(plt1$part$model, "list")
+  expect_type(plt2$part$model, "list")
+
+  expect_named(plt1$part$model, c("stratify", "config"))
+  expect_named(plt2$part$model, c("stratify", "config"))
+
+  expect_equal(plt1$part$model$stratify, FALSE)
+  expect_equal(plt2$part$model$stratify, TRUE)
+
+  cfg1 <- plt1$part$model$config
+  cfg2 <- plt1$part$model$config
+
+  expect_type(cfg1, "list")
+  expect_type(cfg2, "list")
+
+  expect_length(cfg1, 7)
+  expect_length(cfg2, 7)
+
+  cfg_names <- c(
+    "formula", "glm", "p_value", "conf_level", 
+    "predictions", "corner_distance", "builder"
+  ) 
+  expect_named(cfg1, cfg_names)
+  expect_named(cfg2, cfg_names)
+
+})
+
+test_that(".part_group constructs the correct data structure", {
   plt1 <- lr_data |> lr_plot(aucss, ae1)
   plt2 <- lr_data |> lr_plot(aucss, ae1, sex)
 

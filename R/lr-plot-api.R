@@ -129,65 +129,14 @@ lr_plot_show_model <- function(object, keep_strata = NULL, style = "ribbonline",
 
   if (!inherits(object, "erlr_plot")) rlang::abort("`object` must be an erlr plot object")
   if (is.null(keep_strata)) keep_strata <- !is.null(object$strata$name)
-  
-  object$part$model <- list()
-  stratify <- keep_strata
-  config <- list()
 
-  # model formula
-  fml <- paste(object$response$name, object$exposure$name, sep = " ~ ")
-  if (stratify == TRUE) fml <- paste(fml, object$strata$name, sep = " + ")
-  config$formula <- stats::as.formula(fml)
-
-  # model object
-  config$glm <- lr_model(formula = config$formula, data = object$data)
-
-  # model summary
-  # TODO: should this be moved to the builder function? It's quite specific.
-  # also needs to be extended to work when a stratification variable is present
-  if (is.null(object$strata$name) || stratify == FALSE) {
-    config$p_value <- summary(config$glm)$coefficients[2, "Pr(>|z|)"]
-  }
-
-  # confidence level
-  config$conf_level <- conf_level
-
-  # model predictions
-  config$predictions <- .get_model_predictions(
-    config$glm, 
-    config$conf_level, 
-    object$exposure, 
-    object$strata, 
-    stratify
+  object$part$model <- .part_model(
+    object = object, 
+    stratify = keep_strata, 
+    style = style, 
+    conf_level = conf_level
   )
   
-  # visual distance from corners (used for placement of summary)
-  config$corner_distance <- config$predictions |> 
-    dplyr::select(dplyr::all_of(c(object$exposure$name, "fit_resp"))) |> 
-    dplyr::rename(y = fit_resp, x = .data[[object$exposure$name]]) |> 
-    dplyr::mutate(
-      x = x / sum(x),
-      tl_dist = sqrt(x^2 + (1-y)^2),
-      tr_dist = sqrt((1-x)^2 + (1-y)^2),
-      bl_dist = sqrt(x^2 + y^2),
-      br_dist = sqrt((1-x)^2 + y^2)
-    ) |> 
-    dplyr::summarise(
-      top_left     = min(tl_dist, na.rm = TRUE),
-      top_right    = min(tr_dist, na.rm = TRUE),
-      bottom_left  = min(bl_dist, na.rm = TRUE),
-      bottom_right = min(br_dist, na.rm = TRUE)
-    ) |> 
-    unlist()  
-
-  config$builder <- list()
-  if (style == "ribbonline") config$builder$model <- build_model_ribbonline
-  if (style == "spaghetti")  config$builder$model <- build_model_spaghetti
-  config$builder$summary <- build_summary_pvalue # TODO: how to allow custom summary without breaking the style arg
-
-  # store and return
-  object$part$model$stratify <- stratify
-  object$part$model$config <- config
   return(object)
 }
 
