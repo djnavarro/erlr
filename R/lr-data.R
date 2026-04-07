@@ -41,7 +41,7 @@
   attr(lr_data$id, "label") <- "Subject"
   attr(lr_data$sex, "label") <- "Sex"
   attr(lr_data$age, "label") <- "Age"
-  attr(lr_data$age, "label") <- "Weight"
+  attr(lr_data$weight, "label") <- "Weight"
   attr(lr_data$dose, "label") <- "Dose"
   attr(lr_data$treatment, "label") <- "Treatment"
   attr(lr_data$aucss, "label") <- "AUCss"
