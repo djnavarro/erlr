@@ -1,3 +1,4 @@
+
 test_that(".part_model constructs the correct data structure", {
   plt1 <- lr_data |> lr_plot(aucss, ae1)
   plt2 <- lr_data |> lr_plot(aucss, ae1, sex)
@@ -34,6 +35,7 @@ test_that(".part_model constructs the correct data structure", {
   expect_named(cfg2, cfg_names)
 
 })
+
 
 test_that(".part_quantile constructs the correct data structure", {
   plt1 <- lr_data |> lr_plot(aucss, ae1)
@@ -86,6 +88,42 @@ test_that(".part_quantile constructs the correct data structure", {
   expect_equal(as.character(unique(smm2$strata)), c("Male", "Female"))
 
 })
+
+
+test_that(".part_strip constructs the correct data structure", {
+  plt1 <- lr_data |> lr_plot(aucss, ae1)
+  plt2 <- lr_data |> lr_plot(aucss, ae1, sex)
+
+  expect_no_error(plt1 |> lr_plot_show_datastrip())
+  expect_no_error(plt2 |> lr_plot_show_datastrip())
+
+  plt1 <- plt1 |> lr_plot_show_datastrip()
+  plt2 <- plt2 |> lr_plot_show_datastrip()
+  
+  expect_type(plt1$part$strip, "list")
+  expect_type(plt2$part$strip, "list")
+
+  expect_named(plt1$part$strip, c("stratify", "config"))
+  expect_named(plt2$part$strip, c("stratify", "config"))
+
+  expect_equal(plt1$part$strip$stratify, FALSE)
+  expect_equal(plt2$part$strip$stratify, TRUE)
+
+  cfg1 <- plt1$part$strip$config
+  cfg2 <- plt2$part$strip$config
+
+  expect_type(cfg1, "list")
+  expect_type(cfg2, "list")
+
+  expect_length(cfg1, 6)
+  expect_length(cfg2, 6)
+
+  cfg_names <- c("style", "panel", "seed", "builder", "lower", "upper")
+  expect_named(cfg1, cfg_names)
+  expect_named(cfg2, cfg_names)
+
+})
+
 
 test_that(".part_group constructs the correct data structure", {
   plt1 <- lr_data |> lr_plot(aucss, ae1)
@@ -169,3 +207,4 @@ test_that(".part_group constructs the correct data structure", {
   #expect_equal(attr(fct2s, "label"), attr(lr_data$sex, "label"))
 
 })
+

@@ -108,6 +108,29 @@
 }
 
 
+# part_strip ------------------------------------------------------------------
+
+.part_strip <- function(object, stratify, style, panel) {
+
+  part_strip <- list()
+  
+  config <- list()
+  config$style <- style
+  config$panel <- panel
+  config$seed  <- 1234L
+  
+  if (style == "jitter") config$builder <- build_datastrip_jitter
+
+  if (panel %in% c("lower", "both")) config$lower <- TRUE
+  if (panel %in% c("upper", "both")) config$upper <- TRUE
+
+  part_strip$stratify <- stratify
+  part_strip$config <- config 
+
+  return(part_strip)
+}
+
+
 # part_group ------------------------------------------------------------------
 
 .part_group <- function(object, group_cols, stratify, style, bins) {

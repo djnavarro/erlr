@@ -171,21 +171,14 @@ lr_plot_show_datastrip <- function(object, keep_strata = NULL, style = "jitter",
   if (!inherits(object, "erlr_plot")) rlang::abort("`object` must be an erlr plot object")
   if (is.null(keep_strata)) keep_strata <- !is.null(object$strata$name)
 
-  object$part$strip <- list()
-  object$part$strip$stratify <- keep_strata
-  
-  config <- list()
-  config$style <- style
-  config$panel <- panel
-  config$seed  <- 1234L
-  
-  if (style == "jitter") config$builder <- build_datastrip_jitter
+  object$part$strip <- .part_strip(
+    object = object,
+    stratify = keep_strata, 
+    style = style,
+    panel = panel
+  )
 
-  if (panel %in% c("lower", "both")) config$lower <- TRUE
-  if (panel %in% c("upper", "both")) config$upper <- TRUE
-
-  object$part$strip$config <- config 
-  return(object)
+  return(object)  
 }
 
 
