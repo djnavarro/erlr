@@ -31,7 +31,13 @@ lr_plot_show_datastrip(
   panel = "both"
 )
 
-lr_plot_show_groups(object, group_by, style = "boxplot", keep_strata = NULL)
+lr_plot_show_groups(
+  object,
+  group_by,
+  style = "boxplot",
+  bins = NULL,
+  keep_strata = NULL
+)
 
 lr_plot_build(object)
 ```
@@ -101,16 +107,16 @@ lr_data |>
   lr_plot(aucss, ae1) |> 
   lr_plot_show_model() |> 
   lr_plot_show_quantiles() |> 
-  lr_plot_show_groups(dose) |> 
+  lr_plot_show_groups(aucss) |> 
   plot()
 
  
 plt <- lr_data |> 
   lr_plot(aucss, ae2, stratify_by = sex) |> 
   lr_plot_show_model(keep_strata = FALSE) |> 
-  lr_plot_show_quantiles(bins = 3) |> 
+  lr_plot_show_quantiles() |> 
   lr_plot_show_datastrip() |> 
-  lr_plot_show_groups(group_by = c(treatment, dose), keep_strata = FALSE)
+  lr_plot_show_groups(group_by = c(aucss, treatment), keep_strata = FALSE)
 
 print(plt)
 #> <erlr_plot>
@@ -120,9 +126,9 @@ print(plt)
 #>     - stratification:  sex
 #>   plot components:
 #>     - model:           ae2 ~ aucss
-#>     - quantile:        3 bins
+#>     - quantile:        4 bins
 #>     - strip:           jitter both
-#>     - group:           treatment, dose
+#>     - group:           .aucss_quantile, treatment
 #>   plots built: <none>
 #>   output built: no
 plot(plt)

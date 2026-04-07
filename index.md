@@ -59,7 +59,7 @@ lr_data |>
   lr_plot(aucss, ae1) |> 
   lr_plot_show_model() |> 
   lr_plot_show_quantiles() |> 
-  lr_plot_show_groups(dose) |> 
+  lr_plot_show_groups(aucss) |> 
   plot()
 ```
 
@@ -72,7 +72,7 @@ plt <- lr_data |>
    lr_plot_show_model(keep_strata = FALSE) |> 
    lr_plot_show_quantiles(bins = 3) |> 
    lr_plot_show_datastrip() |> 
-   lr_plot_show_groups(group_by = c(treatment, dose), keep_strata = FALSE)
+   lr_plot_show_groups(group_by = c(aucss, treatment), keep_strata = FALSE)
 
 print(plt)
 #> <erlr_plot>
@@ -84,7 +84,7 @@ print(plt)
 #>     - model:           ae2 ~ aucss
 #>     - quantile:        3 bins
 #>     - strip:           jitter both
-#>     - group:           treatment, dose
+#>     - group:           .aucss_quantile, treatment
 #>   plots built: <none>
 #>   output built: no
 plot(plt)
@@ -97,7 +97,7 @@ plot(plt)
 ``` r
 mod1 <- lr_model(ae1 ~ aucss + sex + dose, lr_data)
 mod2 <- lr_scm_backward(mod1, candidates = c("sex", "dose"))
-#> Using seed = 3068
+#> Using seed = 7932
 lr_scm_history(mod2)
 #> # A tibble: 4 × 11
 #>   iteration attempt step       action term_tested model_tested   model_converged
