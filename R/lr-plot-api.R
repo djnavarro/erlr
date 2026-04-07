@@ -128,29 +128,54 @@ lr_plot_show_model <- function(object, keep_strata = NULL, conf_level = 0.95) {
   if (is.null(keep_strata)) keep_strata <- !is.null(object$strata$name)
   
   object$part$model <- list()
-  object$part$model$stratify <- keep_strata
+  stratify <- keep_strata
+  config <- list()
 
   # model formula
   fml <- paste(object$response$name, object$exposure$name, sep = " ~ ")
-  if (object$part$model$stratify == TRUE) {
-    fml <- paste(fml, object$strata$name, sep = " + ")
-  }
-  object$part$model$formula <- stats::as.formula(fml)
+  if (stratify == TRUE) fml <- paste(fml, object$strata$name, sep = " + ")
+  config$formula <- stats::as.formula(fml)
 
-  # model
-  object$part$model$glm <- lr_model(
-    formula = object$part$model$formula, 
-    data = object$data
+  # model object
+  config$glm <- lr_model(formula = config$formula, data = object$data)
+
+  # model summary
+  if (is.null(object$strata$name) || stratify == FALSE) {
+    config$p_value <- summary(config$glm)$coefficients[2, "Pr(>|z|)"]
+  }
+  config$conf_level <- conf_level
+
+  # model predictions
+  config$predictions <- .get_model_predictions(
+    config$glm, 
+    config$conf_level, 
+    object$exposure, 
+    object$strata, 
+    stratify
   )
-
-  if (is.null(object$strata$name) || object$part$model$stratify == FALSE) {
-    # without strata, report a single p-value, for the slope 
-    # TODO: replace this with the anova
-    object$part$model$p_value <- summary(object$part$model$glm)$coefficients[2, "Pr(>|z|)"]
-  }
-  object$part$model$conf_level <- conf_level
-  object$part$model$predictions <- .get_model_predictions(object)
   
+  # visual distance from corners (used for placement of summary)
+  config$corner_distance <- config$predictions |> 
+    dplyr::select(dplyr::all_of(c(object$exposure$name, "fit_resp"))) |> 
+    dplyr::rename(y = fit_resp, x = .data[[object$exposure$name]]) |> 
+    dplyr::mutate(
+      x = x / sum(x),
+      tl_dist = sqrt(x^2 + (1-y)^2),
+      tr_dist = sqrt((1-x)^2 + (1-y)^2),
+      bl_dist = sqrt(x^2 + y^2),
+      br_dist = sqrt((1-x)^2 + y^2)
+    ) |> 
+    dplyr::summarise(
+      top_left     = min(tl_dist, na.rm = TRUE),
+      top_right    = min(tr_dist, na.rm = TRUE),
+      bottom_left  = min(bl_dist, na.rm = TRUE),
+      bottom_right = min(br_dist, na.rm = TRUE)
+    ) |> 
+    unlist()  
+
+  # store and return
+  object$part$model$stratify <- stratify
+  object$part$model$config <- config
   return(object)
 }
 
@@ -164,14 +189,18 @@ lr_plot_show_quantiles <- function(object, keep_strata = NULL, bins = 4, conf_le
   if (is.null(keep_strata)) keep_strata <- !is.null(object$strata$name)
 
   object$part$quantile <- list()
-  object$part$quantile$stratify <- keep_strata
-  object$part$quantile$n_quantiles <- bins
-  object$part$quantile$summary <- object$data |>
+  stratify <- keep_strata
+  config <- list()
+
+  config$n_quantiles <- bins
+  config$conf_level <- conf_level
+
+  config$summary <- object$data |>
     dplyr::mutate(
       response = .data[[object$response$name]],
       exposure_bins = cut_exposure_quantile(
         x = .data[[object$exposure$name]], 
-        n = object$part$quantile$n_quantiles
+        n = config$n_quantiles
       ),
       strata = .get_strata_values(.data, object$strata$name)   
     ) |> 
@@ -181,14 +210,17 @@ lr_plot_show_quantiles <- function(object, keep_strata = NULL, bins = 4, conf_le
       x_mid = mean(.data[[object$exposure$name]], na.rm = TRUE),
       y_mid = n1 / (n0 + n1),
       y_mid_lbl = object$style$format_percent(n1 / (n0 + n1)),
-      ci_lower = clopper_pearson(n1, n0 + n1, conf_level)["lower"], 
-      ci_upper = clopper_pearson(n1, n0 + n1, conf_level)["upper"],
+      ci_lower = clopper_pearson(n1, n0 + n1, config$conf_level)["lower"], 
+      ci_upper = clopper_pearson(n1, n0 + n1, config$conf_level)["upper"],
       y_lwr_lbl = ci_lower - 0.05,
       y_upr_lbl = ci_upper + 0.05,
       y_lbl = dplyr::if_else(y_lwr_lbl > 1 - y_upr_lbl, y_lwr_lbl, y_upr_lbl),
       .by = c("exposure_bins", "strata")
     )
   
+  # store and return
+  object$part$quantile$stratify <- stratify
+  object$part$quantile$config <- config
   return(object)
 }
 
@@ -203,14 +235,17 @@ lr_plot_show_datastrip <- function(object, keep_strata = NULL, style = "jitter",
 
   object$part$strip <- list()
   object$part$strip$stratify <- keep_strata
-  object$part$strip$style <- style
-  object$part$strip$panel <- panel
   
-  if (style == "jitter")  object$part$strip$builder <- .datastrip_jitter
-  #if (style == "dotplot") object$part$strip$builder <- build_strip_dot
+  config <- list()
+  config$style <- style
+  config$panel <- panel
+  
+  if (style == "jitter")  config$builder <- .datastrip_jitter
 
-  if (panel %in% c("lower", "both")) object$part$strip$lower <- TRUE
-  if (panel %in% c("upper", "both")) object$part$strip$upper <- TRUE
+  if (panel %in% c("lower", "both")) config$lower <- TRUE
+  if (panel %in% c("upper", "both")) config$upper <- TRUE
+
+  object$part$strip$config <- config 
   return(object)
 
 }
@@ -228,31 +263,42 @@ lr_plot_show_groups <- function(object, group_by, keep_strata = NULL) {
 
   object$part$group <- list()
   object$part$group$stratify <- keep_strata
-  object$part$group$var <- list()
+  object$part$group$config <- list()
+
   for(g in names(group_cols)) {
-    if (keep_strata)  groupings <- c(g, object$strata$name)
-    if (!keep_strata) groupings <- g
-    object$part$group$var[[g]] <- list()
-    object$part$group$var[[g]]$y <- .plot_variable(
+
+    config <- list()
+
+    # store the variable names used for grouping
+    if (keep_strata)  config$groupings <- c(g, object$strata$name)
+    if (!keep_strata) config$groupings <- g
+
+    # store information about the y-axis variable
+    config$y <- .plot_variable(
       name = g,
       label = .get_label(object$data[[g]]) %||% g,
       role = paste("group", g, sep = "_")
     )
-    object$part$group$var[[g]]$counts <- object$data |> 
+
+    # store sample size information (for merge into plot labels)
+    config$counts <- object$data |> 
       dplyr::summarise(
         n   = sum(!is.na(.data[[object$exposure$name]])),
         lbl = paste0("N=", n),
-        .by = groupings
+        .by = config$groupings
       ) |> 
       dplyr::mutate(lvl = paste0(.data[[g]], " (", lbl, ")")) |> 
       dplyr::arrange(.data[[g]])
-    object$part$group$var[[g]]$n_groups <- nrow(object$part$group$var[[g]]$counts)
-    object$part$group$var[[g]]$data <- object$data |> 
-      dplyr::select(dplyr::all_of(c(groupings, object$exposure$name))) |> 
-      dplyr::left_join(
-        object$part$group$var[[g]]$counts,
-        by = groupings
-      )
+
+    # store the number of groups plotted on the y-axis
+    config$n_groups <- nrow(config$counts)
+
+    # store a modified data set to use for plotting
+    config$data <- object$data |> 
+      dplyr::select(dplyr::all_of(c(config$groupings, object$exposure$name))) |> 
+      dplyr::left_join(config$counts, by = config$groupings)
+    
+    object$part$group$config[[g]] <- config
   }
 
   return(object)  
@@ -262,19 +308,37 @@ lr_plot_show_groups <- function(object, group_by, keep_strata = NULL) {
 
 #' @exportS3Method base::print
 print.erlr_plot <- function(x, ...) {
+
   part_set <- !purrr::map_lgl(x$part, is.null)
+  plot_set <- !purrr::map_lgl(x$plot, is.null)
+
   cat("<erlr_plot>\n")
-  cat("  $data:      ", nrow(x$data), " rows, ", ncol(x$data), " cols\n", sep = "")
-  cat("  $exposure:  ", x$exposure$name %||% "<none>", "\n", sep = "")
-  cat("  $response:  ", x$response$name  %||% "<none>", "\n", sep = "")
-  cat("  $strata:    ", x$strata$name  %||% "<none>", "\n", sep = "")
+  cat("  plot variables:\n")
+  cat("    - exposure:        ", x$exposure$name  %||% "<none>", "\n", sep = "")
+  cat("    - response:        ", x$response$name  %||% "<none>", "\n", sep = "")
+  cat("    - stratification:  ", x$strata$name    %||% "<none>", "\n", sep = "")
+  
   if (any(part_set)) {
-    cat("  $part:\n")
-    if (part_set["model"])    cat("    $model:     ", deparse(x$part$model$formula), "\n", sep = "")
-    if (part_set["quantile"]) cat("    $quantile:  ", x$part$quantile$n_quantiles, " bins\n", sep = "")
-    if (part_set["strip"])    cat("    $strip:     ", x$part$strip$style, " ", x$part$strip$panel, "\n", sep = "")
-    if (part_set["group"])    cat("    $group:     ", paste(names(x$part$group$var), collapse = ", "), "\n", sep = "")
+    cat("  plot components:\n")
+    if (part_set["model"])    cat("    - model:           ", deparse(x$part$model$config$formula), "\n", sep = "")
+    if (part_set["quantile"]) cat("    - quantile:        ", x$part$quantile$config$n_quantiles, " bins\n", sep = "")
+    if (part_set["strip"])    cat("    - strip:           ", x$part$strip$config$style, " ", x$part$strip$config$panel, "\n", sep = "")
+    if (part_set["group"])    cat("    - group:           ", paste(names(x$part$group$config), collapse = ", "), "\n", sep = "")
+  } else {
+    cat("  plot components: <none>\n")
   }
+
+  if (any(plot_set)) {
+    cat("  plots built:\n")
+    if (plot_set["base"])   cat("    - model\n", sep = "")
+    if (plot_set["strip"])  cat("    - strip\n", sep = "")
+    if (plot_set["group"])  cat("    - group\n", sep = "")
+  } else {
+    cat("  plots built: <none>\n")
+  }
+
+  if (is.null(x$output)) cat("  output built: no")
+  if (!is.null(x$output)) cat("  output built: yes")
   
   return(invisible(x))
 }
@@ -320,4 +384,28 @@ lr_plot_build <- function(object) {
   }
 
   return(object)
+}
+
+
+# miscellaneous helpers -------------------------------------------------------
+
+.plot_variable <- function(name = NULL, label = NULL, limits = NULL, role = NULL) {
+  list(name = name, label = label, limits = limits,role = role)
+}
+
+.get_strata_values <- function(data, name) {
+  if (is.null(name)) return(NA)
+  data[[name]]
+}
+
+.get_model_predictions <- function(mod, conf_level, exposure, strata, stratify) {
+
+  pred_dat <- seq(exposure$limits[1], exposure$limits[2], length.out = 300L) |> 
+    data.frame() |> .set_names(exposure$name)
+  
+  if (stratify) pred_dat <- pred_dat |> 
+    dplyr::cross_join(data.frame(strata$limits) |> .set_names(strata$name))
+
+  model_predictions <- lr_predict(object = mod, newdata = pred_dat, conf_level = conf_level)
+  return(model_predictions)
 }
