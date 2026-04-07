@@ -25,7 +25,7 @@ lr_plot_show_datastrip(
   panel = "both"
 )
 
-lr_plot_show_groups(object, group_by, keep_strata = NULL)
+lr_plot_show_groups(object, group_by, style = "boxplot", keep_strata = NULL)
 
 lr_plot_build(object)
 }
@@ -48,7 +48,7 @@ lr_plot_build(object)
 
 \item{bins}{Number of exposure bins (not counting placebo)}
 
-\item{style}{Character string: "jitter" (the default) or "dotplot"}
+\item{style}{Character string used to specify the partial builder for this component}
 
 \item{panel}{Character string: "upper", "lower", or "both" (the default)}
 

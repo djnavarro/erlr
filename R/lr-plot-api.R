@@ -9,7 +9,7 @@
 #' @param keep_strata Logical, indicating whether this component should keep the color stratification
 #' @param labels Named list of labels
 #' @param bins Number of exposure bins (not counting placebo)
-#' @param style Character string: "jitter" (the default) or "dotplot"
+#' @param style Character string used to specify the partial builder for this component
 #' @param panel Character string: "upper", "lower", or "both" (the default)
 #' @param conf_level Confidence level
 #' @param object Partially constructed plot (has S3 class `erlr_plot`)
@@ -261,7 +261,7 @@ lr_plot_show_datastrip <- function(object, keep_strata = NULL, style = "jitter",
 
 #' @rdname lr_plot
 #' @export
-lr_plot_show_groups <- function(object, group_by, keep_strata = NULL) {
+lr_plot_show_groups <- function(object, group_by, style = "boxplot", keep_strata = NULL) {
 
   if (!inherits(object, "erlr_plot")) rlang::abort("`object` must be an erlr plot object")
   if (is.null(keep_strata)) keep_strata <- !is.null(object$strata$name)
@@ -274,7 +274,8 @@ lr_plot_show_groups <- function(object, group_by, keep_strata = NULL) {
   for(g in names(group_cols)) {
 
     config <- list()
-    config$builder <- build_group_boxplot
+    if (style == "boxplot") config$builder <- build_group_boxplot
+    if (style == "violin")  config$builder <- build_group_violin
 
     # store the variable names used for grouping
     if (keep_strata)  config$groupings <- c(g, object$strata$name)

@@ -7,6 +7,7 @@
 \alias{build_quantile_errorbar}
 \alias{build_datastrip_jitter}
 \alias{build_group_boxplot}
+\alias{build_group_violin}
 \alias{build_model_ribbonline}
 \alias{build_summary_pvalue}
 \alias{lr_partial}
@@ -33,6 +34,8 @@ build_datastrip_jitter(
 )
 
 build_group_boxplot(data, config, stratify, exposure, response, strata, style)
+
+build_group_violin(data, config, stratify, exposure, response, strata, style)
 
 build_model_ribbonline(
   data,
