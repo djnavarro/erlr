@@ -122,7 +122,7 @@ lr_plot_style <- function(object, labels) {
 
 #' @rdname lr_plot
 #' @export
-lr_plot_show_model <- function(object, keep_strata = NULL, conf_level = 0.95) {
+lr_plot_show_model <- function(object, keep_strata = NULL, style = "ribbonline", conf_level = 0.95) {
 
   if (!inherits(object, "erlr_plot")) rlang::abort("`object` must be an erlr plot object")
   if (is.null(keep_strata)) keep_strata <- !is.null(object$strata$name)
@@ -174,7 +174,8 @@ lr_plot_show_model <- function(object, keep_strata = NULL, conf_level = 0.95) {
     unlist()  
 
   config$builder <- list()
-  config$builder$model <- build_model_ribbonline
+  if (style == "ribbonline") config$builder$model <- build_model_ribbonline
+  if (style == "spaghetti")  config$builder$model <- build_model_spaghetti
   config$builder$summary <- build_summary_pvalue
 
   # store and return

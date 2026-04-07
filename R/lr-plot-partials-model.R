@@ -58,3 +58,14 @@ build_model_ribbonline <- function(data, config, stratify, exposure, response, s
   geoms <- list(model_ribbon, model_line)
   return(geoms)
 }
+
+
+
+
+#' @rdname lr_partial
+#' @export
+build_model_spaghetti <- function(data, config, stratify, exposure, response, strata, style) {
+
+  geoms <- NULL
+  return(geoms)
+}
