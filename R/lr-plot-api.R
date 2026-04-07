@@ -239,15 +239,15 @@ lr_plot_show_datastrip <- function(object, keep_strata = NULL, style = "jitter",
   config <- list()
   config$style <- style
   config$panel <- panel
+  config$seed  <- 1234L
   
-  if (style == "jitter")  config$builder <- .datastrip_jitter
+  if (style == "jitter") config$builder <- .datastrip_jitter
 
   if (panel %in% c("lower", "both")) config$lower <- TRUE
   if (panel %in% c("upper", "both")) config$upper <- TRUE
 
   object$part$strip$config <- config 
   return(object)
-
 }
 
 

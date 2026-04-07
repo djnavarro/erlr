@@ -29,57 +29,52 @@
 
 .build_strip_plot <- function(object) {
 
-  config <- object$part$strip$config
-  strip <- list()
-  if (config$upper) strip$upper <- config$builder(object, "upper")
-  if (config$lower) strip$lower <- config$builder(object, "lower")
-  
-  return(strip)
+  # standard arguments for a partial builder
+  data     <- object$data
+  config   <- object$part$strip$config
+  stratify <- object$part$strip$stratify
+  exposure <- object$exposure
+  response <- object$response
+  strata   <- object$strata
+  style    <- object$style
+
+  strip_plots <- list()
+
+  if (config$upper) {
+    config$panel <- "upper"
+    strip_plots$upper <- config$builder(
+      data, config, stratify, exposure, response, strata, style
+    )
+  }
+  if (config$lower) {
+    config$panel <- "lower"
+    strip_plots$lower <- config$builder(
+      data, config, stratify, exposure, response, strata, style
+    )
+  }
+
+  return(strip_plots)
 }
 
 .build_group_plot <- function(object) {
 
-  strata   <- object$strata
+  # standard arguments for a partial builder
+  data     <- object$data
   config   <- object$part$group$config
   stratify <- object$part$group$stratify
-  group <- list()
+  exposure <- object$exposure
+  response <- object$response
+  strata   <- object$strata
+  style    <- object$style
 
+  group_plots <- list()
   for(g in names(config)) {
-
-    if (stratify == FALSE) {
-      group[[g]] <- ggplot2::ggplot(
-        data = config[[g]]$data,
-        mapping = ggplot2::aes(
-          x = .data[[object$exposure$name]],
-          y = lvl
-        )
-      )
-    } 
-    
-    if (stratify == TRUE) {
-      group[[g]] <- ggplot2::ggplot(
-        data = config[[g]]$data,
-        mapping = ggplot2::aes(
-          x = .data[[object$exposure$name]],
-          y = lvl,
-          fill = .data[[strata$name]]
-        )
-      )
-    }
-
-    group[[g]] <- group[[g]] +
-      object$style$theme_base() +
-      ggplot2::geom_boxplot(
-        alpha = .5,
-        key_glyph = object$style$draw_key
-      ) +
-      ggplot2::coord_cartesian(
-        xlim = object$exposure$limits, 
-        clip = "off"
-      ) 
+    group_plots[[g]] <- .group_boxplot(
+      data, config[[g]], stratify, exposure, response, strata, style
+    )
   }
   
-  return(group)  
+  return(group_plots)  
 }
 
 
