@@ -176,7 +176,7 @@ lr_plot_show_model <- function(object, keep_strata = NULL, style = "ribbonline",
   config$builder <- list()
   if (style == "ribbonline") config$builder$model <- build_model_ribbonline
   if (style == "spaghetti")  config$builder$model <- build_model_spaghetti
-  config$builder$summary <- build_summary_pvalue
+  config$builder$summary <- build_summary_pvalue # TODO: how to allow custom summary without breaking the style arg
 
   # store and return
   object$part$model$stratify <- stratify
@@ -188,7 +188,7 @@ lr_plot_show_model <- function(object, keep_strata = NULL, style = "ribbonline",
 
 #' @rdname lr_plot
 #' @export
-lr_plot_show_quantiles <- function(object, keep_strata = NULL, bins = 4, conf_level = 0.95) {
+lr_plot_show_quantiles <- function(object, keep_strata = NULL, style = "errorbar", bins = 4, conf_level = 0.95) {
 
   if (!inherits(object, "erlr_plot")) rlang::abort("`object` must be an erlr plot object")
   if (is.null(keep_strata)) keep_strata <- !is.null(object$strata$name)
@@ -223,7 +223,7 @@ lr_plot_show_quantiles <- function(object, keep_strata = NULL, bins = 4, conf_le
       .by = c("exposure_bins", "strata")
     )
   
-  config$builder <- build_quantile_errorbar
+  if (style == "errorbar") config$builder <- build_quantile_errorbar
   
   # store and return
   object$part$quantile$stratify <- stratify
