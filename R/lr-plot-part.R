@@ -1,4 +1,6 @@
 
+# part_model ------------------------------------------------------------------
+
 .part_model <- function(object, stratify, style, conf_level) {
   
   part_model <- list()
@@ -62,6 +64,9 @@
   return(part_model)
 }
 
+
+# part_quantile ---------------------------------------------------------------
+
 .part_quantile <- function(object, stratify, style, bins, conf_level) {
 
   part_quantile <- list()
@@ -102,6 +107,8 @@
   return(part_quantile)
 }
 
+
+# part_group ------------------------------------------------------------------
 
 .part_group <- function(object, group_cols, stratify, style, bins) {
 
@@ -175,3 +182,28 @@
 
   return(part_group)
 }
+
+
+# miscellaneous helpers -------------------------------------------------------
+
+.plot_variable <- function(name = NULL, label = NULL, limits = NULL, role = NULL) {
+  list(name = name, label = label, limits = limits,role = role)
+}
+
+.get_strata_values <- function(data, name) {
+  if (is.null(name)) return(NA)
+  data[[name]]
+}
+
+.get_model_predictions <- function(mod, conf_level, exposure, strata, stratify) {
+
+  pred_dat <- seq(exposure$limits[1], exposure$limits[2], length.out = 300L) |> 
+    data.frame() |> .set_names(exposure$name)
+  
+  if (stratify) pred_dat <- pred_dat |> 
+    dplyr::cross_join(data.frame(strata$limits) |> .set_names(strata$name))
+
+  model_predictions <- lr_predict(object = mod, newdata = pred_dat, conf_level = conf_level)
+  return(model_predictions)
+}
+

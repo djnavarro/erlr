@@ -37,6 +37,7 @@
 #' @name lr_plot
 NULL
 
+
 # setup -----------------------------------------------------------------------
 
 #' @rdname lr_plot
@@ -120,7 +121,6 @@ lr_plot_style <- function(object, labels) {
 }
 
 
-
 # model -----------------------------------------------------------------------
 
 #' @rdname lr_plot
@@ -139,6 +139,7 @@ lr_plot_show_model <- function(object, keep_strata = NULL, style = "ribbonline",
   
   return(object)
 }
+
 
 # quantiles -------------------------------------------------------------------
 
@@ -159,6 +160,7 @@ lr_plot_show_quantiles <- function(object, keep_strata = NULL, style = "errorbar
   
   return(object)
 }
+
 
 # strips ----------------------------------------------------------------------
 
@@ -209,6 +211,7 @@ lr_plot_show_groups <- function(object, group_by, style = "boxplot", bins = NULL
   return(object)  
 }
 
+
 # plot/print ------------------------------------------------------------------
 
 #' @exportS3Method base::print
@@ -254,6 +257,7 @@ plot.erlr_plot <- function(x, y = NULL, ...) {
   plot(object$output)
 }
 
+
 # top level build function ----------------------------------------------------
 
 #' @rdname lr_plot
@@ -291,26 +295,3 @@ lr_plot_build <- function(object) {
   return(object)
 }
 
-
-# miscellaneous helpers -------------------------------------------------------
-
-.plot_variable <- function(name = NULL, label = NULL, limits = NULL, role = NULL) {
-  list(name = name, label = label, limits = limits,role = role)
-}
-
-.get_strata_values <- function(data, name) {
-  if (is.null(name)) return(NA)
-  data[[name]]
-}
-
-.get_model_predictions <- function(mod, conf_level, exposure, strata, stratify) {
-
-  pred_dat <- seq(exposure$limits[1], exposure$limits[2], length.out = 300L) |> 
-    data.frame() |> .set_names(exposure$name)
-  
-  if (stratify) pred_dat <- pred_dat |> 
-    dplyr::cross_join(data.frame(strata$limits) |> .set_names(strata$name))
-
-  model_predictions <- lr_predict(object = mod, newdata = pred_dat, conf_level = conf_level)
-  return(model_predictions)
-}
