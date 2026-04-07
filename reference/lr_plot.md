@@ -102,15 +102,17 @@ plt <- lr_data |>
 
 print(plt)
 #> <erlr_plot>
-#>   $data:      300 rows, 10 cols
-#>   $exposure:  aucss
-#>   $response:  ae2
-#>   $strata:    sex
-#>   $part:
-#>     $model:     ae2 ~ aucss
-#>     $quantile:  3 bins
-#>     $strip:     jitter both
-#>     $group:     treatment, dose
+#>   plot variables:
+#>     - exposure:        aucss
+#>     - response:        ae2
+#>     - stratification:  sex
+#>   plot components:
+#>     - model:           ae2 ~ aucss
+#>     - quantile:        3 bins
+#>     - strip:           jitter both
+#>     - group:           treatment, dose
+#>   plots built: <none>
+#>   output built: no
 plot(plt)
 
 ```
