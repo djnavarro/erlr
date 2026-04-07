@@ -97,7 +97,7 @@ plot(plt)
 ``` r
 mod1 <- lr_model(ae1 ~ aucss + sex + dose, lr_data)
 mod2 <- lr_scm_backward(mod1, candidates = c("sex", "dose"))
-#> Using seed = 1308
+#> Using seed = 9331
 lr_scm_history(mod2)
 #> # A tibble: 4 × 11
 #>   iteration attempt step       action term_tested model_tested   model_converged
