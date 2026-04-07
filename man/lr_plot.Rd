@@ -14,7 +14,12 @@ lr_plot(data, exposure, response, stratify_by = NULL)
 
 lr_plot_style(object, labels)
 
-lr_plot_show_model(object, keep_strata = NULL, conf_level = 0.95)
+lr_plot_show_model(
+  object,
+  keep_strata = NULL,
+  style = "ribbonline",
+  conf_level = 0.95
+)
 
 lr_plot_show_quantiles(object, keep_strata = NULL, bins = 4, conf_level = 0.95)
 
@@ -44,11 +49,11 @@ lr_plot_build(object)
 
 \item{keep_strata}{Logical, indicating whether this component should keep the color stratification}
 
+\item{style}{Character string used to specify the partial builder for this component}
+
 \item{conf_level}{Confidence level}
 
 \item{bins}{Number of exposure bins (not counting placebo)}
-
-\item{style}{Character string used to specify the partial builder for this component}
 
 \item{panel}{Character string: "upper", "lower", or "both" (the default)}
 
