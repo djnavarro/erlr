@@ -1,4 +1,22 @@
 
+#' Partial builders for logistic regression plots
+#'
+#' @param data The original data frame
+#' @param config Configuration for the specific plot
+#' @param stratify Logical indicating whether to stratify
+#' @param exposure Exposure variable
+#' @param response Response variable
+#' @param strata Stratification variable
+#' @param style Style components
+#'
+#' @returns A ggplot2 object, a geom, or a list of geoms
+#' 
+#' @name lr_partial
+#'
+#' 
+NULL
+
+
 # things we can have partials for:
 # - model
 # - summary
@@ -18,7 +36,9 @@
 
 # datastrip partials should return a ggplot2 plot object
 
-.datastrip_jitter <- function(data, config, stratify, exposure, response, strata, style) {
+#' @rdname lr_partial
+#' @export
+build_datastrip_jitter <- function(data, config, stratify, exposure, response, strata, style) {
 
   is_upr <- config$panel == "upper"
   if (config$panel == "upper") dat <- data |> dplyr::filter(.data[[response$name]] == 1)
@@ -71,7 +91,9 @@
 
 # group partials should return a ggplot2 plot object
 
-.group_boxplot <- function(data, config, stratify, exposure, response, strata, style) {
+#' @rdname lr_partial
+#' @export
+build_group_boxplot <- function(data, config, stratify, exposure, response, strata, style) {
 
   if (stratify == FALSE) {
     plot_map <- ggplot2::aes(x = .data[[exposure$name]], y = lvl)
@@ -93,7 +115,9 @@
 
 # model partials should return a geom or a list of geoms
 
-.model_ribbonline <- function(data, config, stratify, exposure, response, strata, style) {
+#' @rdname lr_partial
+#' @export
+build_model_ribbonline <- function(data, config, stratify, exposure, response, strata, style) {
 
   if (stratify == FALSE) {
 
@@ -155,7 +179,9 @@
 
 # summary partials should return a geom or a list of geoms
 
-.summary_pvalue <- function(data, config, stratify, exposure, response, strata, style) {
+#' @rdname lr_partial
+#' @export
+build_summary_pvalue <- function(data, config, stratify, exposure, response, strata, style) {
 
   corner <- names(sort(config$corner_distance)[4])
   summary_data <- tibble::tibble(lbl = style$format_p(config$p_value))
@@ -200,7 +226,9 @@
 
 # quantile partials should return a geom or a list of geoms
 
-.quantile_errorbar <- function(data, config, stratify, exposure, response, strata, style) {
+#' @rdname lr_partial
+#' @export
+build_quantile_errorbar <- function(data, config, stratify, exposure, response, strata, style) {
 
   if (stratify == FALSE) {
 

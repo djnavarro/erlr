@@ -2,6 +2,11 @@
 
 S3method(base::print,erlr_plot)
 S3method(graphics::plot,erlr_plot)
+export(build_datastrip_jitter)
+export(build_group_boxplot)
+export(build_model_ribbonline)
+export(build_quantile_errorbar)
+export(build_summary_pvalue)
 export(clopper_pearson)
 export(cut_exposure_quantile)
 export(cut_quantile)

@@ -6,14 +6,14 @@ reference:
 - title: Build 
   desc: Build logistic regression models for exposure-response
 - contents:
-  - lr_simulator
-  - lr_predict
   - lr_model
+  - lr_predict
   - lr_scm
 - title: Plot 
   desc: Exposure-response plots for logistic regression models
 - contents:
   - lr_plot
+  - lr_partial
 - title: Simulate
   desc: Simulation tools for exposure-response logistic regressions
 - contents:

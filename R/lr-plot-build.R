@@ -66,7 +66,7 @@
 
   group_plots <- list()
   for(g in names(config)) {
-    group_plots[[g]] <- .group_boxplot(
+    group_plots[[g]] <- config[[g]]$builder(
       data, config[[g]], stratify, exposure, response, strata, style
     )
   }
@@ -84,7 +84,7 @@
   strata   <- object$strata
   style    <- object$style
 
-  model_geoms <- .model_ribbonline(
+  model_geoms <- config$builder$model(
     data, config, stratify, exposure, response, strata, style
   )
   return(model_geoms)
@@ -100,7 +100,7 @@
   strata   <- object$strata
   style    <- object$style
 
-  summary_geoms <- .summary_pvalue(
+  summary_geoms <- config$builder$summary(
     data, config, stratify, exposure, response, strata, style
   )
   return(summary_geoms)
@@ -117,7 +117,7 @@
   strata   <- object$strata
   style    <- object$style
 
-  quantile_geoms <- .quantile_errorbar(
+  quantile_geoms <- config$builder(
     data, config, stratify, exposure, response, strata, style
   )
   return(quantile_geoms)

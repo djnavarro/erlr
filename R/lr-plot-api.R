@@ -173,6 +173,10 @@ lr_plot_show_model <- function(object, keep_strata = NULL, conf_level = 0.95) {
     ) |> 
     unlist()  
 
+  config$builder <- list()
+  config$builder$model <- build_model_ribbonline
+  config$builder$summary <- build_summary_pvalue
+
   # store and return
   object$part$model$stratify <- stratify
   object$part$model$config <- config
@@ -218,6 +222,8 @@ lr_plot_show_quantiles <- function(object, keep_strata = NULL, bins = 4, conf_le
       .by = c("exposure_bins", "strata")
     )
   
+  config$builder <- build_quantile_errorbar
+  
   # store and return
   object$part$quantile$stratify <- stratify
   object$part$quantile$config <- config
@@ -241,7 +247,7 @@ lr_plot_show_datastrip <- function(object, keep_strata = NULL, style = "jitter",
   config$panel <- panel
   config$seed  <- 1234L
   
-  if (style == "jitter") config$builder <- .datastrip_jitter
+  if (style == "jitter") config$builder <- build_datastrip_jitter
 
   if (panel %in% c("lower", "both")) config$lower <- TRUE
   if (panel %in% c("upper", "both")) config$upper <- TRUE
@@ -268,6 +274,7 @@ lr_plot_show_groups <- function(object, group_by, keep_strata = NULL) {
   for(g in names(group_cols)) {
 
     config <- list()
+    config$builder <- build_group_boxplot
 
     # store the variable names used for grouping
     if (keep_strata)  config$groupings <- c(g, object$strata$name)
