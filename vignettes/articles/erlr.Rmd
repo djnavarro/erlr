@@ -1,0 +1,16 @@
+---
+title: "Getting Started"
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+This is the getting started article
+
+```{r setup}
+library(erlr)
+```

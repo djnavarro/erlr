@@ -1,0 +1,16 @@
+---
+title: "Simulation"
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+This is the simulation article
+
+```{r setup}
+library(erlr)
+```

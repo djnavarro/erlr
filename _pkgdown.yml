@@ -27,3 +27,11 @@ reference:
   - logit
   - clopper_pearson
   - cut_quantile
+
+articles:
+  - title:
+    navbar:
+    contents: 
+      - articles/model
+      - articles/plot
+      - articles/simulate

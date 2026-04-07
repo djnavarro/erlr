@@ -1,0 +1,78 @@
+---
+title: "Modelling"
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+This is the modelling article
+
+```{r setup}
+library(erlr)
+library(tibble)
+```
+
+
+
+The core function is `lr_model()`, a very thin wrapper around `glm()` that specifies the family and link function to create a logistic regression. The package comes with a synthetic data set called `lr_data` that we can use:
+
+```{r data-1}
+lr_data
+```
+
+## Fitting models
+
+Creating a model:
+
+```{r model-1}
+mod <- lr_model(formula = ae1 ~ aucss, data = lr_data)
+mod
+```
+
+## Prediction
+
+The `lr_predict()` function produces model predictions:
+
+```{r predict-1}
+pred <- mod |> 
+  lr_predict(newdata = tibble(
+    aucss = seq(from = 0, to = 1500, by = 100)
+  ))
+pred
+```
+
+The confidence level can be adjusted using the `conf_level` argument
+
+```{r predict-2}
+pred <- mod |> 
+  lr_predict(
+    newdata = tibble(aucss = seq(from = 0, to = 1500, by = 100)), 
+    conf_level = 0.8 
+  )
+pred
+```
+
+## Stepwise covariate modelling
+
+There are two functions that control SCM regression, `lr_scm_forward()` and `lr_scm_backward()`:
+
+```{r scm-1}
+base_mod <- lr_model(formula = ae1 ~ aucss, data = lr_data)
+candidates <- c("sex", "dose", "weight", "age")
+
+final_mod <- base_mod |> 
+  lr_scm_forward(candidates, threshold = 0.01, seed = 3425) |> 
+  lr_scm_backward(candidates, threshold = 0.001, seed = 9821)
+
+final_mod
+```
+
+To extract the log, use `lr_scm_history()`:
+
+```{r}
+lr_scm_history(final_mod)
+```
