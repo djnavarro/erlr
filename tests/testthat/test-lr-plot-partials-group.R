@@ -72,7 +72,7 @@ test_that("build_group_violin returns geom + coord", {
   p2 <- p2 |> lr_plot_show_groups(treatment, style = "violin")
 
   expect_no_error(
-    build_group_boxplot(
+    build_group_violin(
       data = p1$data,
       config = p1$part$group$config[[1]],
       stratify = p1$part$group$stratify,
@@ -83,7 +83,7 @@ test_that("build_group_violin returns geom + coord", {
     )
   )
   expect_no_error(
-    build_group_boxplot(
+    build_group_violin(
       data = p2$data,
       config = p2$part$group$config[[1]],
       stratify = p2$part$group$stratify,
@@ -94,7 +94,7 @@ test_that("build_group_violin returns geom + coord", {
     )
   )
 
-  p1_out <- build_group_boxplot(
+  p1_out <- build_group_violin(
       data = p1$data,
       config = p1$part$group$config[[1]],
       stratify = p1$part$group$stratify,
@@ -103,7 +103,7 @@ test_that("build_group_violin returns geom + coord", {
       strata = p1$strata,
       style = p1$style
     )
-  p2_out <- build_group_boxplot(
+  p2_out <- build_group_violin(
       data = p2$data,
       config = p2$part$group$config[[1]],
       stratify = p2$part$group$stratify,
