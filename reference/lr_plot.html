@@ -48,7 +48,12 @@
 <span></span>
 <span><span class="fu">lr_plot_style</span><span class="op">(</span><span class="va">object</span>, <span class="va">labels</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">lr_plot_show_model</span><span class="op">(</span><span class="va">object</span>, keep_strata <span class="op">=</span> <span class="cn">NULL</span>, conf_level <span class="op">=</span> <span class="fl">0.95</span><span class="op">)</span></span>
+<span><span class="fu">lr_plot_show_model</span><span class="op">(</span></span>
+<span>  <span class="va">object</span>,</span>
+<span>  keep_strata <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  style <span class="op">=</span> <span class="st">"ribbonline"</span>,</span>
+<span>  conf_level <span class="op">=</span> <span class="fl">0.95</span></span>
+<span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">lr_plot_show_quantiles</span><span class="op">(</span><span class="va">object</span>, keep_strata <span class="op">=</span> <span class="cn">NULL</span>, bins <span class="op">=</span> <span class="fl">4</span>, conf_level <span class="op">=</span> <span class="fl">0.95</span><span class="op">)</span></span>
 <span></span>
@@ -96,16 +101,16 @@
 <dd><p>Logical, indicating whether this component should keep the color stratification</p></dd>
 
 
+<dt id="arg-style">style<a class="anchor" aria-label="anchor" href="#arg-style"></a></dt>
+<dd><p>Character string used to specify the partial builder for this component</p></dd>
+
+
 <dt id="arg-conf-level">conf_level<a class="anchor" aria-label="anchor" href="#arg-conf-level"></a></dt>
 <dd><p>Confidence level</p></dd>
 
 
 <dt id="arg-bins">bins<a class="anchor" aria-label="anchor" href="#arg-bins"></a></dt>
 <dd><p>Number of exposure bins (not counting placebo)</p></dd>
-
-
-<dt id="arg-style">style<a class="anchor" aria-label="anchor" href="#arg-style"></a></dt>
-<dd><p>Character string used to specify the partial builder for this component</p></dd>
 
 
 <dt id="arg-panel">panel<a class="anchor" aria-label="anchor" href="#arg-panel"></a></dt>

@@ -5,16 +5,6 @@ Partial builders for logistic regression plots
 ## Usage
 
 ``` r
-build_quantile_errorbar(
-  data,
-  config,
-  stratify,
-  exposure,
-  response,
-  strata,
-  style
-)
-
 build_datastrip_jitter(
   data,
   config,
@@ -30,6 +20,26 @@ build_group_boxplot(data, config, stratify, exposure, response, strata, style)
 build_group_violin(data, config, stratify, exposure, response, strata, style)
 
 build_model_ribbonline(
+  data,
+  config,
+  stratify,
+  exposure,
+  response,
+  strata,
+  style
+)
+
+build_model_spaghetti(
+  data,
+  config,
+  stratify,
+  exposure,
+  response,
+  strata,
+  style
+)
+
+build_quantile_errorbar(
   data,
   config,
   stratify,
