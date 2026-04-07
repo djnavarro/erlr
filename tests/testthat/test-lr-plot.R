@@ -8,6 +8,7 @@ test_that("lr_plot creates an erlr_plot (minimal)", {
 test_that("lr_plot creates an erlr_plot (all parts)", {
   expect_no_error(
     lr_data |> 
+      dplyr::mutate(dose = factor(dose)) |> 
       lr_plot(aucss, ae1) |> 
       lr_plot_show_model() |> 
       lr_plot_show_quantiles()  |> 
@@ -15,6 +16,7 @@ test_that("lr_plot creates an erlr_plot (all parts)", {
       lr_plot_show_groups(c(treatment, dose))
   )
   plt <- lr_data |> 
+    dplyr::mutate(dose = factor(dose)) |> 
     lr_plot(aucss, ae1) |> 
     lr_plot_show_model() |> 
     lr_plot_show_quantiles()  |> 
@@ -26,6 +28,7 @@ test_that("lr_plot creates an erlr_plot (all parts)", {
 test_that("lr_plot creates an erlr_plot (all parts, all strata)", {
   expect_no_error(
     lr_data |> 
+      dplyr::mutate(dose = factor(dose)) |> 
       lr_plot(aucss, ae1, sex) |> 
       lr_plot_show_model() |> 
       lr_plot_show_quantiles()  |> 
@@ -33,6 +36,7 @@ test_that("lr_plot creates an erlr_plot (all parts, all strata)", {
       lr_plot_show_groups(c(treatment, dose))
   )
   plt <- lr_data |> 
+    dplyr::mutate(dose = factor(dose)) |> 
     lr_plot(aucss, ae1, sex) |> 
     lr_plot_show_model() |> 
     lr_plot_show_quantiles()  |> 
@@ -52,6 +56,7 @@ plt2 <- lr_data |>
   lr_plot_show_datastrip()
 
 plt3 <- lr_data |> 
+  dplyr::mutate(dose = factor(dose)) |> 
   lr_plot(aucss, ae1) |> 
   lr_plot_show_model() |> 
   lr_plot_show_quantiles()  |> 
@@ -86,6 +91,4 @@ test_that("lr_plot_build constructs ggplot2 objects", {
     c(base = TRUE, strip_upper = TRUE, strip_lower = TRUE, group_treatment = TRUE, group_dose = TRUE)
   )
 })
-
-
 

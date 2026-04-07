@@ -21,15 +21,15 @@
 #'   lr_plot(aucss, ae1) |> 
 #'   lr_plot_show_model() |> 
 #'   lr_plot_show_quantiles() |> 
-#'   lr_plot_show_groups(dose) |> 
+#'   lr_plot_show_groups(aucss) |> 
 #'   plot()
 #'  
 #' plt <- lr_data |> 
 #'   lr_plot(aucss, ae2, stratify_by = sex) |> 
 #'   lr_plot_show_model(keep_strata = FALSE) |> 
-#'   lr_plot_show_quantiles(bins = 3) |> 
+#'   lr_plot_show_quantiles() |> 
 #'   lr_plot_show_datastrip() |> 
-#'   lr_plot_show_groups(group_by = c(treatment, dose), keep_strata = FALSE)
+#'   lr_plot_show_groups(group_by = c(aucss, treatment), keep_strata = FALSE)
 #' 
 #' print(plt)
 #' plot(plt)
@@ -269,62 +269,20 @@ lr_plot_show_datastrip <- function(object, keep_strata = NULL, style = "jitter",
 
 #' @rdname lr_plot
 #' @export
-lr_plot_show_groups <- function(object, group_by, style = "boxplot", keep_strata = NULL) {
+lr_plot_show_groups <- function(object, group_by, style = "boxplot", bins = NULL, keep_strata = NULL) {
 
   if (!inherits(object, "erlr_plot")) rlang::abort("`object` must be an erlr plot object")
   if (is.null(keep_strata)) keep_strata <- !is.null(object$strata$name)
   group_cols <- tidyselect::eval_select(rlang::enquo(group_by), object$data) 
+  group_cols <- names(group_cols)
 
-  object$part$group <- list()
-  object$part$group$stratify <- keep_strata
-  object$part$group$config <- list()
-
-  for(g in names(group_cols)) {
-
-    config <- list()
-    if (style == "boxplot") config$builder <- build_group_boxplot
-    if (style == "violin")  config$builder <- build_group_violin
-
-    # data 
-    dat <- object$data
-
-    # TODO: add code to handle continuous grouping variables
-    # with a special case for when it's the exposure variable.
-    # modify "dat" so that it contains a new discretised variable
-    # and modify "g" to refer to this new variable (cannot reuse
-    # the same name in case the original is used for something)
-
-    # store the variable names used for grouping
-    if (keep_strata)  config$groupings <- c(g, object$strata$name)
-    if (!keep_strata) config$groupings <- g
-
-    # store information about the y-axis variable
-    config$y <- .plot_variable(
-      name = g,
-      label = .get_label(dat[[g]]) %||% g,
-      role = paste("group", g, sep = "_")
-    )
-
-    # store sample size information (for merge into plot labels)
-    config$counts <- dat |> 
-      dplyr::summarise(
-        n   = sum(!is.na(.data[[object$exposure$name]])),
-        lbl = paste0("N=", n),
-        .by = config$groupings
-      ) |> 
-      dplyr::mutate(lvl = paste0(.data[[g]], " (", lbl, ")")) |> 
-      dplyr::arrange(.data[[g]])
-
-    # store the number of groups plotted on the y-axis
-    config$n_groups <- nrow(config$counts)
-
-    # store a modified data set to use for plotting
-    config$data <- dat |> 
-      dplyr::select(dplyr::all_of(c(config$groupings, object$exposure$name))) |> 
-      dplyr::left_join(config$counts, by = config$groupings)
-    
-    object$part$group$config[[g]] <- config
-  }
+  object$part$group <- .part_group(
+    object = object,
+    group_cols = group_cols, 
+    stratify = keep_strata, 
+    style = style,
+    bins = bins
+  )
 
   return(object)  
 }
