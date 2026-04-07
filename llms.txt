@@ -205,3 +205,4 @@ Other functions and objects
   [`cut_quantile()`](https://erlr.djnavarro.net/reference/cut_quantile.md)
   : Cut a continuous variable into quantiles
 
+# Articles
