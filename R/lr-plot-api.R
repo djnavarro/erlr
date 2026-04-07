@@ -337,7 +337,7 @@ print.erlr_plot <- function(x, ...) {
     cat("  plots built: <none>\n")
   }
 
-  if (is.null(x$output)) cat("  output built: no")
+  if (is.null(x$output))  cat("  output built: no")
   if (!is.null(x$output)) cat("  output built: yes")
   
   return(invisible(x))

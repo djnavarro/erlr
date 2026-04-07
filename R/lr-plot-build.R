@@ -16,12 +16,11 @@
     ) 
   if (!is.null(object$part$model)) {
     base <- base + 
-      .build_model_ribbon(object) +
-      .build_model_line(object) +
-      .build_model_summary(object)
+      .build_model_geoms(object) +
+      .build_summary_geoms(object)
   }
   if (!is.null(object$part$quantile)) {
-    base <- base + .build_quantiles(object)
+    base <- base + .build_quantile_geoms(object)
   }
 
   return(base)
@@ -29,7 +28,6 @@
 
 .build_strip_plot <- function(object) {
 
-  # standard arguments for a partial builder
   data     <- object$data
   config   <- object$part$strip$config
   stratify <- object$part$strip$stratify
@@ -58,7 +56,6 @@
 
 .build_group_plot <- function(object) {
 
-  # standard arguments for a partial builder
   data     <- object$data
   config   <- object$part$group$config
   stratify <- object$part$group$stratify
@@ -77,193 +74,52 @@
   return(group_plots)  
 }
 
+.build_model_geoms <- function(object) {
 
-# specific buildiers: base plot model -----------------------------------------
-
-.build_model_ribbon <- function(object) {
-
-  strata   <- object$strata
-  stratify <- object$part$model$stratify
+  data     <- object$data
   config   <- object$part$model$config
+  stratify <- object$part$model$stratify
+  exposure <- object$exposure
+  response <- object$response
+  strata   <- object$strata
+  style    <- object$style
 
-  if (stratify == FALSE) {
-    model_ribbon <- ggplot2::geom_ribbon(
-      data = config$predictions,
-      mapping = ggplot2::aes(
-        x = .data[[object$exposure$name]],
-        ymin = ci_lower,
-        ymax = ci_upper
-      ),
-      fill = "grey40",
-      alpha = .25,
-      key_glyph = object$style$draw_key
-    )
-  }
-
-  if (stratify == TRUE) {
-    model_ribbon <- ggplot2::geom_ribbon(
-      data = config$predictions,
-      mapping = ggplot2::aes(
-        x = .data[[object$exposure$name]],
-        fill = .data[[strata$name]],
-        ymin = ci_lower,
-        ymax = ci_upper
-      ),
-      alpha = .25,
-      key_glyph = object$style$draw_key
-    )
-  } 
-
-  return(model_ribbon)
+  model_geoms <- .model_ribbonline(
+    data, config, stratify, exposure, response, strata, style
+  )
+  return(model_geoms)
 }
 
-.build_model_line <- function(object) {
+.build_summary_geoms <- function(object) {
 
-  strata   <- object$strata
-  stratify <- object$part$model$stratify
+  data     <- object$data
   config   <- object$part$model$config
+  stratify <- object$part$model$stratify
+  exposure <- object$exposure
+  response <- object$response
+  strata   <- object$strata
+  style    <- object$style
 
-  if (stratify == FALSE) {
-    model_line <- ggplot2::geom_path(
-      data = config$predictions,
-      mapping = ggplot2::aes(
-        x = .data[[object$exposure$name]], 
-        y = fit_resp
-      ),
-      linewidth = 1,
-      key_glyph = object$style$draw_key
-    )
-  }
-
-  if (stratify == TRUE) {
-    model_line <- ggplot2::geom_path(
-      data = config$predictions,
-      mapping = ggplot2::aes(
-        x = .data[[object$exposure$name]], 
-        y = fit_resp,
-        color = .data[[strata$name]]
-      ),
-      linewidth = 1,
-      key_glyph = object$style$draw_key
-    )
-  }
-
-  return(model_line)
+  summary_geoms <- .summary_pvalue(
+    data, config, stratify, exposure, response, strata, style
+  )
+  return(summary_geoms)
+  
 }
 
-.build_model_summary <- function(object) {
+.build_quantile_geoms <- function(object) {
 
-  strata   <- object$strata
-  stratify <- object$part$model$stratify
-  config   <- object$part$model$config
-
-  which_corner <- names(sort(config$corner_distance)[4])
-  pval <- tibble::tibble(lbl = object$style$format_p(config$p_value))
-
-  if (which_corner == "top_left") {
-    model_summary <- ggplot2::geom_label(
-      data = pval,
-      mapping = ggplot2::aes(x = I(.05), y = I(.95), label = lbl),
-      hjust = 0, vjust = 1, show.legend = FALSE
-    )
-  }
-
-  if (which_corner == "top_right") {
-    model_summary <- ggplot2::geom_label(
-      data = pval,
-      mapping = ggplot2::aes(x = I(.95), y = I(.95), label = lbl),
-      hjust = 1, vjust = 1, show.legend = FALSE
-    )
-  }
-
-  if (which_corner == "bottom_left") {
-    model_summary <- ggplot2::geom_label(
-      data = pval,
-      mapping = ggplot2::aes(x = I(.05), y = I(.05), label = lbl),
-      hjust = 0, vjust = 0, show.legend = FALSE
-    )
-  }
-
-  if (which_corner == "bottom_right") {
-    model_summary <- ggplot2::geom_label(
-      data = pval,
-      mapping = ggplot2::aes(x = I(.95), y = I(.05), label = lbl),
-      hjust = 1, vjust = 0, show.legend = FALSE
-    )
-  }
-
-  return(model_summary)
-}
-
-# specific buildiers: base plot quantile --------------------------------------
-
-.build_quantiles <- function(object) {
-
-  strata   <- object$strata
-  stratify <- object$part$quantile$stratify
+  data     <- object$data
   config   <- object$part$quantile$config
+  stratify <- object$part$quantile$stratify
+  exposure <- object$exposure
+  response <- object$response
+  strata   <- object$strata
+  style    <- object$style
 
-  if (stratify == FALSE) {
-    quantile_geoms <- list(
-      ggplot2::geom_point(
-        data = config$summary,
-        mapping = ggplot2::aes(x = x_mid, y = y_mid),
-        inherit.aes = FALSE,
-        size = 2,
-        key_glyph = object$style$draw_key
-      ),
-      ggplot2::geom_errorbar(
-        data = config$summary,
-        mapping = ggplot2::aes(x = x_mid, ymin = ci_lower, ymax = ci_upper),
-        width = 0.025 * (object$exposure$limits[2] - object$exposure$limits[1]),
-        inherit.aes = FALSE,
-        key_glyph = object$style$draw_key
-      ),
-      ggplot2::geom_text(
-        data = config$summary,
-        mapping = ggplot2::aes(x = x_mid, y = y_lbl, label = y_mid_lbl),
-        inherit.aes = FALSE,
-        size = 3,
-        show.legend = FALSE
-      )
-    )
-  }
-
-  if (stratify == TRUE) {
-    quantile_geoms <- list(
-      ggplot2::geom_point(
-        data = config$summary,
-        mapping = ggplot2::aes(
-          x = x_mid, 
-          y = y_mid,
-          color = .data[["strata"]]
-        ),
-        inherit.aes = FALSE,
-        size = 2,
-        key_glyph = object$style$draw_key
-      ),
-      ggplot2::geom_errorbar(
-        data = config$summary,
-        mapping = ggplot2::aes(
-          x = x_mid, 
-          ymin = ci_lower, 
-          ymax = ci_upper,
-          color = .data[["strata"]]  
-        ),
-        inherit.aes = FALSE,
-        width = 0.025 * (object$exposure$limits[2] - object$exposure$limits[1]),
-        key_glyph = object$style$draw_key
-      ),
-      ggplot2::geom_text(
-        data = config$summary,
-        mapping = ggplot2::aes(x = x_mid, y = y_lbl, label = y_mid_lbl),
-        inherit.aes = FALSE,
-        size = 3,
-        show.legend = FALSE
-      ) 
-    ) 
-  }
-
+  quantile_geoms <- .quantile_errorbar(
+    data, config, stratify, exposure, response, strata, style
+  )
   return(quantile_geoms)
 }
 
