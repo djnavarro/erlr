@@ -92,3 +92,36 @@ test_that("lr_plot_build constructs ggplot2 objects", {
   )
 })
 
+test_that("print method works as expected", {
+  print_quiet <- purrr::quietly(print.erlr_plot)
+
+  expect_no_error(print_quiet(plt1))
+  expect_no_error(print_quiet(plt2))
+  expect_no_error(print_quiet(plt3))
+
+  printout1 <- print_quiet(plt1)
+  printout2 <- print_quiet(plt2)
+  printout3 <- print_quiet(plt3)
+
+  expect_equal(printout1$result, plt1)
+  expect_equal(printout2$result, plt2)
+  expect_equal(printout3$result, plt3)
+
+  expect_equal(printout1$warnings, character())
+  expect_equal(printout2$warnings, character())
+  expect_equal(printout3$warnings, character())
+
+  expect_equal(printout1$messages, character())
+  expect_equal(printout2$messages, character())
+  expect_equal(printout3$messages, character())
+
+  outlines1 <- strsplit(printout1$output, split = "\n")[[1]]
+  outlines2 <- strsplit(printout2$output, split = "\n")[[1]]
+  outlines3 <- strsplit(printout3$output, split = "\n")[[1]]
+
+  expect_length(outlines1, 9)
+  expect_length(outlines2, 11)
+  expect_length(outlines3, 12) 
+
+})
+
