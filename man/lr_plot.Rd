@@ -21,7 +21,13 @@ lr_plot_show_model(
   conf_level = 0.95
 )
 
-lr_plot_show_quantiles(object, keep_strata = NULL, bins = 4, conf_level = 0.95)
+lr_plot_show_quantiles(
+  object,
+  keep_strata = NULL,
+  style = "errorbar",
+  bins = 4,
+  conf_level = 0.95
+)
 
 lr_plot_show_datastrip(
   object,
