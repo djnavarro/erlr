@@ -2,6 +2,8 @@
 
 ## erglm 0.1.1
 
+CRAN release: 2026-08-08
+
 CRAN resubmission, addressing reviewer feedback on the 0.1.0 submission:
 
 - Self-references to ‘erglm’ in the `DESCRIPTION` `Description` field
