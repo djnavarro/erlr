@@ -19,6 +19,7 @@ knitr::opts_chunk$set(
 [![R-CMD-check](https://github.com/djnavarro/erglm/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/djnavarro/erglm/actions/workflows/R-CMD-check.yaml)
 [![Codecov test coverage](https://codecov.io/gh/djnavarro/erglm/graph/badge.svg)](https://app.codecov.io/gh/djnavarro/erglm)
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
+[![CRAN status](https://www.r-pkg.org/badges/version/erglm)](https://CRAN.R-project.org/package=erglm)
 <!-- badges: end -->
 
 Provides estimation tools for exposure-response models based on `glm()`. It is mostly intended as a convenience package: the core tools are wrappers around `glm()`, tested and supported for binomial, poisson, gaussian, and gamma families. For plotting exposure-response models (including those fitted with erglm), see the companion package [erplots](https://github.com/djnavarro/erplots), which supplies a model-agnostic mini-language for building exposure-response plots.
